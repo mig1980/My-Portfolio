@@ -1,0 +1,76 @@
+import React, { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
+
+const navItems = [
+  { label: 'About', href: '#about' },
+  { label: 'Expertise', href: '#expertise' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Thought Leadership', href: '#thoughts' },
+  { label: 'Contact', href: '#contact' },
+];
+
+const Navigation: React.FC = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled ? 'py-4 bg-slate-950/80 backdrop-blur-md border-b border-slate-800' : 'py-6 bg-transparent'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <a href="#" className="text-xl font-bold tracking-tight text-slate-100 hover:text-primary-400 transition-colors">
+          MG<span className="text-primary-500">.</span>
+        </a>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex gap-8">
+          {navItems.map((item) => (
+            <a 
+              key={item.label} 
+              href={item.href}
+              className="text-sm font-medium text-slate-400 hover:text-white hover:underline decoration-primary-500 decoration-2 underline-offset-8 transition-all"
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* Mobile Toggle */}
+        <button 
+          className="md:hidden text-slate-300 hover:text-white"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <X /> : <Menu />}
+        </button>
+      </div>
+
+      {/* Mobile Nav Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-slate-900 border-b border-slate-800 p-6 flex flex-col gap-4 shadow-2xl animate-fade-in-up">
+          {navItems.map((item) => (
+            <a 
+              key={item.label} 
+              href={item.href}
+              className="text-lg font-medium text-slate-300 hover:text-primary-400"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+  );
+};
+
+export default Navigation;

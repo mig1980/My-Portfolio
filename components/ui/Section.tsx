@@ -36,18 +36,16 @@ interface SectionProps {
  * </Section>
  * ```
  */
-const Section: React.FC<SectionProps> = memo(
-  ({ id, className = '', children, darker = false }) => {
-    return (
-      <section
-        id={id}
-        className={`py-20 md:py-32 px-6 md:px-12 lg:px-24 transition-colors duration-500 ${darker ? 'bg-slate-900/50' : 'bg-transparent'} ${className}`}
-      >
-        <div className="max-w-6xl mx-auto">{children}</div>
-      </section>
-    );
-  }
-);
+const Section: React.FC<SectionProps> = memo(({ id, className = '', children, darker = false }) => {
+  return (
+    <section
+      id={id}
+      className={`py-20 md:py-32 px-6 md:px-12 lg:px-24 transition-colors duration-500 ${darker ? 'bg-slate-900/50' : 'bg-transparent'} ${className}`}
+    >
+      <div className="max-w-6xl mx-auto">{children}</div>
+    </section>
+  );
+});
 
 Section.displayName = 'Section';
 

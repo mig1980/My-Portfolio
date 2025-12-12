@@ -33,21 +33,19 @@ interface CardProps {
  * </Card>
  * ```
  */
-const Card: React.FC<CardProps> = memo(
-  ({ children, className = '', hoverEffect = true }) => {
-    return (
-      <div
-        className={`
+const Card: React.FC<CardProps> = memo(({ children, className = '', hoverEffect = true }) => {
+  return (
+    <div
+      className={`
         relative p-6 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm
         ${hoverEffect ? 'hover:border-primary-500/50 hover:bg-slate-800/80 transition-all duration-300 group' : ''}
         ${className}
       `}
-      >
-        {children}
-      </div>
-    );
-  }
-);
+    >
+      {children}
+    </div>
+  );
+});
 
 Card.displayName = 'Card';
 

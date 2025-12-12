@@ -66,6 +66,7 @@ const Hero: React.FC = () => {
             <img
               src="https://picsum.photos/800/800?grayscale"
               alt="Michael Gavrilov"
+              loading="lazy"
               className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />

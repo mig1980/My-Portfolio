@@ -1,5 +1,16 @@
-import React from 'react';
+/**
+ * @fileoverview Type definitions for the AboutMe portfolio application.
+ * @description Contains all shared TypeScript interfaces used across components.
+ * @author Michael Gavrilov
+ * @version 1.0.0
+ */
 
+import type React from 'react';
+
+/**
+ * Represents a professional job role/position.
+ * Used in the Experience section to display work history.
+ */
 export interface JobRole {
   title: string;
   company: string;
@@ -8,47 +19,99 @@ export interface JobRole {
   description: string[];
 }
 
+/**
+ * Represents a category of skills with associated icon.
+ * Used in the Expertise section to display competency areas.
+ */
 export interface SkillGroup {
+  /** Category name (e.g., "Technical Skills", "Leadership") */
   category: string;
+  /** Array of individual skill names */
   skills: string[];
+  /** React icon component for visual representation */
   icon: React.ReactNode;
 }
 
+/**
+ * Represents an educational qualification.
+ * Used in the Education section to display academic background.
+ */
 export interface EducationItem {
+  /** Name of the degree or program */
   degree: string;
+  /** Name of the educational institution */
   institution: string;
+  /** Type of qualification */
   type: 'Master' | 'Bachelor' | 'Certification';
 }
 
+/**
+ * Represents a professional certification.
+ * Used in the Education section to display credentials.
+ */
 export interface Certification {
+  /** Name of the certification */
   name: string;
+  /** Organization that issued the certification */
   issuer?: string;
 }
 
+/**
+ * Represents a thought leadership content item (article, talk, etc.).
+ * Used in the ThoughtLeadership section to showcase publications.
+ */
 export interface ThoughtLeadershipItem {
+  /** Title of the content piece */
   title: string;
+  /** Type of content (e.g., "Article", "Conference Talk") */
   type: string;
+  /** Brief description of the content */
   description: string;
+  /** External URL to the full content */
   link?: string;
 }
 
+/**
+ * Represents a social media or contact link.
+ * Used in the Contact section for social connectivity.
+ */
 export interface SocialLink {
+  /** Platform name (e.g., "LinkedIn", "GitHub") */
   platform: string;
+  /** Full URL or mailto link */
   url: string;
+  /** Accessible label for screen readers */
   label: string;
+  /** React icon component for the platform */
   icon: React.ReactNode;
 }
 
+/**
+ * Represents a professional award or recognition.
+ * Used in the About section to highlight achievements.
+ */
 export interface AwardItem {
+  /** Name of the award */
   title: string;
+  /** Organization that granted the award */
   issuer: string;
+  /** Level or tier of the award (e.g., "Platinum", "Gold") */
   awardLevel: string;
+  /** Brief description of the achievement */
   description: string;
+  /** Visual theme color for the award card */
   color?: 'platinum' | 'gold' | 'blue';
+  /** Optional link to award details */
   link?: string;
 }
 
+/**
+ * Represents a personal interest or hobby.
+ * Used in the About section to add personality.
+ */
 export interface InterestItem {
+  /** Name of the interest */
   label: string;
+  /** React icon component representing the interest */
   icon: React.ReactNode;
 }

@@ -48,9 +48,13 @@ const Navigation: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         <a
           href="#"
-          className="text-xl font-bold tracking-tight text-slate-100 hover:text-primary-400 transition-colors"
+          className="hover:opacity-80 transition-opacity"
         >
-          MG<span className="text-primary-500">.</span>
+          <img
+            src="/Logo.png"
+            alt="Michael Gavrilov"
+            className="h-14 w-auto"
+          />
         </a>
 
         {/* Desktop Nav */}

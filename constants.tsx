@@ -36,14 +36,15 @@ import {
  */
 export const PERSONAL_INFO = {
   name: 'Michael Gavrilov',
+  tagline: 'Engineer at heart.',
+  taglineHighlight: 'Enterprise AI catalyst.',
   title: 'Strategic Account Director at Microsoft',
-  subtitle: 'Helping enterprise leaders turn AI strategy into adoption',
   location: 'New York City',
-  summary: `Strategic Account Director at Microsoft, leading Fortune 500 AI transformations—bridging executive strategy and generative AI implementation to deliver measurable outcomes.
+  summary: `Started as an engineer. Became a dealmaker. Never lost the builder's mindset.
 
-  Over more than two decades, I’ve led multi-year programs and negotiated complex enterprise partnerships—building executive sponsorship and driving adoption at scale.
+I've spent two decades translating between the language of technology and the language of business—helping Fortune 500 leaders see what's possible, then making it real.
 
-  With a background spanning engineering and business management, I translate advanced technology into outcomes—from strategy to implementation.`,
+Whether architecting solutions or negotiating multi-year partnerships, I bring the same approach: listen deeply, cut through complexity, and deliver what I promised.`,
 };
 
 export const EXPERIENCE: JobRole[] = [

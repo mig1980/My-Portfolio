@@ -31,8 +31,8 @@ const About: React.FC = () => {
               Strategic Account Director based in {PERSONAL_INFO.location}.
             </p>
             <p>
-              Colleagues know me as someone who listens first, gives honest advice, and thrives on
-              solving complex challenges.
+              Colleagues know me as someone who listens first, gives honest advice, and turns
+              complex challenges into actionable plans.
             </p>
           </div>
         </div>

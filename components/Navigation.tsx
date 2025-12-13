@@ -46,15 +46,8 @@ const Navigation: React.FC = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <a
-          href="#"
-          className="hover:opacity-80 transition-opacity"
-        >
-          <img
-            src="/Logo.png"
-            alt="Michael Gavrilov"
-            className="h-14 w-auto"
-          />
+        <a href="#" className="hover:opacity-80 transition-opacity">
+          <img src="/Logo.png" alt="Michael Gavrilov" className="h-14 w-auto" />
         </a>
 
         {/* Desktop Nav */}

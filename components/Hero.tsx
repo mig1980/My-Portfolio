@@ -35,19 +35,15 @@ const Hero: React.FC = () => {
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
-            Engineer at heart. <br />
+            {PERSONAL_INFO.tagline} <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-indigo-400">
-              Enterprise AI dealmaker.
+              {PERSONAL_INFO.taglineHighlight}
             </span>
           </h1>
 
           <p className="text-xl text-slate-300 max-w-lg leading-relaxed">
-            Strategic Account Director at Microsoft, leading Fortune 500 AI transformations—bridging
-            executive strategy and generative AI implementation to deliver measurable outcomes.
-          </p>
-
-          <p className="text-sm text-slate-400 max-w-lg">
-            Closed $250M+ TCV in complex, multi-year enterprise partnerships.
+            Strategic Account Director at Microsoft, leading AI transformation for Fortune 500
+            accounts—turning executive vision into multi-year partnerships and measurable adoption.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">

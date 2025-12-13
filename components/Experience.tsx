@@ -23,7 +23,7 @@ const Experience: React.FC = () => {
     <Section id="experience" darker>
       <div className="mb-16">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Professional Experience</h2>
-        <p className="text-slate-400 max-w-2xl">
+        <p className="text-slate-300 max-w-2xl">
           A track record of high-stakes negotiation, strategic partnership building, and
           technological leadership.
         </p>

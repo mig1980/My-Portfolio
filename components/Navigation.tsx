@@ -59,7 +59,7 @@ const Navigation: React.FC = () => {
             <a
               key={item.label}
               href={item.href}
-              className="text-sm font-medium text-slate-400 hover:text-white hover:underline decoration-primary-500 decoration-2 underline-offset-8 transition-all"
+              className="text-sm font-medium text-slate-300 hover:text-white hover:underline decoration-primary-500 decoration-2 underline-offset-8 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-sm"
             >
               {item.label}
             </a>
@@ -68,7 +68,7 @@ const Navigation: React.FC = () => {
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden text-slate-300 hover:text-white"
+          className="md:hidden text-slate-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-md p-1"
           onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMobileMenuOpen}
@@ -84,7 +84,7 @@ const Navigation: React.FC = () => {
             <a
               key={item.label}
               href={item.href}
-              className="text-lg font-medium text-slate-300 hover:text-primary-400"
+              className="text-lg font-medium text-slate-300 hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-md px-2 py-1 -mx-2"
               onClick={closeMobileMenu}
             >
               {item.label}

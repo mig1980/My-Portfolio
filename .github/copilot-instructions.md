@@ -133,6 +133,7 @@ AboutMe/
 ├── constants.tsx                # Application data and content
 ├── components/
 │   ├── About.tsx                # About section with awards
+│   ├── BackToTop.tsx            # Floating back-to-top button (memo)
 │   ├── Contact.tsx              # Contact/footer section
 │   ├── Education.tsx            # Education & certifications (memo)
 │   ├── Experience.tsx           # Work experience timeline

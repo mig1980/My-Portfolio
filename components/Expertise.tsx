@@ -24,9 +24,9 @@ const Expertise: React.FC = memo(() => {
     <Section id="expertise">
       <div className="text-center max-w-3xl mx-auto mb-16">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Core Competencies</h2>
-        <p className="text-slate-400">
-          Bridging the technical and the commercial. I translate complex technological capabilities
-          into strategic business advantages.
+        <p className="text-slate-300">
+          Bridging executive strategy and technical execution—translating complex AI capabilities
+          into measurable business outcomes.
         </p>
       </div>
 
@@ -40,7 +40,7 @@ const Expertise: React.FC = memo(() => {
 
             <div className="grid sm:grid-cols-2 gap-3">
               {group.skills.map((skill) => (
-                <div key={skill} className="flex items-start gap-2 text-sm text-slate-400">
+                <div key={skill} className="flex items-start gap-2 text-sm text-slate-300">
                   <CheckCircle2 className="w-4 h-4 text-primary-500 mt-0.5 shrink-0" />
                   <span>{skill}</span>
                 </div>

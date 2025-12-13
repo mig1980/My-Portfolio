@@ -24,7 +24,6 @@ import {
   TrendingUp,
   Linkedin,
   Mail,
-  Globe,
   BookOpen,
   Waves,
   Dumbbell,
@@ -38,12 +37,13 @@ import {
 export const PERSONAL_INFO = {
   name: 'Michael Gavrilov',
   title: 'Strategic Account Director at Microsoft',
-  subtitle: 'Driving Strategic AI Partnerships & Digital Transformation',
-  location: 'New York, New York',
-  email: 'michael.gavrilov@microsoft.com',
-  summary: `I lead Microsoft AI initiatives for Fortune 500 organizations, turning cutting-edge technology into real business results. For more than two decades, I’ve driven multi-year projects, negotiated major deals totaling over $250M, and built trusted executive partnerships.
+  subtitle: 'Helping enterprise leaders turn AI strategy into adoption',
+  location: 'New York City',
+  summary: `Strategic Account Director at Microsoft, leading Fortune 500 AI transformations—bridging executive strategy and generative AI implementation to deliver measurable outcomes.
 
-  My experience across engineering and business management gives me a unique perspective on using Generative AI for real client results. I enjoy partnering with organizations to solve tough challenges and translate advanced technology into lasting value.`,
+  Over more than two decades, I’ve led multi-year programs and negotiated complex enterprise partnerships—building executive sponsorship and driving adoption at scale.
+
+  With a background spanning engineering and business management, I translate advanced technology into outcomes—from strategy to implementation.`,
 };
 
 export const EXPERIENCE: JobRole[] = [
@@ -55,7 +55,7 @@ export const EXPERIENCE: JobRole[] = [
     description: [
       'Lead AI transformation for a strategic pharmaceutical customer, aligning Microsoft’s advanced technologies with client priorities.',
       'Orchestrate cross-functional teams and engage directly with C-level stakeholders to accelerate innovation.',
-      'Develop and execute long-term account strategies, including multi-year partnerships exceeding $250M.',
+      'Develop and execute long-term account strategies, closing multi-year strategic partnerships totaling $250M+ TCV.',
       'Build and sustain trusted executive relationships across global accounts, unlocking new opportunities.',
     ],
   },
@@ -123,7 +123,7 @@ export const SKILLS: SkillGroup[] = [
     category: 'Strategic Leadership',
     icon: <Briefcase className="w-5 h-5" />,
     skills: [
-      'Complex Deal Closure ($250M+)',
+      'Complex Deal Closure ($250M+ TCV)',
       'C-Suite Partnerships',
       'Digital Transformation',
       'Cross-functional Team Leadership',
@@ -135,7 +135,7 @@ export const SKILLS: SkillGroup[] = [
     skills: [
       'Generative AI Strategy',
       'Agentic AI & Copilots',
-      'Prompt Engineering',
+      'AI Value Realization',
       'AI Business Integration',
     ],
   },
@@ -218,10 +218,10 @@ export const AWARDS: AwardItem[] = [
   },
   {
     title: 'Strategic Deal Maker',
-    issuer: 'Career Milestone',
-    awardLevel: '$250M+ Total Value',
+    issuer: 'Impact',
+    awardLevel: '$250M+ TCV',
     description:
-      'Architected and closed complex multi-year strategic partnerships exceeding $250M in value.',
+      'Architected and closed complex multi-year strategic partnerships totaling $250M+ in total contract value (TCV).',
     color: 'blue',
   },
 ];
@@ -244,17 +244,11 @@ export const INTERESTS: InterestItem[] = [
  */
 export const THOUGHT_LEADERSHIP: ThoughtLeadershipItem[] = [
   {
-    title: 'Quantum Investor Digest',
+    title: 'QuantumInvestor',
     type: 'Blog / Publication',
     description:
-      'Author of a specialized digest dedicated to leveraging Generative AI for smarter stock market investing. Exploring the intersection of financial analysis and agentic workflows.',
-    // Link removed until a valid URL is available
-  },
-  {
-    title: 'AI in Healthcare',
-    type: 'Strategic Focus',
-    description:
-      'Driving innovation in Pharma and Life Sciences by implementing secure, scalable AI architectures that accelerate drug discovery and operational efficiency.',
+      'A public, AI-managed portfolio experiment benchmarked against the S&P 500—weekly picks, performance updates, and full documentation.',
+    link: 'https://quantuminvestor.net/docs.html',
   },
 ];
 
@@ -271,14 +265,8 @@ export const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     platform: 'Email',
-    url: 'mailto:michael.gavrilov@microsoft.com',
-    label: 'Email Me',
+    url: 'mailto:michael@gavrilov.ai',
+    label: 'Send an email',
     icon: <Mail className="w-5 h-5" />,
-  },
-  {
-    platform: 'Company',
-    url: 'https://www.microsoft.com',
-    label: 'Microsoft',
-    icon: <Globe className="w-5 h-5" />,
   },
 ];

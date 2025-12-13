@@ -5,9 +5,8 @@
 
 import { memo } from 'react';
 import Section from './ui/Section';
-import Card from './ui/Card';
 import { THOUGHT_LEADERSHIP } from '../constants';
-import { ExternalLink, BookOpen } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 /**
  * Thought Leadership section component for showcasing publications.
@@ -19,60 +18,71 @@ import { ExternalLink, BookOpen } from 'lucide-react';
  * @returns The thought leadership section with articles and blog CTA
  */
 const ThoughtLeadership: React.FC = memo(() => {
+  const quantumInvestor = THOUGHT_LEADERSHIP.find((item) =>
+    item.link?.includes('quantuminvestor.net')
+  );
+
   return (
     <Section id="thoughts">
-      <div className="grid md:grid-cols-2 gap-12">
-        <div>
-          <h2 className="text-3xl font-bold text-white mb-6">Thought Leadership</h2>
-          <p className="text-slate-400 mb-8">
-            I am passionate about the intersection of financial markets and Generative AI. Through
-            my writing and speaking, I explore how agentic workflows can redefine investment
-            strategies.
-          </p>
-
-          <div className="space-y-6">
-            {THOUGHT_LEADERSHIP.map((item, idx) => (
-              <Card key={idx} hoverEffect={true} className="border-l-4 border-l-primary-500">
-                <div className="flex items-start justify-between mb-2">
-                  <span className="text-xs font-bold text-primary-400 uppercase tracking-wider">
-                    {item.type}
-                  </span>
-                  {item.link && item.link !== '#' && (
-                    <ExternalLink className="w-4 h-4 text-slate-500" />
-                  )}
-                </div>
-                <h3 className="text-xl font-bold text-slate-100 mb-2">{item.title}</h3>
-                <p className="text-slate-400 text-sm mb-4">{item.description}</p>
-                {item.link && item.link !== '#' && (
-                  <a
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium text-white hover:text-primary-400 underline decoration-slate-700 underline-offset-4"
-                  >
-                    Read Article
-                  </a>
-                )}
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-indigo-900/20 to-slate-900 rounded-3xl p-8 border border-slate-800 flex flex-col justify-center items-center text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-
-          <BookOpen className="w-12 h-12 text-primary-400 mb-6" />
-          <h3 className="text-2xl font-bold text-white mb-4">Quantum Investor Digest</h3>
-          <p className="text-slate-300 mb-8">
-            My personal blog dedicated to using generative AI for smarter investing. Join the
-            conversation on leveraging AI for stock market analysis.
-          </p>
+      <div className="max-w-6xl mx-auto">
+        <div className="max-w-3xl">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Thought Leadership</h2>
           <a
-            href="#contact"
-            className="inline-block px-6 py-3 bg-slate-100 text-slate-900 hover:bg-white rounded-lg font-bold transition-colors"
+            href="https://quantuminvestor.net"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary-300 font-semibold hover:text-primary-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-sm"
           >
-            Contact to Subscribe
+            QuantumInvestor.net
           </a>
+          <p className="mt-4 text-slate-300 text-lg leading-relaxed">
+            What if AI could pick stocks better than expensive advisors? I’m finding out—publicly.
+          </p>
+          <p className="mt-4 text-slate-400">
+            I built QuantumInvestor to run a live experiment: letting generative AI manage a real
+            portfolio and tracking every decision against the S&amp;P 500.
+          </p>
+          <p className="mt-4 text-slate-400">
+            Each week, I publish the AI’s picks, document performance, and share what’s actually
+            working. No paywalls, no hype—just transparent results for investors curious whether AI
+            deserves a seat at the table.
+          </p>
+          <p className="mt-4 text-slate-500 text-sm">
+            This isn’t financial advice. It’s an experiment you can follow along with.
+          </p>
+
+          <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-3">
+            <a
+              href="https://quantuminvestor.net"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-6 py-3 bg-slate-100 text-slate-900 hover:bg-white rounded-lg font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            >
+              Follow the experiment
+            </a>
+
+            {quantumInvestor?.link && quantumInvestor.link !== '#' && (
+              <a
+                href={quantumInvestor.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-slate-700 hover:border-slate-500 text-slate-200 hover:text-white rounded-lg font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+              >
+                View Docs
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            )}
+
+            <a
+              href="https://quantuminvestor.net/about.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm font-medium text-slate-200 hover:text-white underline decoration-slate-700 underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-sm"
+            >
+              About
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </div>
     </Section>

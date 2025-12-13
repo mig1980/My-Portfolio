@@ -6,12 +6,12 @@
 import React from 'react';
 import Section from './ui/Section';
 import { PERSONAL_INFO, AWARDS, INTERESTS } from '../constants';
-import { Quote, Trophy, Award, Medal, ArrowUpRight, Heart } from 'lucide-react';
+import { Trophy, Award, Medal, ArrowUpRight, Heart } from 'lucide-react';
 
 /**
  * About section component displaying personal information.
  * Features:
- * - Personal summary with quote styling
+ * - Personal summary
  * - Awards and recognition grid with visual tiers (platinum/gold/blue)
  * - Personal interests showcase
  *
@@ -26,7 +26,7 @@ const About: React.FC = () => {
             <span className="w-8 h-1 bg-primary-500 rounded-full"></span>
             About Me
           </h2>
-          <div className="text-slate-400 space-y-4">
+          <div className="text-slate-300 space-y-4">
             <p className="font-medium text-slate-200">
               Strategic Account Director based in {PERSONAL_INFO.location}.
             </p>
@@ -39,8 +39,7 @@ const About: React.FC = () => {
 
         <div className="md:col-span-8">
           <div className="relative bg-slate-800/30 rounded-2xl p-8 border border-slate-800">
-            <Quote className="absolute top-6 left-6 w-8 h-8 text-primary-500/20" />
-            <div className="relative z-10 space-y-6 text-lg text-slate-300 leading-relaxed">
+            <div className="space-y-6 text-lg text-slate-300 leading-relaxed">
               {PERSONAL_INFO.summary.split('\n\n').map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}

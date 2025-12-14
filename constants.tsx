@@ -42,6 +42,7 @@ export const PERSONAL_INFO = {
   taglineHighlight: 'Enterprise AI catalyst.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
+  calendlyUrl: 'https://calendly.com/your-link/15min', // TODO: Replace with actual Calendly URL
   summary: `Started as an engineer. Became a dealmaker. Never lost the builder's mindset.
 
 I've spent two decades translating between the language of technology and the language of business—helping Fortune 500 leaders see what's possible, then making it real.

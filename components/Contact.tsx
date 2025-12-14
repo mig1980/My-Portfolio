@@ -21,8 +21,7 @@ const Contact: React.FC = () => {
         <div className="mb-20">
           <h2 className="text-4xl font-bold text-white mb-6">Let's Connect</h2>
           <p className="text-slate-300 max-w-md text-lg mb-8">
-            Whether you want to discuss AI strategy, complex deal structures, or the future of
-            investing, I'm always open to connecting.
+            Always open to a good conversation—about AI, deals, or ideas worth exploring.
           </p>
           <div className="flex gap-4">
             {SOCIAL_LINKS.map((link) => (

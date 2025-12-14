@@ -29,6 +29,8 @@ import {
   Dumbbell,
   Mountain,
   Flag,
+  Snowflake,
+  LineChart,
 } from 'lucide-react';
 
 /**
@@ -135,7 +137,7 @@ export const SKILLS: SkillGroup[] = [
     icon: <Brain className="w-5 h-5" />,
     skills: [
       'Generative AI Strategy',
-      'Agentic AI & Copilots',
+      'Copilot Enablement',
       'AI Value Realization',
       'AI Business Integration',
     ],
@@ -146,7 +148,7 @@ export const SKILLS: SkillGroup[] = [
     skills: [
       'Azure Cloud Strategy',
       'Solutions Architecture',
-      'Enterprise SaaS',
+      'Agentic AI',
       'Data & Security Compliance',
     ],
   },
@@ -233,10 +235,12 @@ export const AWARDS: AwardItem[] = [
  */
 export const INTERESTS: InterestItem[] = [
   { label: 'Continuous Learning', icon: <BookOpen className="w-4 h-4" /> },
+  { label: 'Investing', icon: <LineChart className="w-4 h-4" /> },
   { label: 'Swimming', icon: <Waves className="w-4 h-4" /> },
   { label: 'Boxing', icon: <Dumbbell className="w-4 h-4" /> },
+  { label: 'Snowboarding', icon: <Snowflake className="w-4 h-4" /> },
   { label: 'Horseback Riding', icon: <Mountain className="w-4 h-4" /> },
-  { label: 'Golf', icon: <Flag className="w-4 h-4" /> },
+  { label: 'Golfing', icon: <Flag className="w-4 h-4" /> },
 ];
 
 /**
@@ -247,8 +251,6 @@ export const THOUGHT_LEADERSHIP: ThoughtLeadershipItem[] = [
   {
     title: 'QuantumInvestor',
     type: 'Blog / Publication',
-    description:
-      'A public, AI-managed portfolio experiment benchmarked against the S&P 500—weekly picks, performance updates, and full documentation.',
     link: 'https://quantuminvestor.net/docs.html',
   },
 ];

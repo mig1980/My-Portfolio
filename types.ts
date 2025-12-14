@@ -65,8 +65,8 @@ export interface ThoughtLeadershipItem {
   title: string;
   /** Type of content (e.g., "Article", "Conference Talk") */
   type: string;
-  /** Brief description of the content */
-  description: string;
+  /** Brief description of the content (optional) */
+  description?: string;
   /** External URL to the full content */
   link?: string;
 }

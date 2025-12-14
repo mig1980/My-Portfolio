@@ -67,8 +67,8 @@ const Hero: React.FC = () => {
           {/* Professional Headshot */}
           <div className="relative w-72 h-72 md:w-96 md:h-96 rounded-2xl overflow-hidden border-2 border-slate-800 shadow-2xl bg-slate-900 group">
             <img
-              src="/Headshot.jpg"
-              alt="Michael Gavrilov"
+              src="/michael-gavrilov-headshot.jpg"
+              alt="Michael Gavrilov - Strategic Account Director at Microsoft specializing in Enterprise AI"
               loading="lazy"
               className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
             />

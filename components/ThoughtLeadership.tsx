@@ -36,7 +36,8 @@ const ThoughtLeadership: React.FC = memo(() => {
             QuantumInvestor.net
           </a>
           <p className="mt-4 text-slate-300 text-lg leading-relaxed">
-            What if AI could pick stocks better than expensive advisors? I’m finding out—publicly.
+            The builder's mindset doesn't clock out. What if AI could pick stocks better than
+            expensive advisors? I'm finding out—publicly.
           </p>
           <p className="mt-4 text-slate-400">
             I built QuantumInvestor to run a live experiment: letting generative AI manage a real

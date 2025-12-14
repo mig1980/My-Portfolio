@@ -27,9 +27,7 @@ const About: React.FC = () => {
             About Me
           </h2>
           <div className="text-slate-300 space-y-4">
-            <p className="font-medium text-slate-200">
-              Strategic Account Director based in {PERSONAL_INFO.location}.
-            </p>
+            <p className="font-medium text-slate-200">Based in {PERSONAL_INFO.location}.</p>
             <p>
               Colleagues know me as someone who listens first, gives honest advice, and turns
               complex challenges into actionable plans.

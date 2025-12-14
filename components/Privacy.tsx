@@ -3,14 +3,14 @@
  * @description Rendered inside the SPA for consistent styling.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import Section from './ui/Section';
 import Card from './ui/Card';
 import { SOCIAL_LINKS } from '../constants';
 
 const EFFECTIVE_DATE = 'December 12, 2025';
 
-const Privacy: React.FC = () => {
+const Privacy: React.FC = memo(() => {
   const linkedInUrl = SOCIAL_LINKS.find((link) => link.platform === 'LinkedIn')?.url;
 
   return (
@@ -102,6 +102,8 @@ const Privacy: React.FC = () => {
       </div>
     </Section>
   );
-};
+});
+
+Privacy.displayName = 'Privacy';
 
 export default Privacy;

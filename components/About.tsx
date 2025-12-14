@@ -3,7 +3,7 @@
  * @description Displays biographical information, awards, and personal interests.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import Section from './ui/Section';
 import { PERSONAL_INFO, AWARDS, INTERESTS } from '../constants';
 import { Trophy, Award, Medal, ArrowUpRight, Heart } from 'lucide-react';
@@ -17,7 +17,7 @@ import { Trophy, Award, Medal, ArrowUpRight, Heart } from 'lucide-react';
  *
  * @returns The about section with bio, awards, and interests
  */
-const About: React.FC = () => {
+const About: React.FC = memo(() => {
   return (
     <Section id="about" darker>
       <div className="grid md:grid-cols-12 gap-12 items-start">
@@ -130,6 +130,8 @@ const About: React.FC = () => {
       </div>
     </Section>
   );
-};
+});
+
+About.displayName = 'About';
 
 export default About;

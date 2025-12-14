@@ -3,8 +3,8 @@
  * @description Displays the main headline, personal introduction, and CTA buttons.
  */
 
-import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import React, { memo } from 'react';
+import { ArrowRight, Download } from 'lucide-react';
 import { PERSONAL_INFO } from '../constants';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 
@@ -18,7 +18,7 @@ import { useScrollPosition } from '../hooks/useScrollPosition';
  *
  * @returns The hero section with intro content and visual elements
  */
-const Hero: React.FC = () => {
+const Hero: React.FC = memo(() => {
   const hasScrolled = useScrollPosition({ threshold: 100 });
 
   return (
@@ -62,6 +62,14 @@ const Hero: React.FC = () => {
             >
               View Experience
             </a>
+            <a
+              href="/Michael-Gavrilov-Resume.pdf"
+              download
+              className="inline-flex items-center justify-center gap-2 px-6 py-4 text-slate-400 hover:text-white transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Resume
+            </a>
           </div>
         </div>
 
@@ -95,6 +103,8 @@ const Hero: React.FC = () => {
       )}
     </section>
   );
-};
+});
+
+Hero.displayName = 'Hero';
 
 export default Hero;

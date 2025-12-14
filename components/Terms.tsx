@@ -3,14 +3,14 @@
  * @description Rendered inside the SPA for consistent styling.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import Section from './ui/Section';
 import Card from './ui/Card';
 import { SOCIAL_LINKS } from '../constants';
 
 const EFFECTIVE_DATE = 'December 12, 2025';
 
-const Terms: React.FC = () => {
+const Terms: React.FC = memo(() => {
   const linkedInUrl = SOCIAL_LINKS.find((link) => link.platform === 'LinkedIn')?.url;
 
   return (
@@ -101,6 +101,8 @@ const Terms: React.FC = () => {
       </div>
     </Section>
   );
-};
+});
+
+Terms.displayName = 'Terms';
 
 export default Terms;

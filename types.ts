@@ -43,6 +43,10 @@ export interface EducationItem {
   institution: string;
   /** Type of qualification */
   type: 'Master' | 'Bachelor' | 'Certification';
+  /** URL to institution logo (optional) */
+  logo?: string;
+  /** URL to diploma/degree verification (optional) */
+  url?: string;
 }
 
 /**
@@ -54,6 +58,10 @@ export interface Certification {
   name: string;
   /** Organization that issued the certification */
   issuer?: string;
+  /** URL to issuer logo (optional) */
+  logo?: string;
+  /** URL to certificate verification or details (optional) */
+  url?: string;
 }
 
 /**
@@ -114,4 +122,19 @@ export interface InterestItem {
   label: string;
   /** React icon component representing the interest */
   icon: React.ReactNode;
+}
+
+/**
+ * Represents a statistic for animated display.
+ * Used in the Stats section to highlight key achievements.
+ */
+export interface StatItem {
+  /** Numeric value to animate to */
+  value: number;
+  /** Optional suffix (e.g., '+', 'M+', 'x') */
+  suffix?: string;
+  /** Optional prefix (e.g., '$') */
+  prefix?: string;
+  /** Label describing the statistic */
+  label: string;
 }

@@ -8,9 +8,11 @@
 import React from 'react';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
+import Stats from './components/Stats';
 import About from './components/About';
+import MyApproach from './components/MyApproach';
 import Expertise from './components/Expertise';
-import Experience from './components/Experience';
+import Timeline from './components/Timeline';
 import ThoughtLeadership from './components/ThoughtLeadership';
 import Education from './components/Education';
 import Contact from './components/Contact';
@@ -58,9 +60,11 @@ const App: React.FC = () => {
       <main className="bg-slate-950 min-h-screen text-slate-200 selection:bg-primary-500/30">
         <Navigation />
         <Hero />
+        <Stats />
         <About />
+        <MyApproach />
         <Expertise />
-        <Experience />
+        <Timeline />
         <ThoughtLeadership />
         <Education />
         <Contact />

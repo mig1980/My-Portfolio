@@ -3,7 +3,7 @@
  * @description Provides site navigation with scroll-aware styling changes.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 
@@ -25,7 +25,7 @@ const navItems = [
  *
  * @returns The navigation header element
  */
-const Navigation: React.FC = () => {
+const Navigation: React.FC = memo(() => {
   const isScrolled = useScrollPosition({ threshold: 50 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -91,6 +91,8 @@ const Navigation: React.FC = () => {
       )}
     </header>
   );
-};
+});
+
+Navigation.displayName = 'Navigation';
 
 export default Navigation;

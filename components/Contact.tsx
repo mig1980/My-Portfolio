@@ -3,7 +3,7 @@
  * @description Provides contact information, social links, and copyright notice.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { SOCIAL_LINKS, PERSONAL_INFO } from '../constants';
 import { Coffee } from 'lucide-react';
 
@@ -15,7 +15,7 @@ import { Coffee } from 'lucide-react';
  *
  * @returns The contact section with footer
  */
-const Contact: React.FC = () => {
+const Contact: React.FC = memo(() => {
   return (
     <footer id="contact" className="bg-slate-950 border-t border-slate-900 pt-20 pb-10">
       <div className="max-w-6xl mx-auto px-6">
@@ -70,6 +70,8 @@ const Contact: React.FC = () => {
       </div>
     </footer>
   );
-};
+});
+
+Contact.displayName = 'Contact';
 
 export default Contact;

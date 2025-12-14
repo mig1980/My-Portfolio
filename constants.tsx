@@ -16,6 +16,7 @@ import type {
   SocialLink,
   AwardItem,
   InterestItem,
+  StatItem,
 } from './types';
 import {
   Briefcase,
@@ -54,7 +55,7 @@ export const EXPERIENCE: JobRole[] = [
   {
     title: 'Strategic Account Director | Healthcare & Life Sciences',
     company: 'Microsoft',
-    logo: 'https://logo.clearbit.com/microsoft.com',
+    logo: 'https://logo.clearbit.com/microsoft.com?size=64',
     period: 'Jan 2017 - Present',
     description: [
       'Lead AI transformation for a strategic pharmaceutical customer, aligning Microsoft’s advanced technologies with client priorities.',
@@ -66,7 +67,7 @@ export const EXPERIENCE: JobRole[] = [
   {
     title: 'Senior Account Executive',
     company: 'Microsoft',
-    logo: 'https://logo.clearbit.com/microsoft.com',
+    logo: 'https://logo.clearbit.com/microsoft.com?size=64',
     period: 'Apr 2011 - Jan 2017',
     description: [
       'Managed robust sales pipelines and guided high-performing teams across Sales, Engineering, and Delivery.',
@@ -77,7 +78,7 @@ export const EXPERIENCE: JobRole[] = [
   {
     title: 'Account Technology Strategist',
     company: 'Microsoft',
-    logo: 'https://logo.clearbit.com/microsoft.com',
+    logo: 'https://logo.clearbit.com/microsoft.com?size=64',
     period: 'July 2008 - Mar 2011',
     description: [
       'Advised senior executives on AI-driven technology strategies aligning with business goals.',
@@ -88,7 +89,7 @@ export const EXPERIENCE: JobRole[] = [
   {
     title: 'Partner Technology Strategist',
     company: 'Microsoft',
-    logo: 'https://logo.clearbit.com/microsoft.com',
+    logo: 'https://logo.clearbit.com/microsoft.com?size=64',
     period: 'Oct 2006 - July 2008',
     description: [
       'Developed impactful go-to-market strategies driving partner growth and revenue.',
@@ -99,7 +100,6 @@ export const EXPERIENCE: JobRole[] = [
   {
     title: 'IT Solutions Architect',
     company: 'Systematica Group',
-    logo: 'https://ui-avatars.com/api/?name=Systematica+Group&background=0f172a&color=cbd5e1&bold=true',
     period: 'July 2005 - Oct 2006',
     description: [
       'Led architectural design and technical strategy for complex IT solutions in pre-sales engagements.',
@@ -109,7 +109,7 @@ export const EXPERIENCE: JobRole[] = [
   {
     title: 'IT Operations Manager / Team Lead',
     company: 'Allied Testing',
-    logo: 'https://logo.clearbit.com/alliedtesting.com',
+    logo: 'https://logo.clearbit.com/alliedtesting.com?size=64',
     period: 'Apr 2002 - July 2005',
     description: [
       'Led a team of systems engineers to deliver process improvements and automation, increasing operational efficiency by 25%.',
@@ -174,16 +174,22 @@ export const EDUCATION: EducationItem[] = [
     degree: "Master's degree, Management of Technology",
     institution: 'New York University',
     type: 'Master',
+    logo: 'https://logo.clearbit.com/nyu.edu?size=64',
+    url: '', // TODO: Add diploma URL
   },
   {
-    degree: 'Master’s degree, Information Systems Engineering',
+    degree: "Master's degree, Information Systems Engineering",
     institution: 'Bauman Moscow State Technical University',
     type: 'Master',
+    logo: 'https://logo.clearbit.com/bmstu.ru?size=64',
+    url: '', // TODO: Add diploma URL
   },
   {
-    degree: 'Bachelor’s degree, Computer Engineering',
+    degree: "Bachelor's degree, Computer Engineering",
     institution: 'Bauman Moscow State Technical University',
     type: 'Bachelor',
+    logo: 'https://logo.clearbit.com/bmstu.ru?size=64',
+    url: '', // TODO: Add diploma URL
   },
 ];
 
@@ -192,11 +198,35 @@ export const EDUCATION: EducationItem[] = [
  * Displayed in the Education section.
  */
 export const CERTIFICATIONS: Certification[] = [
-  { name: 'Microsoft Certified: Azure Solutions Architect Expert', issuer: 'Microsoft' },
-  { name: 'Selling to the C-Suite', issuer: 'Wharton Executive Education' },
-  { name: 'Insight Selling', issuer: 'Insight Selling' },
-  { name: 'Value Negotiation', issuer: 'INSEAD' },
-  { name: 'AWS Certified Cloud Practitioner', issuer: 'Amazon Web Services' },
+  {
+    name: 'Microsoft Certified: Azure Solutions Architect Expert',
+    issuer: 'Microsoft',
+    logo: 'https://logo.clearbit.com/microsoft.com?size=64',
+    url: '', // TODO: Add certificate URL
+  },
+  {
+    name: 'Selling to the C-Suite',
+    issuer: 'Wharton Executive Education',
+    logo: 'https://logo.clearbit.com/wharton.upenn.edu?size=64',
+    url: '', // TODO: Add certificate URL
+  },
+  {
+    name: 'Insight Selling',
+    issuer: 'Insight Selling',
+    url: '', // TODO: Add certificate URL
+  },
+  {
+    name: 'Value Negotiation',
+    issuer: 'INSEAD',
+    logo: 'https://logo.clearbit.com/insead.edu?size=64',
+    url: '', // TODO: Add certificate URL
+  },
+  {
+    name: 'AWS Certified Cloud Practitioner',
+    issuer: 'Amazon Web Services',
+    logo: 'https://logo.clearbit.com/aws.amazon.com?size=64',
+    url: '', // TODO: Add certificate URL
+  },
 ];
 
 /**
@@ -242,6 +272,16 @@ export const INTERESTS: InterestItem[] = [
   { label: 'Snowboarding', icon: <Snowflake className="w-4 h-4" /> },
   { label: 'Horseback Riding', icon: <Mountain className="w-4 h-4" /> },
   { label: 'Golfing', icon: <Flag className="w-4 h-4" /> },
+];
+
+/**
+ * Key statistics for animated display.
+ * Displayed in the Stats section below Hero.
+ */
+export const STATS: StatItem[] = [
+  { value: 20, suffix: '+', label: 'Years Experience' },
+  { value: 250, prefix: '$', suffix: 'M+', label: 'TCV Closed' },
+  { value: 2, suffix: 'x', label: 'Microsoft Platinum Club' },
 ];
 
 /**

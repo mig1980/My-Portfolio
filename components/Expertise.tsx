@@ -3,7 +3,7 @@
  * @description Shows skills organized by category in a grid layout.
  */
 
-import { memo } from 'react';
+import React, { memo } from 'react';
 import Section from './ui/Section';
 import Card from './ui/Card';
 import { SKILLS } from '../constants';

@@ -3,8 +3,7 @@
  * @description Provides consistent spacing and layout for page sections.
  */
 
-import { memo } from 'react';
-import type { ReactNode } from 'react';
+import React, { memo, type ReactNode } from 'react';
 
 /**
  * Props for the Section component.

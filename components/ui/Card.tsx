@@ -3,8 +3,7 @@
  * @description Provides a consistent card styling with optional hover effects.
  */
 
-import { memo } from 'react';
-import type { ReactNode } from 'react';
+import React, { memo, type ReactNode } from 'react';
 
 /**
  * Props for the Card component.

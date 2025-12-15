@@ -31,7 +31,7 @@ const Contact: React.FC = memo(() => {
                 href={link.url}
                 target={link.url.startsWith('mailto:') ? undefined : '_blank'}
                 rel={link.url.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-                className="p-4 bg-slate-900 rounded-full text-slate-300 hover:bg-primary-600 hover:text-white transition-all transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                className="p-4 bg-slate-900 rounded-full text-slate-300 hover:bg-primary-600 hover:text-white transition-all transform hover:-translate-y-1 focus-ring"
                 aria-label={link.label}
               >
                 {link.icon}
@@ -47,19 +47,19 @@ const Contact: React.FC = memo(() => {
               href="https://logo.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-600 hover:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-sm"
+              className="text-slate-600 hover:text-slate-300 transition-colors focus-ring-inset rounded-sm"
             >
               Logos by Logo.dev
             </a>
             <a
               href="/privacy"
-              className="text-slate-600 hover:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-sm"
+              className="text-slate-600 hover:text-slate-300 transition-colors focus-ring-inset rounded-sm"
             >
               Privacy Policy
             </a>
             <a
               href="/terms"
-              className="text-slate-600 hover:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-sm"
+              className="text-slate-600 hover:text-slate-300 transition-colors focus-ring-inset rounded-sm"
             >
               Terms of Use
             </a>

@@ -80,16 +80,38 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 ### Project Structure
 
 ```
-src/
+AboutMe/
 ├── components/          # React components
-│   ├── ui/             # Reusable UI primitives
-│   └── [Feature].tsx   # Feature components
-├── hooks/              # Custom React hooks
-├── styles/             # Global styles (Tailwind)
+│   ├── ui/             # Reusable UI primitives (Card, Section, PageWrapper, etc.)
+│   └── [Feature].tsx   # Feature components (About, Hero, Timeline, etc.)
+├── hooks/              # Custom React hooks (useScrollPosition, useCountUp)
+├── utils/              # Shared utilities (string.ts, dom.ts, logo.ts)
+├── styles/             # Global styles (Tailwind + custom utilities)
 ├── types.ts            # Shared TypeScript types
 ├── constants.tsx       # Application data/content
 └── App.tsx             # Root component
 ```
+
+### Shared Utilities
+
+When adding new functionality, check existing utilities first:
+
+| Utility | Location | Purpose |
+|---------|----------|---------|
+| `getInitials` | `utils/string.ts` | Extract initials from names |
+| `handleImageError` | `utils/dom.ts` | Image fallback handling |
+| `getLogoUrl` | `utils/logo.ts` | Generate logo URLs |
+| `useScrollPosition` | `hooks/useScrollPosition.ts` | Track scroll state |
+| `useCountUp` | `hooks/useCountUp.ts` | Animated number counting |
+
+### CSS Utility Classes
+
+Use these pre-defined classes from `styles/globals.css`:
+
+| Class | Usage |
+|-------|-------|
+| `.focus-ring` | Focus states for buttons/prominent elements |
+| `.focus-ring-inset` | Focus states for inline/text links |
 
 ### Tech Stack
 

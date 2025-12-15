@@ -3,10 +3,12 @@
  * @description Displays educational background and professional certifications.
  */
 
-import { memo } from 'react';
+import React, { memo } from 'react';
 import Section from './ui/Section';
 import { EDUCATION, CERTIFICATIONS } from '../constants';
 import { GraduationCap, Award, ExternalLink } from 'lucide-react';
+import { getInitials } from '../utils/string';
+import { handleImageError } from '../utils/dom';
 
 /**
  * Education section component displaying academic and professional credentials.
@@ -30,14 +32,6 @@ const Education: React.FC = memo(() => {
           </h3>
           <div className="space-y-8">
             {EDUCATION.map((edu, idx) => {
-              // Get initials from institution name
-              const getInitials = (name: string): string => {
-                const words = name.split(' ').filter((word) => word.length > 0);
-                if (words.length >= 2) {
-                  return (words[0]![0]! + words[1]![0]!).toUpperCase();
-                }
-                return name.substring(0, 2).toUpperCase();
-              };
 
               const CardWrapper = edu.url ? 'a' : 'div';
               const cardProps = edu.url
@@ -66,11 +60,7 @@ const Education: React.FC = memo(() => {
                           src={edu.logo}
                           alt={`${edu.institution} logo`}
                           className="w-10 h-10 rounded object-contain bg-white p-1"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                            const fallback = (e.target as HTMLImageElement).nextElementSibling;
-                            if (fallback) fallback.classList.remove('hidden');
-                          }}
+                          onError={handleImageError}
                         />
                       ) : null}
                       <div
@@ -110,15 +100,6 @@ const Education: React.FC = memo(() => {
           </h3>
           <div className="grid sm:grid-cols-2 gap-4">
             {CERTIFICATIONS.map((cert, idx) => {
-              // Get initials from issuer name
-              const getInitials = (name: string): string => {
-                const words = name.split(' ').filter((word) => word.length > 0);
-                if (words.length >= 2) {
-                  return (words[0]![0]! + words[1]![0]!).toUpperCase();
-                }
-                return name.substring(0, 2).toUpperCase();
-              };
-
               const CardWrapper = cert.url ? 'a' : 'div';
               const cardProps = cert.url
                 ? {
@@ -145,11 +126,7 @@ const Education: React.FC = memo(() => {
                         src={cert.logo}
                         alt={`${cert.issuer} logo`}
                         className="w-8 h-8 rounded object-contain bg-white p-0.5"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                          const fallback = (e.target as HTMLImageElement).nextElementSibling;
-                          if (fallback) fallback.classList.remove('hidden');
-                        }}
+                        onError={handleImageError}
                       />
                     ) : null}
                     <div

@@ -7,6 +7,58 @@ import React, { memo } from 'react';
 import Section from './ui/Section';
 import { PERSONAL_INFO, AWARDS, INTERESTS } from '../constants';
 import { Trophy, ArrowUpRight, Heart } from 'lucide-react';
+import type { AwardItem } from '../types';
+
+/**
+ * Pre-computed style configurations for award card color variants.
+ * Defined outside component to avoid recreation on each render.
+ */
+interface AwardStyleConfig {
+  accentColor: string;
+  borderColor: string;
+  bgGradient: string;
+  isShimmer: boolean;
+}
+
+const AWARD_STYLES: Record<NonNullable<AwardItem['color']>, AwardStyleConfig> = {
+  platinum: {
+    accentColor: 'text-slate-300',
+    borderColor: 'hover:border-slate-300/50',
+    bgGradient:
+      'bg-gradient-to-br from-slate-800/50 to-slate-900 hover:from-slate-700/50 hover:to-slate-800',
+    isShimmer: true,
+  },
+  gold: {
+    accentColor: 'text-yellow-500',
+    borderColor: 'hover:border-yellow-500/50',
+    bgGradient:
+      'bg-gradient-to-br from-slate-900 to-yellow-900/10 hover:from-slate-800 hover:to-yellow-900/20',
+    isShimmer: false,
+  },
+  purple: {
+    accentColor: 'text-purple-400',
+    borderColor: 'hover:border-purple-500/50',
+    bgGradient:
+      'bg-gradient-to-br from-slate-900 to-purple-900/10 hover:from-slate-800 hover:to-purple-900/20',
+    isShimmer: false,
+  },
+  green: {
+    accentColor: 'text-emerald-400',
+    borderColor: 'hover:border-emerald-500/50',
+    bgGradient:
+      'bg-gradient-to-br from-slate-900 to-emerald-900/10 hover:from-slate-800 hover:to-emerald-900/20',
+    isShimmer: false,
+  },
+  blue: {
+    accentColor: 'text-primary-400',
+    borderColor: 'hover:border-primary-500/50',
+    bgGradient: 'hover:bg-slate-800',
+    isShimmer: false,
+  },
+};
+
+/** Default style for awards without a specified color */
+const DEFAULT_AWARD_STYLE: AwardStyleConfig = AWARD_STYLES.blue;
 
 /**
  * About section component displaying personal information.
@@ -55,33 +107,9 @@ const About: React.FC = memo(() => {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
               {AWARDS.map((award, idx) => {
-                // Determine style based on award color type
-                let accentColor = 'text-primary-400';
-                let borderColor = 'hover:border-primary-500/50';
-                let bgGradient = 'hover:bg-slate-800';
-                let isShimmer = false;
-
-                if (award.color === 'platinum') {
-                  isShimmer = true;
-                  borderColor = 'hover:border-slate-300/50';
-                  bgGradient =
-                    'bg-gradient-to-br from-slate-800/50 to-slate-900 hover:from-slate-700/50 hover:to-slate-800';
-                } else if (award.color === 'gold') {
-                  accentColor = 'text-yellow-500';
-                  borderColor = 'hover:border-yellow-500/50';
-                  bgGradient =
-                    'bg-gradient-to-br from-slate-900 to-yellow-900/10 hover:from-slate-800 hover:to-yellow-900/20';
-                } else if (award.color === 'purple') {
-                  accentColor = 'text-purple-400';
-                  borderColor = 'hover:border-purple-500/50';
-                  bgGradient =
-                    'bg-gradient-to-br from-slate-900 to-purple-900/10 hover:from-slate-800 hover:to-purple-900/20';
-                } else if (award.color === 'green') {
-                  accentColor = 'text-emerald-400';
-                  borderColor = 'hover:border-emerald-500/50';
-                  bgGradient =
-                    'bg-gradient-to-br from-slate-900 to-emerald-900/10 hover:from-slate-800 hover:to-emerald-900/20';
-                }
+                // Look up pre-computed styles or use default
+                const style = award.color ? AWARD_STYLES[award.color] : DEFAULT_AWARD_STYLE;
+                const { accentColor, borderColor, bgGradient, isShimmer } = style;
 
                 const CardWrapper = award.link ? 'a' : 'div';
                 const cardProps = award.link

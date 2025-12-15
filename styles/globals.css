@@ -56,6 +56,19 @@
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Reusable Component Utilities */
+@layer components {
+  /* Focus ring with offset - for buttons and prominent elements */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
+  }
+
+  /* Focus ring without offset - for inline/text elements */
+  .focus-ring-inset {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500;
+  }
+}
+
 @keyframes fadeInUp {
   0% {
     opacity: 0;

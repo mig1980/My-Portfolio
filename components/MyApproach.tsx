@@ -3,7 +3,7 @@
  * @description Displays strategic approach cards that differentiate the professional brand.
  */
 
-import { memo } from 'react';
+import React, { memo } from 'react';
 import Section from './ui/Section';
 import { Search, Users, Rocket, TrendingUp, Quote } from 'lucide-react';
 

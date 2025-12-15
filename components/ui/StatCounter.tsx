@@ -3,7 +3,7 @@
  * @description Displays a single statistic with animated counting effect.
  */
 
-import { memo } from 'react';
+import React, { memo } from 'react';
 import type { StatItem } from '../../types';
 import { useCountUp } from '../../hooks/useCountUp';
 

@@ -3,20 +3,11 @@
  * @description Displays a single job entry with expand/collapse functionality.
  */
 
-import { memo } from 'react';
+import React, { memo } from 'react';
 import type { JobRole } from '../../types';
 import { Calendar, ChevronDown } from 'lucide-react';
-
-/**
- * Get initials from company name (e.g., "Systematica Group" → "SG")
- */
-const getInitials = (name: string): string => {
-  const words = name.split(' ').filter((word) => word.length > 0);
-  if (words.length >= 2) {
-    return (words[0]![0]! + words[1]![0]!).toUpperCase();
-  }
-  return name.substring(0, 2).toUpperCase();
-};
+import { getInitials } from '../../utils/string';
+import { handleImageError } from '../../utils/dom';
 
 /**
  * Props for the TimelineItem component.
@@ -102,12 +93,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
                         src={job.logo}
                         alt={`${job.company} logo`}
                         className="w-8 h-8 rounded object-contain bg-white p-0.5"
-                        onError={(e) => {
-                          // Hide image and show fallback
-                          (e.target as HTMLImageElement).style.display = 'none';
-                          const fallback = (e.target as HTMLImageElement).nextElementSibling;
-                          if (fallback) fallback.classList.remove('hidden');
-                        }}
+                        onError={handleImageError}
                       />
                     ) : null}
                     {/* Fallback placeholder - shown when no logo or logo fails */}

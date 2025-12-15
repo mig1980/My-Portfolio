@@ -3,7 +3,7 @@
  * @description Provides site navigation with scroll-aware styling changes.
  */
 
-import { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 
@@ -56,7 +56,7 @@ const Navigation: React.FC = memo(() => {
             <a
               key={item.label}
               href={item.href}
-              className="text-sm font-medium text-slate-300 hover:text-white hover:underline decoration-primary-500 decoration-2 underline-offset-8 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-sm"
+              className="text-sm font-medium text-slate-300 hover:text-white hover:underline decoration-primary-500 decoration-2 underline-offset-8 transition-all focus-ring rounded-sm"
             >
               {item.label}
             </a>
@@ -65,7 +65,7 @@ const Navigation: React.FC = memo(() => {
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden text-slate-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 rounded-md p-1"
+          className="md:hidden text-slate-300 hover:text-white focus-ring rounded-md p-1"
           onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMobileMenuOpen}
@@ -81,7 +81,7 @@ const Navigation: React.FC = memo(() => {
             <a
               key={item.label}
               href={item.href}
-              className="text-lg font-medium text-slate-300 hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-md px-2 py-1 -mx-2"
+              className="text-lg font-medium text-slate-300 hover:text-primary-400 focus-ring-inset rounded-md px-2 py-1 -mx-2"
               onClick={closeMobileMenu}
             >
               {item.label}

@@ -19,6 +19,7 @@ import Contact from './components/Contact';
 import BackToTop from './components/BackToTop';
 import Privacy from './components/Privacy';
 import Terms from './components/Terms';
+import PageWrapper from './components/ui/PageWrapper';
 
 /**
  * Root application component.
@@ -34,17 +35,17 @@ const App: React.FC = () => {
 
   if (normalizedPathname === '/privacy') {
     return (
-      <main className="bg-slate-950 min-h-screen text-slate-200 selection:bg-primary-500/30">
+      <PageWrapper>
         <Privacy />
-      </main>
+      </PageWrapper>
     );
   }
 
   if (normalizedPathname === '/terms') {
     return (
-      <main className="bg-slate-950 min-h-screen text-slate-200 selection:bg-primary-500/30">
+      <PageWrapper>
         <Terms />
-      </main>
+      </PageWrapper>
     );
   }
 
@@ -57,7 +58,7 @@ const App: React.FC = () => {
       >
         Skip to main content
       </a>
-      <main className="bg-slate-950 min-h-screen text-slate-200 selection:bg-primary-500/30">
+      <PageWrapper>
         <Navigation />
         <Hero />
         <Stats />
@@ -68,7 +69,7 @@ const App: React.FC = () => {
         <Education />
         <ThoughtLeadership />
         <Contact />
-      </main>
+      </PageWrapper>
       <BackToTop />
     </>
   );

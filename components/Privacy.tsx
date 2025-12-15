@@ -77,7 +77,7 @@ const Privacy: React.FC = memo(() => {
             If you have questions about this Privacy Policy, contact me via{' '}
             {linkedInUrl ? (
               <a
-                className="text-slate-200 underline decoration-primary-500 underline-offset-4 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-sm"
+                className="text-slate-200 underline decoration-primary-500 underline-offset-4 hover:text-white focus-ring-inset rounded-sm"
                 href={linkedInUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -93,7 +93,7 @@ const Privacy: React.FC = memo(() => {
           <div className="mt-10">
             <a
               href="/"
-              className="inline-flex items-center text-slate-300 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-sm"
+              className="inline-flex items-center text-slate-300 hover:text-white transition-colors focus-ring-inset rounded-sm"
             >
               Back to the site
             </a>

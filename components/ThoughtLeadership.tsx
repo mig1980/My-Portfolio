@@ -3,7 +3,7 @@
  * @description Showcases written content, talks, and intellectual contributions.
  */
 
-import { memo } from 'react';
+import React, { memo } from 'react';
 import Section from './ui/Section';
 import { THOUGHT_LEADERSHIP } from '../constants';
 import { ExternalLink } from 'lucide-react';

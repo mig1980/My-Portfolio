@@ -3,7 +3,7 @@
  * @description Displays work history as an interactive vertical timeline.
  */
 
-import { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 import Section from './ui/Section';
 import TimelineItem from './ui/TimelineItem';
 import { EXPERIENCE } from '../constants';

@@ -3,7 +3,7 @@
  * @description Displays animated statistics showcasing career achievements.
  */
 
-import { memo } from 'react';
+import React, { memo } from 'react';
 import StatCounter from './ui/StatCounter';
 import { STATS } from '../constants';
 

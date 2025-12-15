@@ -21,7 +21,8 @@ const APPROACH_STEPS: ApproachStep[] = [
   {
     icon: Search,
     title: 'Discovery',
-    description: 'Listen with empathy to understand the real business challenge, not just the stated problem.',
+    description:
+      'Listen with empathy to understand the real business challenge, not just the stated problem.',
     color: 'from-blue-500 to-blue-600',
   },
   {
@@ -33,7 +34,8 @@ const APPROACH_STEPS: ApproachStep[] = [
   {
     icon: Rocket,
     title: 'Execution',
-    description: 'Deliver on promises with speed and precision—reliability earns lasting partnerships.',
+    description:
+      'Deliver on promises with speed and precision—reliability earns lasting partnerships.',
     color: 'from-emerald-500 to-emerald-600',
   },
   {

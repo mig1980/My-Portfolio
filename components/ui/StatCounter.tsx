@@ -47,9 +47,7 @@ const StatCounter: React.FC<StatCounterProps> = memo(
           <span>{count}</span>
           <span className="text-primary-400">{suffix}</span>
         </div>
-        <div className="text-slate-400 text-sm md:text-base font-medium text-center">
-          {label}
-        </div>
+        <div className="text-slate-400 text-sm md:text-base font-medium text-center">{label}</div>
       </div>
     );
   }

@@ -45,7 +45,9 @@ const ThoughtLeadership: React.FC = memo(() => {
                 >
                   QuantumInvestor.net
                 </a>
-                <p className="text-xs text-slate-500">Personal Project • Live AI Investment Experiment</p>
+                <p className="text-xs text-slate-500">
+                  Personal Project • Live AI Investment Experiment
+                </p>
               </div>
             </div>
 

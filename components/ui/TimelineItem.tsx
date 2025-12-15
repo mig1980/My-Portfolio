@@ -123,9 +123,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
                   </div>
 
                   <div>
-                    <span className="text-primary-400 font-semibold text-sm">
-                      {job.company}
-                    </span>
+                    <span className="text-primary-400 font-semibold text-sm">{job.company}</span>
                     {isCurrent && (
                       <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-primary-500/20 text-primary-300 rounded-full">
                         Current

@@ -18,10 +18,7 @@ import { STATS } from '../constants';
  */
 const Stats: React.FC = memo(() => {
   return (
-    <section
-      className="relative py-16 md:py-20 bg-slate-950"
-      aria-label="Key Statistics"
-    >
+    <section className="relative py-16 md:py-20 bg-slate-950" aria-label="Key Statistics">
       {/* Subtle gradient divider */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent" />
 

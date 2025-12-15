@@ -38,9 +38,7 @@ const Timeline: React.FC = memo(() => {
   return (
     <Section id="experience" darker>
       <div className="mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-          Professional Journey
-        </h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Professional Journey</h2>
         <p className="text-slate-300 max-w-2xl">
           From hands-on engineering to enterprise dealmaking—click any role to explore the story.
         </p>
@@ -60,14 +58,10 @@ const Timeline: React.FC = memo(() => {
         {/* Timeline end marker */}
         <div className="flex gap-6">
           <div className="flex flex-col items-center">
-            <div className="text-xs font-bold text-slate-600 mb-2 w-12 text-center">
-              Start
-            </div>
+            <div className="text-xs font-bold text-slate-600 mb-2 w-12 text-center">Start</div>
             <div className="w-3 h-3 rounded-full bg-slate-800 border-2 border-slate-700" />
           </div>
-          <div className="text-sm text-slate-600 italic pt-1">
-            Where it all began...
-          </div>
+          <div className="text-sm text-slate-600 italic pt-1">Where it all began...</div>
         </div>
       </div>
     </Section>

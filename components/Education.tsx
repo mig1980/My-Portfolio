@@ -32,7 +32,6 @@ const Education: React.FC = memo(() => {
           </h3>
           <div className="space-y-8">
             {EDUCATION.map((edu, idx) => {
-
               const CardWrapper = edu.url ? 'a' : 'div';
               const cardProps = edu.url
                 ? {

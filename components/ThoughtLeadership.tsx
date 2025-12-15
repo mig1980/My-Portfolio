@@ -30,20 +30,20 @@ const ThoughtLeadership: React.FC = memo(() => {
 
       {/* QuantumInvestor Card */}
       <div className="max-w-3xl mx-auto">
-        <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm hover:border-primary-500/50 hover:bg-slate-800/80 transition-all duration-300">
+        <div className="p-6 rounded-2xl border border-slate-800 bg-slate-800/30 transition-colors duration-300 hover:border-slate-700">
           {/* Logo & Title Row */}
-          <div className="flex items-start gap-5 mb-6">
+          <div className="flex items-center gap-5 mb-6">
             <img
               src="/LogoQI.png"
               alt="QuantumInvestor logo"
-              className="w-16 h-16 rounded-xl object-contain flex-shrink-0"
+              className="w-20 h-20 rounded-xl object-contain flex-shrink-0"
             />
-            <div>
+            <div className="flex flex-col justify-center">
               <a
                 href="https://quantuminvestor.net"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xl font-bold text-white hover:text-primary-300 transition-colors"
+                className="text-xl font-bold text-white hover:text-primary-400 transition-colors"
               >
                 QuantumInvestor.net
               </a>
@@ -59,13 +59,13 @@ const ThoughtLeadership: React.FC = memo(() => {
             picks, documented performance, transparent results. No paywalls, no hype.
           </p>
 
-          {/* CTAs */}
+          {/* CTAs - matching Hero button styles */}
           <div className="flex flex-wrap gap-4 mb-6">
             <a
               href="https://quantuminvestor.net"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-3 bg-slate-100 text-slate-900 hover:bg-white rounded-lg font-semibold transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-lg font-semibold transition-colors"
             >
               Follow the experiment
             </a>
@@ -75,7 +75,7 @@ const ThoughtLeadership: React.FC = memo(() => {
                 href={quantumInvestor.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 border border-slate-600 hover:border-slate-400 text-slate-300 hover:text-white rounded-lg font-medium transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white rounded-lg font-medium transition-colors"
               >
                 Docs
                 <ExternalLink className="w-4 h-4" />

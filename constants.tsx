@@ -130,7 +130,7 @@ export const SKILLS: SkillGroup[] = [
     skills: [
       'Complex Deal Closure ($250M+ TCV)',
       'C-Suite Partnerships',
-      'Digital Transformation',
+      'AI-First Enterprise Strategy',
       'Cross-functional Team Leadership',
     ],
   },
@@ -272,14 +272,6 @@ export const AWARDS: AwardItem[] = [
     description: 'Achieved 100% cumulative tenured weighted attainment on a sales quota plan.',
     color: 'green',
     badgeUrl: '/Awards/100Attainment.png',
-  },
-  {
-    title: 'Strategic Deal Maker',
-    issuer: 'Impact',
-    awardLevel: '$250M+ TCV',
-    description:
-      'Architected and closed complex multi-year strategic partnerships totaling $250M+ in total contract value.',
-    color: 'blue',
   },
 ];
 

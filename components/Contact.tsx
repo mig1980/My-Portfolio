@@ -21,7 +21,8 @@ const Contact: React.FC = memo(() => {
         <div className="mb-20">
           <h2 className="text-4xl font-bold text-white mb-6">Let's Connect</h2>
           <p className="text-slate-300 max-w-md text-lg mb-8">
-            Always open to a good conversation—about AI, deals, or ideas worth exploring.
+            Always open to a good conversation—about AI, the future of work, or ideas worth
+            exploring.
           </p>
           <div className="flex flex-wrap gap-4">
             {SOCIAL_LINKS.map((link) => (

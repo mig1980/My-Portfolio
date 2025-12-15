@@ -53,13 +53,12 @@ const About: React.FC = memo(() => {
               Honors & Achievements
             </h3>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
               {AWARDS.map((award, idx) => {
                 // Determine style based on award color type
                 let accentColor = 'text-primary-400';
                 let borderColor = 'hover:border-primary-500/50';
                 let bgGradient = 'hover:bg-slate-800';
-                let icon = <Award className="w-6 h-6" />;
                 let isShimmer = false;
 
                 if (award.color === 'platinum') {
@@ -67,25 +66,21 @@ const About: React.FC = memo(() => {
                   borderColor = 'hover:border-slate-300/50';
                   bgGradient =
                     'bg-gradient-to-br from-slate-800/50 to-slate-900 hover:from-slate-700/50 hover:to-slate-800';
-                  icon = <Trophy className="w-6 h-6" />;
                 } else if (award.color === 'gold') {
                   accentColor = 'text-yellow-500';
                   borderColor = 'hover:border-yellow-500/50';
                   bgGradient =
                     'bg-gradient-to-br from-slate-900 to-yellow-900/10 hover:from-slate-800 hover:to-yellow-900/20';
-                  icon = <Medal className="w-6 h-6" />;
                 } else if (award.color === 'purple') {
                   accentColor = 'text-purple-400';
                   borderColor = 'hover:border-purple-500/50';
                   bgGradient =
                     'bg-gradient-to-br from-slate-900 to-purple-900/10 hover:from-slate-800 hover:to-purple-900/20';
-                  icon = <Trophy className="w-6 h-6" />;
                 } else if (award.color === 'green') {
                   accentColor = 'text-emerald-400';
                   borderColor = 'hover:border-emerald-500/50';
                   bgGradient =
                     'bg-gradient-to-br from-slate-900 to-emerald-900/10 hover:from-slate-800 hover:to-emerald-900/20';
-                  icon = <Award className="w-6 h-6" />;
                 }
 
                 const CardWrapper = award.link ? 'a' : 'div';
@@ -108,25 +103,19 @@ const About: React.FC = memo(() => {
                     `}
                   >
                     {award.link && (
-                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-4 right-4 opacity-60 group-hover:opacity-100 transition-opacity">
                         <ArrowUpRight className={`w-4 h-4 ${accentColor}`} />
                       </div>
                     )}
 
-                    {/* Badge image or fallback icon */}
-                    {award.badgeUrl ? (
+                    {/* Badge image */}
+                    {award.badgeUrl && (
                       <div className="mb-3 p-2 bg-white/90 rounded-lg inline-block">
                         <img
                           src={award.badgeUrl}
                           alt={`${award.title} badge`}
                           className="w-20 h-20 object-contain"
                         />
-                      </div>
-                    ) : (
-                      <div
-                        className={`mb-3 ${accentColor} p-2 bg-slate-950/50 rounded-lg inline-block`}
-                      >
-                        {icon}
                       </div>
                     )}
 
@@ -135,7 +124,7 @@ const About: React.FC = memo(() => {
                     </h4>
 
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
-                      {award.issuer} •{' '}
+                      {award.issuer && `${award.issuer} • `}
                       {isShimmer ? (
                         <span className="bg-gradient-to-r from-slate-300 via-white to-slate-300 bg-clip-text text-transparent">
                           {award.awardLevel}

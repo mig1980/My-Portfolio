@@ -6,7 +6,7 @@
 import React, { memo } from 'react';
 import Section from './ui/Section';
 import { PERSONAL_INFO, AWARDS, INTERESTS } from '../constants';
-import { Trophy, Award, Medal, ArrowUpRight, Heart } from 'lucide-react';
+import { Trophy, ArrowUpRight, Heart } from 'lucide-react';
 
 /**
  * About section component displaying personal information.

@@ -46,7 +46,8 @@ const ThoughtLeadership: React.FC = memo(() => {
                   QuantumInvestor.net
                 </a>
                 <p className="text-xs text-slate-500">
-                  Personal Project • Live AI Investment Experiment
+                  Personal Project • Live AI Investment Experiment you can follow along with. Not
+                  financial advice.
                 </p>
               </div>
             </div>
@@ -54,10 +55,6 @@ const ThoughtLeadership: React.FC = memo(() => {
             <p className="text-slate-300 mb-4">
               Can AI pick stocks better than expensive advisors? I&apos;m finding out publicly.
               Weekly picks, documented performance, transparent results. No paywalls, no hype.
-            </p>
-
-            <p className="text-xs text-slate-500 mb-5 italic">
-              Not financial advice. An experiment you can follow along with.
             </p>
 
             <div className="flex flex-wrap items-center gap-3">

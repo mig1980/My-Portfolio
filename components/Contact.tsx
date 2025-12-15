@@ -52,16 +52,10 @@ const Contact: React.FC = memo(() => {
               Logos by Logo.dev
             </a>
             <a
-              href="/privacy"
+              href="/legal"
               className="text-slate-600 hover:text-slate-300 transition-colors focus-ring-inset rounded-sm"
             >
-              Privacy Policy
-            </a>
-            <a
-              href="/terms"
-              className="text-slate-600 hover:text-slate-300 transition-colors focus-ring-inset rounded-sm"
-            >
-              Terms of Use
+              Legal
             </a>
           </div>
         </div>

@@ -17,8 +17,7 @@ import ThoughtLeadership from './components/ThoughtLeadership';
 import Education from './components/Education';
 import Contact from './components/Contact';
 import BackToTop from './components/BackToTop';
-import Privacy from './components/Privacy';
-import Terms from './components/Terms';
+import Legal from './components/Legal';
 import PageWrapper from './components/ui/PageWrapper';
 
 /**
@@ -33,18 +32,10 @@ const App: React.FC = () => {
   const normalizedPathname =
     pathname.endsWith('/') && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
 
-  if (normalizedPathname === '/privacy') {
+  if (normalizedPathname === '/legal') {
     return (
       <PageWrapper>
-        <Privacy />
-      </PageWrapper>
-    );
-  }
-
-  if (normalizedPathname === '/terms') {
-    return (
-      <PageWrapper>
-        <Terms />
+        <Legal />
       </PageWrapper>
     );
   }

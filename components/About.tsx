@@ -138,11 +138,11 @@ const About: React.FC = memo(() => {
 
                     {/* Badge image */}
                     {award.badgeUrl && (
-                      <div className="mb-3 p-2 bg-white/90 rounded-lg inline-block">
+                      <div className="mb-3 p-1.5 bg-white/90 rounded-lg inline-block overflow-hidden">
                         <img
                           src={award.badgeUrl}
                           alt={`${award.title} badge`}
-                          className="w-20 h-20 object-contain"
+                          className={`w-12 h-12 object-contain ${award.title !== 'Champion Award' ? 'scale-150' : ''}`}
                         />
                       </div>
                     )}

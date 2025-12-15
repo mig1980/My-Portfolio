@@ -61,9 +61,9 @@ const Hero: React.FC = memo(() => {
               View Experience
             </a>
             <a
-              href="/Michael-Gavrilov-Resume.pdf"
+              href="/CV/Michael-Gavrilov-Resume.pdf"
               download
-              className="inline-flex items-center justify-center gap-2 px-6 py-4 text-slate-400 hover:text-white transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-4 text-slate-400 hover:text-white transition-colors focus-ring rounded-lg"
             >
               <Download className="w-4 h-4" />
               Resume

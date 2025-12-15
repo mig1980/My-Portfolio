@@ -212,13 +212,14 @@ export const CERTIFICATIONS: Certification[] = [
     url: '', // TODO: Add certificate URL
   },
   {
-    name: 'Insight Selling',
-    issuer: 'Insight Selling',
+    name: 'Business Strategy and Financial Acumen',
+    issuer: 'INSEAD Executive Education',
+    logo: getLogoUrl('insead.edu'),
     url: '', // TODO: Add certificate URL
   },
   {
     name: 'Value Negotiation',
-    issuer: 'INSEAD',
+    issuer: 'INSEAD Executive Education',
     logo: getLogoUrl('insead.edu'),
     url: '', // TODO: Add certificate URL
   },

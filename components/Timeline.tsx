@@ -37,14 +37,13 @@ const Timeline: React.FC = memo(() => {
 
   return (
     <Section id="experience" darker>
-      <div className="mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Professional Journey</h2>
-        <p className="text-slate-300 max-w-2xl">
-          From hands-on engineering to enterprise dealmaking—click any role to explore the story.
-        </p>
-      </div>
-
       <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Professional Journey</h2>
+          <p className="text-slate-300">
+            From hands-on engineering to enterprise dealmaking—click any role to explore the story.
+          </p>
+        </div>
         {EXPERIENCE.map((job, index) => (
           <TimelineItem
             key={index}

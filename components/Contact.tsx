@@ -4,8 +4,7 @@
  */
 
 import React, { memo } from 'react';
-import { SOCIAL_LINKS, PERSONAL_INFO } from '../constants';
-import { Coffee } from 'lucide-react';
+import { SOCIAL_LINKS } from '../constants';
 
 /**
  * Contact section and footer component.
@@ -37,16 +36,6 @@ const Contact: React.FC = memo(() => {
                 {link.icon}
               </a>
             ))}
-            <a
-              href={PERSONAL_INFO.calendlyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-4 bg-primary-600 hover:bg-primary-500 text-white rounded-full font-semibold transition-all transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-              aria-label="Book a 15 minute call"
-            >
-              <Coffee className="w-5 h-5" />
-              Book 15 minutes
-            </a>
           </div>
         </div>
 

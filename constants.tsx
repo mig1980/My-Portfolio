@@ -44,7 +44,6 @@ export const PERSONAL_INFO = {
   taglineHighlight: 'Enterprise AI catalyst.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
-  calendlyUrl: 'https://calendly.com/your-link/15min', // TODO: Replace with actual Calendly URL
   summary: `Started as an engineer. Became a dealmaker. Never lost the builder's mindset.
 
 I've spent two decades translating between the language of technology and the language of business—helping Fortune 500 leaders see what's possible, then making it real.
@@ -66,7 +65,7 @@ export const EXPERIENCE: JobRole[] = [
     ],
   },
   {
-    title: 'Senior Account Executive',
+    title: 'Senior Account Executive | Enterprise Accounts',
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'Apr 2011 - Jan 2017',
@@ -77,7 +76,7 @@ export const EXPERIENCE: JobRole[] = [
     ],
   },
   {
-    title: 'Account Technology Strategist',
+    title: 'Account Technology Strategist | Enterprise Accounts',
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'July 2008 - Mar 2011',
@@ -109,7 +108,7 @@ export const EXPERIENCE: JobRole[] = [
     ],
   },
   {
-    title: 'IT Operations Manager / Team Lead',
+    title: 'IT Operations Manager | Team Lead',
     company: 'Allied Testing',
     logo: getLogoUrl('alliedtesting.com'),
     period: 'Apr 2002 - July 2005',
@@ -244,21 +243,43 @@ export const AWARDS: AwardItem[] = [
     description:
       'Honored twice for exceptional performance, awarded to the top tier of achievers worldwide.',
     color: 'platinum',
+    badgeUrl: '/Awards/PlatinumClub.png',
   },
   {
     title: 'Gold Club Award',
     issuer: 'Microsoft',
-    awardLevel: 'Top Performer',
+    awardLevel: '2x Recipient',
     description:
       'Awarded for outstanding contribution to revenue growth and strategic customer impact.',
     color: 'gold',
+    badgeUrl: '/Awards/GoldClub.png',
+    link: '/Awards/Gold_Club_Award_Letter.pdf',
+  },
+  {
+    title: 'Champion Award',
+    issuer: 'Microsoft',
+    awardLevel: 'FY23 Q4',
+    description:
+      'Transformational Deals as One Microsoft—recognized for driving cloud-first approach on a strategic enterprise engagement.',
+    color: 'purple',
+    badgeUrl: '/Awards/Champion.png',
+    link: '/Awards/Champion_Award_Letter.pdf',
+  },
+  {
+    title: '100% Attainment',
+    issuer: 'Microsoft',
+    awardLevel: 'FY25',
+    description:
+      'Achieved 100% cumulative tenured weighted attainment on a sales quota plan.',
+    color: 'green',
+    badgeUrl: '/Awards/100Attainment.png',
   },
   {
     title: 'Strategic Deal Maker',
     issuer: 'Impact',
     awardLevel: '$250M+ TCV',
     description:
-      'Architected and closed complex multi-year strategic partnerships totaling $250M+ in total contract value (TCV).',
+      'Architected and closed complex multi-year strategic partnerships totaling $250M+ in total contract value.',
     color: 'blue',
   },
 ];
@@ -312,7 +333,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     platform: 'Email',
-    url: 'mailto:michael@gavrilov.ai',
+    url: 'mailto:contact@gavrilov.ai',
     label: 'Send an email',
     icon: <Mail className="w-5 h-5" />,
   },

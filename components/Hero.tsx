@@ -48,9 +48,7 @@ const Hero: React.FC = memo(() => {
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <a
-              href={PERSONAL_INFO.calendlyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#contact"
               className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white rounded-lg font-semibold transition-all shadow-lg shadow-primary-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
             >
               Start a Conversation

@@ -108,9 +108,11 @@ export interface AwardItem {
   /** Brief description of the achievement */
   description: string;
   /** Visual theme color for the award card */
-  color?: 'platinum' | 'gold' | 'blue';
+  color?: 'platinum' | 'gold' | 'blue' | 'green' | 'purple';
   /** Optional link to award details */
   link?: string;
+  /** Optional path to badge image (e.g., '/awards/PlatinumClub.png') */
+  badgeUrl?: string;
 }
 
 /**

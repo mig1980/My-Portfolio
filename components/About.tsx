@@ -27,8 +27,10 @@ const About: React.FC = memo(() => {
             About Me
           </h2>
           <div className="text-slate-300 space-y-4">
-            <p className="font-medium text-slate-200">Based in {PERSONAL_INFO.location}.</p>
-            <p>
+            <p className="text-slate-400 text-sm">
+              Based in {PERSONAL_INFO.location} • Father to a daughter
+            </p>
+            <p className="text-lg leading-relaxed">
               Colleagues know me as someone who listens first, gives honest advice, and turns
               complex challenges into actionable plans.
             </p>
@@ -58,9 +60,10 @@ const About: React.FC = memo(() => {
                 let borderColor = 'hover:border-primary-500/50';
                 let bgGradient = 'hover:bg-slate-800';
                 let icon = <Award className="w-6 h-6" />;
+                let isShimmer = false;
 
                 if (award.color === 'platinum') {
-                  accentColor = 'text-slate-200';
+                  isShimmer = true;
                   borderColor = 'hover:border-slate-300/50';
                   bgGradient =
                     'bg-gradient-to-br from-slate-800/50 to-slate-900 hover:from-slate-700/50 hover:to-slate-800';
@@ -71,14 +74,37 @@ const About: React.FC = memo(() => {
                   bgGradient =
                     'bg-gradient-to-br from-slate-900 to-yellow-900/10 hover:from-slate-800 hover:to-yellow-900/20';
                   icon = <Medal className="w-6 h-6" />;
+                } else if (award.color === 'purple') {
+                  accentColor = 'text-purple-400';
+                  borderColor = 'hover:border-purple-500/50';
+                  bgGradient =
+                    'bg-gradient-to-br from-slate-900 to-purple-900/10 hover:from-slate-800 hover:to-purple-900/20';
+                  icon = <Trophy className="w-6 h-6" />;
+                } else if (award.color === 'green') {
+                  accentColor = 'text-emerald-400';
+                  borderColor = 'hover:border-emerald-500/50';
+                  bgGradient =
+                    'bg-gradient-to-br from-slate-900 to-emerald-900/10 hover:from-slate-800 hover:to-emerald-900/20';
+                  icon = <Award className="w-6 h-6" />;
                 }
 
+                const CardWrapper = award.link ? 'a' : 'div';
+                const cardProps = award.link
+                  ? {
+                      href: award.link,
+                      target: '_blank',
+                      rel: 'noopener noreferrer',
+                    }
+                  : {};
+
                 return (
-                  <div
+                  <CardWrapper
                     key={idx}
+                    {...cardProps}
                     className={`
                       group relative p-5 rounded-xl border border-slate-800 bg-slate-900/50 
                       transition-all duration-300 ${borderColor} ${bgGradient}
+                      ${award.link ? 'cursor-pointer' : ''}
                     `}
                   >
                     {award.link && (
@@ -87,22 +113,40 @@ const About: React.FC = memo(() => {
                       </div>
                     )}
 
-                    <div
-                      className={`mb-3 ${accentColor} p-2 bg-slate-950/50 rounded-lg inline-block`}
-                    >
-                      {icon}
-                    </div>
+                    {/* Badge image or fallback icon */}
+                    {award.badgeUrl ? (
+                      <div className="mb-3 p-2 bg-white/90 rounded-lg inline-block">
+                        <img
+                          src={award.badgeUrl}
+                          alt={`${award.title} badge`}
+                          className="w-20 h-20 object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className={`mb-3 ${accentColor} p-2 bg-slate-950/50 rounded-lg inline-block`}
+                      >
+                        {icon}
+                      </div>
+                    )}
 
                     <h4 className="text-slate-100 font-bold text-lg mb-1 group-hover:text-white transition-colors">
                       {award.title}
                     </h4>
 
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
-                      {award.issuer} • <span className={accentColor}>{award.awardLevel}</span>
+                      {award.issuer} •{' '}
+                      {isShimmer ? (
+                        <span className="bg-gradient-to-r from-slate-300 via-white to-slate-300 bg-clip-text text-transparent">
+                          {award.awardLevel}
+                        </span>
+                      ) : (
+                        <span className={accentColor}>{award.awardLevel}</span>
+                      )}
                     </div>
 
                     <p className="text-sm text-slate-400 leading-snug">{award.description}</p>
-                  </div>
+                  </CardWrapper>
                 );
               })}
             </div>

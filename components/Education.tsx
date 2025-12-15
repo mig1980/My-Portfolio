@@ -20,7 +20,7 @@ import { GraduationCap, Award, ExternalLink } from 'lucide-react';
  */
 const Education: React.FC = memo(() => {
   return (
-    <Section id="education" darker>
+    <Section id="education">
       <div className="grid md:grid-cols-2 gap-16">
         {/* Education Column */}
         <div>
@@ -175,6 +175,13 @@ const Education: React.FC = memo(() => {
               );
             })}
           </div>
+        </div>
+
+        {/* Languages */}
+        <div className="mt-12 pt-8 border-t border-slate-800/50">
+          <p className="text-slate-400 text-sm">
+            <span className="text-slate-500">Languages:</span> English • Russian
+          </p>
         </div>
       </div>
     </Section>

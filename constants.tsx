@@ -101,6 +101,7 @@ export const EXPERIENCE: JobRole[] = [
   {
     title: 'IT Solutions Architect',
     company: 'Systematica Group',
+    logo: '/Company_logo/gks.png',
     period: 'July 2005 - Oct 2006',
     description: [
       'Led architectural design and technical strategy for complex IT solutions in pre-sales engagements.',

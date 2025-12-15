@@ -65,8 +65,8 @@ const App: React.FC = () => {
         <MyApproach />
         <Expertise />
         <Timeline />
-        <ThoughtLeadership />
         <Education />
+        <ThoughtLeadership />
         <Contact />
       </main>
       <BackToTop />

@@ -23,7 +23,7 @@ const ThoughtLeadership: React.FC = memo(() => {
   );
 
   return (
-    <Section id="thoughts">
+    <Section id="thoughts" darker>
       <div className="max-w-6xl mx-auto">
         <div className="max-w-3xl">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Thought Leadership</h2>

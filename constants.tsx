@@ -269,8 +269,7 @@ export const AWARDS: AwardItem[] = [
     title: '100% Attainment',
     issuer: 'Microsoft',
     awardLevel: 'FY25',
-    description:
-      'Achieved 100% cumulative tenured weighted attainment on a sales quota plan.',
+    description: 'Achieved 100% cumulative tenured weighted attainment on a sales quota plan.',
     color: 'green',
     badgeUrl: '/Awards/100Attainment.png',
   },

@@ -32,6 +32,7 @@ import {
   Flag,
   Snowflake,
   LineChart,
+  Handshake,
 } from 'lucide-react';
 import { getLogoUrl } from './utils/logo';
 
@@ -41,7 +42,7 @@ import { getLogoUrl } from './utils/logo';
 export const PERSONAL_INFO = {
   name: 'Michael Gavrilov',
   tagline: 'Engineer at heart.',
-  taglineHighlight: 'Enterprise AI catalyst.',
+  taglineHighlight: 'Transformational dealmaker.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
   summary: `Started as an engineer. Became a dealmaker. Never lost the builder's mindset.
@@ -59,8 +60,8 @@ export const EXPERIENCE: JobRole[] = [
     period: 'Jan 2017 - Present',
     description: [
       'Lead AI transformation for a strategic pharmaceutical customer, aligning Microsoft’s advanced technologies with client priorities.',
-      'Orchestrate cross-functional teams and engage directly with C-level stakeholders to accelerate innovation.',
-      'Develop and execute long-term account strategies, closing multi-year strategic partnerships totaling $250M+ TCV.',
+      'Navigate complex, multi-stakeholder negotiations with C-suite executives to unlock transformational AI adoption.',
+      'Architect novel deal structures involving product partnerships and multi-year revenue commitments totaling $250M+ TCV.',
       'Build and sustain trusted executive relationships across global accounts, unlocking new opportunities.',
     ],
   },
@@ -92,7 +93,7 @@ export const EXPERIENCE: JobRole[] = [
     logo: getLogoUrl('microsoft.com'),
     period: 'Oct 2006 - July 2008',
     description: [
-      'Developed impactful go-to-market strategies driving partner growth and revenue.',
+      'Structured platform partnerships and joint go-to-market strategies driving partner growth and revenue.',
       'Led programs resulting in a 150% increase in partner-influenced revenue.',
       'Cultivated technical relationships with CTOs/CIOs to understand strategic challenges.',
     ],
@@ -162,6 +163,16 @@ export const SKILLS: SkillGroup[] = [
       'Strategic Account Planning',
       'Go-to-Market Strategy',
       'Insight Selling',
+    ],
+  },
+  {
+    category: 'Partnership & Deals',
+    icon: <Handshake className="w-5 h-5" />,
+    skills: [
+      'Transformational Partnerships',
+      'Novel Deal Structures',
+      'Platform Economics',
+      'B2B Ecosystem Development',
     ],
   },
 ];

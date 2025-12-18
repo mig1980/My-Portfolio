@@ -41,13 +41,17 @@ const Navigation: React.FC = memo(() => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'py-4 bg-slate-950/80 backdrop-blur-md border-b border-slate-800'
-          : 'py-6 bg-transparent'
+          ? 'py-3 bg-slate-950/80 backdrop-blur-md border-b border-slate-800'
+          : 'py-4 bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <a href="#" className="hover:opacity-80 transition-opacity">
-          <img src="/Logo.png" alt="Michael Gavrilov" className="h-14 w-auto" />
+        <a href="#" className="p-1 -m-1 hover:opacity-80 transition-opacity focus-ring rounded-lg">
+          <img
+            src="/Logo.webp"
+            alt="Michael Gavrilov"
+            className={`w-auto transition-all duration-300 ${isScrolled ? 'h-10' : 'h-12'}`}
+          />
         </a>
 
         {/* Desktop Nav */}

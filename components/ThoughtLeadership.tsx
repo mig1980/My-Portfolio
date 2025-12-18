@@ -33,11 +33,18 @@ const ThoughtLeadership: React.FC = memo(() => {
         <div className="p-6 rounded-2xl border border-slate-800 bg-slate-800/30 transition-colors duration-300 hover:border-slate-700">
           {/* Logo & Title Row */}
           <div className="flex items-center gap-5 mb-6">
-            <img
-              src="/LogoQI.png"
-              alt="QuantumInvestor logo"
-              className="w-20 h-20 rounded-xl object-contain flex-shrink-0"
-            />
+            <a
+              href="https://quantuminvestor.net"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0"
+            >
+              <img
+                src="/LogoQI.png"
+                alt="QuantumInvestor logo"
+                className="w-20 h-20 rounded-xl object-contain hover:opacity-80 transition-opacity"
+              />
+            </a>
             <div className="flex flex-col justify-center">
               <a
                 href="https://quantuminvestor.net"

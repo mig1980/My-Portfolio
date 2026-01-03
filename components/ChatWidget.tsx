@@ -7,10 +7,21 @@
  */
 
 import React, { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { MessageCircle, X, Send, Trash2, Bot, User, Sparkles } from 'lucide-react';
+import {
+  MessageCircle,
+  X,
+  Send,
+  Trash2,
+  Bot,
+  User,
+  Sparkles,
+  RefreshCw,
+  WifiOff,
+} from 'lucide-react';
 import { useChat } from '../hooks/useChat';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import type { ChatMessage } from '../types';
 
 // ============================================================================
@@ -264,6 +275,95 @@ const AiDisclaimer = memo(() => (
 
 AiDisclaimer.displayName = 'AiDisclaimer';
 
+/** Props for OfflineIndicator component */
+interface OfflineIndicatorProps {
+  isFullscreen?: boolean;
+}
+
+/**
+ * Offline status indicator.
+ * Shows when the browser is disconnected from the network.
+ */
+const OfflineIndicator = memo<OfflineIndicatorProps>(({ isFullscreen = false }) => (
+  <div
+    className={`flex items-center justify-center gap-2 px-3 py-2 bg-amber-900/30 
+               border-t border-amber-700/50 text-xs text-amber-400
+               ${isFullscreen ? 'py-3' : ''}`}
+    role="status"
+    aria-live="polite"
+  >
+    <WifiOff className="w-3.5 h-3.5" aria-hidden="true" />
+    <span>You&apos;re offline. Reconnect to send messages.</span>
+  </div>
+));
+
+OfflineIndicator.displayName = 'OfflineIndicator';
+
+/** Props for FollowUpSuggestions component */
+interface FollowUpSuggestionsProps {
+  suggestions: string[];
+  onSelect: (suggestion: string) => void;
+  disabled?: boolean;
+}
+
+/**
+ * Follow-up question suggestion chips.
+ * Displayed after AI responses to guide conversation.
+ */
+const FollowUpSuggestions = memo<FollowUpSuggestionsProps>(
+  ({ suggestions, onSelect, disabled = false }) => {
+    if (suggestions.length === 0) return null;
+
+    return (
+      <div className="flex flex-wrap gap-2 mt-3 justify-start">
+        {suggestions.map((suggestion) => (
+          <button
+            key={suggestion}
+            type="button"
+            onClick={() => onSelect(suggestion)}
+            disabled={disabled}
+            className="px-3 py-1.5 bg-primary-600/20 hover:bg-primary-600/30 
+                     text-primary-300 text-xs rounded-full transition-colors 
+                     focus-ring border border-primary-600/30
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
+    );
+  }
+);
+
+FollowUpSuggestions.displayName = 'FollowUpSuggestions';
+
+/** Props for RetryButton component */
+interface RetryButtonProps {
+  onRetry: () => void;
+  disabled?: boolean;
+}
+
+/**
+ * Retry button for failed messages.
+ */
+const RetryButton = memo<RetryButtonProps>(({ onRetry, disabled = false }) => (
+  <button
+    type="button"
+    onClick={onRetry}
+    disabled={disabled}
+    className="inline-flex items-center gap-1.5 px-3 py-1.5 mt-2
+               bg-slate-700 hover:bg-slate-600 text-slate-200 
+               text-xs rounded-lg transition-colors focus-ring
+               disabled:opacity-50 disabled:cursor-not-allowed"
+    aria-label="Retry sending message"
+  >
+    <RefreshCw className="w-3 h-3" aria-hidden="true" />
+    <span>Retry</span>
+  </button>
+));
+
+RetryButton.displayName = 'RetryButton';
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -282,13 +382,26 @@ const ChatWidget: React.FC = memo(() => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [input, setInput] = useState<string>('');
   const [isTypingAnimation, setIsTypingAnimation] = useState<boolean>(false);
-  const { messages, isLoading, error, isRateLimited, sendMessage, clearHistory } = useChat();
+  const {
+    messages,
+    isLoading,
+    error,
+    isRateLimited,
+    suggestions,
+    failedMessage,
+    sendMessage,
+    retryLastMessage,
+    clearHistory,
+  } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Mobile responsiveness
   const isMobile = useIsMobile();
   const isFullscreen = isMobile && isOpen;
+
+  // Online status
+  const isOnline = useOnlineStatus();
 
   // Lock body scroll when fullscreen on mobile
   useBodyScrollLock(isFullscreen);
@@ -356,13 +469,13 @@ const ChatWidget: React.FC = memo(() => {
   const handleSubmit = useCallback(
     async (e: React.FormEvent): Promise<void> => {
       e.preventDefault();
-      if (!input.trim() || isLoading || isRateLimited) return;
+      if (!input.trim() || isLoading || isRateLimited || !isOnline) return;
 
       const message = input;
       setInput('');
       await sendMessage(message);
     },
-    [input, isLoading, isRateLimited, sendMessage]
+    [input, isLoading, isRateLimited, isOnline, sendMessage]
   );
 
   const handleKeyDown = useCallback(
@@ -377,10 +490,24 @@ const ChatWidget: React.FC = memo(() => {
 
   const handleQuickQuestion = useCallback(
     (question: string): void => {
+      if (!isOnline) return;
       void sendMessage(question);
     },
-    [sendMessage]
+    [sendMessage, isOnline]
   );
+
+  const handleSuggestionSelect = useCallback(
+    (suggestion: string): void => {
+      if (!isOnline) return;
+      void sendMessage(suggestion);
+    },
+    [sendMessage, isOnline]
+  );
+
+  const handleRetry = useCallback((): void => {
+    if (!isOnline) return;
+    void retryLastMessage();
+  }, [retryLastMessage, isOnline]);
 
   const toggleChat = useCallback((): void => {
     setIsOpen((prev) => !prev);
@@ -518,7 +645,7 @@ const ChatWidget: React.FC = memo(() => {
                         onClick={() => handleQuickQuestion(question)}
                         className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 
                                    text-xs rounded-full transition-colors focus-ring"
-                        disabled={isLoading || isRateLimited}
+                        disabled={isLoading || isRateLimited || !isOnline}
                       >
                         {question}
                       </button>
@@ -538,23 +665,38 @@ const ChatWidget: React.FC = memo(() => {
               />
             ))}
 
+            {/* Follow-up Suggestions */}
+            {!isLoading && !error && suggestions.length > 0 && messages.length > 0 && (
+              <FollowUpSuggestions
+                suggestions={suggestions}
+                onSelect={handleSuggestionSelect}
+                disabled={isLoading || isRateLimited || !isOnline}
+              />
+            )}
+
             {/* Loading Indicator */}
             {isLoading && <LoadingIndicator />}
 
-            {/* Error Message */}
+            {/* Error Message with Retry */}
             {error && (
               <div
                 className="bg-red-900/30 border border-red-700 text-red-300 px-3 py-2 
                            rounded-lg text-sm"
                 role="alert"
               >
-                {error}
+                <p>{error}</p>
+                {failedMessage && (
+                  <RetryButton onRetry={handleRetry} disabled={isLoading || !isOnline} />
+                )}
               </div>
             )}
 
             {/* Scroll anchor */}
             <div ref={messagesEndRef} aria-hidden="true" />
           </div>
+
+          {/* Offline Indicator */}
+          {!isOnline && <OfflineIndicator isFullscreen={isFullscreen} />}
 
           {/* AI Disclaimer */}
           <AiDisclaimer />
@@ -575,9 +717,15 @@ const ChatWidget: React.FC = memo(() => {
                 value={input}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder={isRateLimited ? 'Please wait...' : 'Type your message...'}
+                placeholder={
+                  !isOnline
+                    ? 'Offline...'
+                    : isRateLimited
+                      ? 'Please wait...'
+                      : 'Type your message...'
+                }
                 maxLength={MAX_INPUT_LENGTH}
-                disabled={isLoading || isRateLimited}
+                disabled={isLoading || isRateLimited || !isOnline}
                 className={`flex-1 bg-slate-800 text-slate-200 placeholder-slate-500 
                            px-4 rounded-full text-sm border border-slate-700
                            focus:outline-none focus:border-primary-500 focus:ring-1 
@@ -588,7 +736,7 @@ const ChatWidget: React.FC = memo(() => {
               />
               <button
                 type="submit"
-                disabled={!input.trim() || isLoading || isRateLimited}
+                disabled={!input.trim() || isLoading || isRateLimited || !isOnline}
                 className={`bg-primary-600 hover:bg-primary-700 disabled:bg-slate-700 
                            text-white rounded-full flex items-center justify-center 
                            transition-colors focus-ring disabled:cursor-not-allowed

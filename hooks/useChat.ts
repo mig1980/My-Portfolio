@@ -22,8 +22,14 @@ export interface UseChatReturn {
   error: string | null;
   /** Whether rate limited (429 response) */
   isRateLimited: boolean;
+  /** Follow-up question suggestions from AI */
+  suggestions: string[];
+  /** Failed message content for retry */
+  failedMessage: string | null;
   /** Send a message to the AI */
   sendMessage: (content: string) => Promise<void>;
+  /** Retry the last failed message */
+  retryLastMessage: () => Promise<void>;
   /** Clear all chat history */
   clearHistory: () => void;
 }
@@ -197,6 +203,8 @@ export function useChat({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, setIsRateLimited] = useState<boolean>(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [failedMessage, setFailedMessage] = useState<string | null>(null);
 
   // Track if initial load from storage is done
   const initialLoadDone = useRef<boolean>(false);
@@ -242,6 +250,10 @@ export function useChat({
       const trimmedContent = content.trim();
       if (!trimmedContent || isLoading || isRateLimited) return;
 
+      // Clear previous failed message and suggestions
+      setFailedMessage(null);
+      setSuggestions([]);
+
       // Create user message
       const userMessage: ChatMessage = {
         id: generateId(),
@@ -282,6 +294,7 @@ export function useChat({
         if (response.status === 429) {
           setIsRateLimited(true);
           setError('Too many requests. Please wait 30 seconds before trying again.');
+          setFailedMessage(trimmedContent);
 
           // Auto-clear rate limit after cooldown
           rateLimitTimeoutRef.current = setTimeout(() => {
@@ -316,6 +329,11 @@ export function useChat({
         };
 
         setMessages((prev) => [...prev, assistantMessage]);
+
+        // Update follow-up suggestions
+        if (data.suggestions && data.suggestions.length > 0) {
+          setSuggestions(data.suggestions);
+        }
       } catch (err) {
         // Handle specific error types
         let errorMessage: string;
@@ -331,6 +349,7 @@ export function useChat({
         }
 
         setError(errorMessage);
+        setFailedMessage(trimmedContent);
         console.error('Chat error:', err);
       } finally {
         clearTimeout(timeoutId);
@@ -340,10 +359,40 @@ export function useChat({
     [endpoint, timeout, isLoading, isRateLimited]
   );
 
+  const retryLastMessage = useCallback(async (): Promise<void> => {
+    if (!failedMessage || isLoading || isRateLimited) return;
+
+    // Remove the failed user message before retrying
+    setMessages((prev: ChatMessage[]) => {
+      // Find and remove the last user message that matches the failed content
+      // Using reverse iteration for ES2020 compatibility (instead of findLastIndex)
+      let lastIndex = -1;
+      for (let i = prev.length - 1; i >= 0; i--) {
+        if (prev[i]?.role === 'user' && prev[i]?.content === failedMessage) {
+          lastIndex = i;
+          break;
+        }
+      }
+      if (lastIndex !== -1) {
+        return [...prev.slice(0, lastIndex), ...prev.slice(lastIndex + 1)];
+      }
+      return prev;
+    });
+
+    // Clear error and retry
+    setError(null);
+    const messageToRetry = failedMessage;
+    setFailedMessage(null);
+
+    await sendMessage(messageToRetry);
+  }, [failedMessage, isLoading, isRateLimited, sendMessage]);
+
   const clearHistory = useCallback((): void => {
     setMessages([]);
     setError(null);
     setIsRateLimited(false);
+    setSuggestions([]);
+    setFailedMessage(null);
     clearStorage(storageKey);
 
     // Clear any pending rate limit timeout
@@ -353,5 +402,15 @@ export function useChat({
     }
   }, [storageKey]);
 
-  return { messages, isLoading, error, isRateLimited, sendMessage, clearHistory };
+  return {
+    messages,
+    isLoading,
+    error,
+    isRateLimited,
+    suggestions,
+    failedMessage,
+    sendMessage,
+    retryLastMessage,
+    clearHistory,
+  };
 }

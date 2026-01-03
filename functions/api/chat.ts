@@ -54,6 +54,7 @@ interface GeminiResponse {
 
 interface ApiSuccessResponse {
   reply: string;
+  suggestions?: string[];
 }
 
 interface ApiErrorResponse {
@@ -297,7 +298,101 @@ Q: "Can you help me with my homework?"
 A: "Ha! I appreciate the creativity, but I'm specifically here to chat about Michael's professional background. If you have questions about his experience, skills, or career journey, I'd love to help with those instead!"
 
 Q: "What's Michael's salary?"
-A: "That's not something I have information about - and honestly, it wouldn't be appropriate for me to share even if I did! But if you're curious about his professional accomplishments or career trajectory, I'm happy to tell you more about those."`;
+A: "That's not something I have information about - and honestly, it wouldn't be appropriate for me to share even if I did! But if you're curious about his professional accomplishments or career trajectory, I'm happy to tell you more about those."
+
+================================================================================
+CONVERSATION CONTEXT AWARENESS
+================================================================================
+
+When there is conversation history, acknowledge it naturally:
+- Reference previous topics when relevant (e.g., "Building on what we discussed about his Microsoft role...")
+- Avoid repeating information already shared unless explicitly asked
+- Use phrases like "As I mentioned...", "Going deeper into...", "Related to your earlier question..."
+- Connect new information to previously discussed topics when possible
+
+================================================================================
+INTENT DETECTION - SPECIAL ROUTING
+================================================================================
+
+For these intents, provide helpful direct links:
+
+CONTACT REQUESTS (e.g., "How can I contact Michael?", "I want to reach out"):
+- LinkedIn: linkedin.com/in/mgavrilov
+- Email: contact@gavrilov.ai
+- Encourage professional networking
+
+RESUME REQUESTS (e.g., "Can I see his resume?", "Where's his CV?"):
+- Direct to: /CV/Michael-Gavrilov-Resume.pdf (downloadable on the website)
+- Mention it contains full career details
+
+JOB OPPORTUNITY DISCUSSIONS:
+- Encourage reaching out via LinkedIn or email
+- Mention he's always open to interesting conversations`;
+
+// ============================================================================
+// Follow-up Suggestion Generator
+// ============================================================================
+
+/**
+ * Generates contextual follow-up questions based on the response.
+ * Returns 2-3 relevant questions to keep the conversation going.
+ */
+function generateFollowUpSuggestions(
+  userMessage: string,
+  aiResponse: string,
+  history: ChatHistoryItem[]
+): string[] {
+  const messageLower = userMessage.toLowerCase();
+  const responseLower = aiResponse.toLowerCase();
+  const historyTopics = history.map((h) => h.content.toLowerCase()).join(' ');
+
+  // Track what's already been discussed to avoid repetition
+  const discussed = {
+    experience: historyTopics.includes('experience') || historyTopics.includes('career'),
+    education: historyTopics.includes('education') || historyTopics.includes('degree'),
+    achievements: historyTopics.includes('achievement') || historyTopics.includes('award'),
+    skills: historyTopics.includes('skill') || historyTopics.includes('technical'),
+    contact: historyTopics.includes('contact') || historyTopics.includes('linkedin'),
+  };
+
+  const suggestions: string[] = [];
+
+  // Context-aware suggestions based on what was just discussed
+  if (responseLower.includes('microsoft') || messageLower.includes('role')) {
+    if (!discussed.achievements) suggestions.push('What awards has he won?');
+    if (!discussed.skills) suggestions.push('What are his key skills?');
+  }
+
+  if (responseLower.includes('award') || responseLower.includes('platinum')) {
+    if (!discussed.experience) suggestions.push('Tell me about his career journey');
+    suggestions.push('What deals did he close?');
+  }
+
+  if (responseLower.includes('education') || responseLower.includes('degree')) {
+    if (!discussed.skills) suggestions.push('Is he technical?');
+    suggestions.push('What certifications does he have?');
+  }
+
+  if (responseLower.includes('technical') || responseLower.includes('azure')) {
+    suggestions.push('What industries has he worked in?');
+    if (!discussed.education) suggestions.push('Where did he study?');
+  }
+
+  if (responseLower.includes('healthcare') || responseLower.includes('pharma')) {
+    suggestions.push('What AI solutions does he specialize in?');
+    suggestions.push('How long has he been at Microsoft?');
+  }
+
+  // Default suggestions if none matched
+  if (suggestions.length === 0) {
+    if (!discussed.experience) suggestions.push("What's his experience?");
+    if (!discussed.achievements) suggestions.push('Key achievements?');
+    if (!discussed.contact) suggestions.push('How can I contact him?');
+  }
+
+  // Return 2-3 unique suggestions, prioritizing less-discussed topics
+  return [...new Set(suggestions)].slice(0, 3);
+}
 
 // ============================================================================
 // Response Helpers
@@ -508,7 +603,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return jsonResponse({ error: 'Empty text in AI response. Please try again.' }, 200, origin);
     }
 
-    return jsonResponse({ reply: reply.trim() }, 200, origin);
+    // Generate follow-up suggestions based on conversation context
+    const suggestions = generateFollowUpSuggestions(sanitizedMessage, reply, recentHistory);
+
+    return jsonResponse({ reply: reply.trim(), suggestions }, 200, origin);
   } catch (error) {
     console.error('Chat API error:', error);
     return jsonResponse({ error: 'An unexpected error occurred. Please try again.' }, 500, origin);

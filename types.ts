@@ -188,4 +188,6 @@ export interface ChatApiRequest {
  * Uses discriminated union for type-safe response handling.
  * @internal Used by useChat hook
  */
-export type ChatApiResponse = { reply: string; error?: never } | { error: string; reply?: never };
+export type ChatApiResponse =
+  | { reply: string; suggestions?: string[]; error?: never }
+  | { error: string; reply?: never; suggestions?: never };

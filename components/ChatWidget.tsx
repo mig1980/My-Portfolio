@@ -1,9 +1,10 @@
 /**
  * @fileoverview Floating AI chat widget component.
  * @description Provides an interactive chat interface for portfolio visitors.
- * Features: typing animation, timestamps, AI disclaimer, localStorage persistence.
+ * Features: typing animation, timestamps, AI disclaimer, localStorage persistence,
+ * swipe-to-dismiss on mobile.
  * @author Michael Gavrilov
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 import React, { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
@@ -22,6 +23,7 @@ import { useChat } from '../hooks/useChat';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import { useSwipeToDismiss } from '../hooks/useSwipeToDismiss';
 import type { ChatMessage } from '../types';
 
 // ============================================================================
@@ -518,6 +520,24 @@ const ChatWidget: React.FC = memo(() => {
   // Lock body scroll when fullscreen on mobile
   useBodyScrollLock(isFullscreen);
 
+  // Swipe-to-dismiss for mobile fullscreen mode
+  const closeChat = useCallback((): void => {
+    setIsOpen(false);
+  }, []);
+
+  const {
+    ref: swipeRef,
+    offset: swipeOffset,
+    isSwiping,
+    handlers: swipeHandlers,
+  } = useSwipeToDismiss({
+    direction: 'down',
+    enabled: isFullscreen,
+    onDismiss: closeChat,
+    threshold: 100,
+    velocityThreshold: 0.3,
+  });
+
   // ============================================================================
   // Greeting Bubble Logic
   // ============================================================================
@@ -758,6 +778,7 @@ const ChatWidget: React.FC = memo(() => {
       {/* Chat Window */}
       {isOpen && (
         <div
+          ref={swipeRef}
           id="chat-dialog"
           className={`fixed z-50 bg-slate-900 flex flex-col overflow-hidden
                       motion-safe:animate-[slideUp_0.2s_ease-out]
@@ -765,7 +786,8 @@ const ChatWidget: React.FC = memo(() => {
                         isFullscreen
                           ? 'inset-0 rounded-none border-0'
                           : 'bottom-24 left-6 w-[380px] max-w-[calc(100vw-48px)] border border-slate-700 rounded-2xl shadow-2xl'
-                      }`}
+                      }
+                      ${isSwiping ? 'transition-none' : 'transition-transform duration-300 ease-out'}`}
           style={{
             height: isFullscreen ? '100%' : 'min(520px, calc(100vh - 150px))',
             // Safe area insets for notched devices
@@ -773,22 +795,35 @@ const ChatWidget: React.FC = memo(() => {
             paddingBottom: isFullscreen ? 'env(safe-area-inset-bottom, 0px)' : undefined,
             paddingLeft: isFullscreen ? 'env(safe-area-inset-left, 0px)' : undefined,
             paddingRight: isFullscreen ? 'env(safe-area-inset-right, 0px)' : undefined,
+            // Swipe offset transform for mobile fullscreen
+            transform: isFullscreen && swipeOffset > 0 ? `translateY(${swipeOffset}px)` : undefined,
           }}
           role="dialog"
           aria-label="AI Assistant Chat"
           aria-describedby="chat-description"
           aria-modal="true"
+          {...(isFullscreen ? swipeHandlers : {})}
         >
           {/* Screen reader description */}
           <span id="chat-description" className="sr-only">
             Chat with an AI assistant about Michael&apos;s professional background
           </span>
 
+          {/* Swipe indicator for mobile fullscreen */}
+          {isFullscreen && (
+            <div
+              className="flex justify-center py-2 bg-gradient-to-r from-primary-600 to-primary-700"
+              aria-hidden="true"
+            >
+              <div className="w-10 h-1 bg-white/30 rounded-full" />
+            </div>
+          )}
+
           {/* Header */}
           <div
             className={`bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-3 
                        flex items-center justify-between flex-shrink-0
-                       ${isFullscreen ? 'py-4' : ''}`}
+                       ${isFullscreen ? 'pt-0 py-4' : ''}`}
           >
             <div className="flex items-center gap-2">
               {/* Close button for mobile fullscreen - positioned first for easy thumb reach */}
@@ -828,6 +863,7 @@ const ChatWidget: React.FC = memo(() => {
             role="list"
             aria-label="Chat messages"
             data-scroll-container
+            data-block-swipe="true"
           >
             {/* Welcome Message */}
             {messages.length === 0 && (

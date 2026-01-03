@@ -1,11 +1,11 @@
 /**
  * @fileoverview Custom hook for managing AI chat state and interactions.
- * @description Handles message history, loading states, and API communication.
+ * @description Handles message history, loading states, API communication, and localStorage persistence.
  * @author Michael Gavrilov
- * @version 1.0.0
+ * @version 1.1.0
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ChatMessage, ChatApiResponse, ChatHistoryItem } from '../types';
 
 // ============================================================================
@@ -34,6 +34,16 @@ interface UseChatOptions {
   endpoint?: string;
   /** Request timeout in milliseconds (default: 30000) */
   timeout?: number;
+  /** localStorage key for persistence (default: 'aboutme-chat-history') */
+  storageKey?: string;
+}
+
+/** Stored message format (serializable) */
+interface StoredMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string; // ISO string for serialization
 }
 
 // ============================================================================
@@ -46,11 +56,107 @@ const DEFAULT_ENDPOINT = '/api/chat';
 /** Default request timeout (30 seconds) */
 const DEFAULT_TIMEOUT = 30000;
 
+/** Default localStorage key */
+const DEFAULT_STORAGE_KEY = 'aboutme-chat-history';
+
 /** Rate limit cooldown in milliseconds (30 seconds) */
 const RATE_LIMIT_COOLDOWN_MS = 30000;
 
+/** Maximum messages to store in localStorage */
+const MAX_STORED_MESSAGES = 50;
+
+/** localStorage expiration time (24 hours in ms) */
+const STORAGE_EXPIRATION_MS = 24 * 60 * 60 * 1000;
+
 // ============================================================================
-// Helpers
+// Storage Helpers
+// ============================================================================
+
+/**
+ * Safely parses JSON from localStorage.
+ * @param key - localStorage key
+ * @returns Parsed messages or null if invalid/expired
+ */
+function loadFromStorage(key: string): ChatMessage[] | null {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return null;
+    }
+
+    const stored = localStorage.getItem(key);
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored) as {
+      messages: StoredMessage[];
+      savedAt: number;
+    };
+
+    // Check if expired (24 hours)
+    if (Date.now() - parsed.savedAt > STORAGE_EXPIRATION_MS) {
+      localStorage.removeItem(key);
+      return null;
+    }
+
+    // Convert stored messages back to ChatMessage format
+    return parsed.messages.map((msg) => ({
+      ...msg,
+      timestamp: new Date(msg.timestamp),
+    }));
+  } catch {
+    // Invalid data, clear it
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Ignore storage errors
+    }
+    return null;
+  }
+}
+
+/**
+ * Saves messages to localStorage.
+ * @param key - localStorage key
+ * @param messages - Messages to save
+ */
+function saveToStorage(key: string, messages: ChatMessage[]): void {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return;
+    }
+
+    // Limit stored messages to prevent quota issues
+    const messagesToStore = messages.slice(-MAX_STORED_MESSAGES);
+
+    const data = {
+      messages: messagesToStore.map((msg) => ({
+        ...msg,
+        timestamp: msg.timestamp.toISOString(),
+      })),
+      savedAt: Date.now(),
+    };
+
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch {
+    // Ignore storage errors (quota exceeded, private mode, etc.)
+  }
+}
+
+/**
+ * Clears messages from localStorage.
+ * @param key - localStorage key
+ */
+function clearStorage(key: string): void {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem(key);
+    }
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+// ============================================================================
+// ID Generation Helper
 // ============================================================================
 
 /**
@@ -71,7 +177,7 @@ function generateId(): string {
 
 /**
  * Hook for managing chat state with the AI assistant.
- * Handles message history, loading states, and API communication.
+ * Handles message history, loading states, API communication, and localStorage persistence.
  *
  * @param options - Configuration options
  * @returns Chat state and control functions
@@ -85,11 +191,15 @@ function generateId(): string {
 export function useChat({
   endpoint = DEFAULT_ENDPOINT,
   timeout = DEFAULT_TIMEOUT,
+  storageKey = DEFAULT_STORAGE_KEY,
 }: UseChatOptions = {}): UseChatReturn {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, setIsRateLimited] = useState<boolean>(false);
+
+  // Track if initial load from storage is done
+  const initialLoadDone = useRef<boolean>(false);
 
   // Use ref to always have current messages for history (avoids stale closure)
   const messagesRef = useRef<ChatMessage[]>([]);
@@ -97,6 +207,35 @@ export function useChat({
 
   // Track rate limit timeout
   const rateLimitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Load messages from localStorage on mount
+  useEffect(() => {
+    if (initialLoadDone.current) return;
+    initialLoadDone.current = true;
+
+    const stored = loadFromStorage(storageKey);
+    if (stored && stored.length > 0) {
+      setMessages(stored);
+    }
+  }, [storageKey]);
+
+  // Save messages to localStorage when they change
+  useEffect(() => {
+    // Don't save during initial load
+    if (!initialLoadDone.current) return;
+    // Don't save empty messages (prevents overwriting on clear before reload)
+    if (messages.length === 0) return;
+    saveToStorage(storageKey, messages);
+  }, [messages, storageKey]);
+
+  // Cleanup rate limit timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (rateLimitTimeoutRef.current) {
+        clearTimeout(rateLimitTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const sendMessage = useCallback(
     async (content: string): Promise<void> => {
@@ -205,13 +344,14 @@ export function useChat({
     setMessages([]);
     setError(null);
     setIsRateLimited(false);
+    clearStorage(storageKey);
 
     // Clear any pending rate limit timeout
     if (rateLimitTimeoutRef.current) {
       clearTimeout(rateLimitTimeoutRef.current);
       rateLimitTimeoutRef.current = null;
     }
-  }, []);
+  }, [storageKey]);
 
   return { messages, isLoading, error, isRateLimited, sendMessage, clearHistory };
 }

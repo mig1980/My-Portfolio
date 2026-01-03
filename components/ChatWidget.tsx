@@ -1,12 +1,13 @@
 /**
  * @fileoverview Floating AI chat widget component.
  * @description Provides an interactive chat interface for portfolio visitors.
+ * Features: typing animation, timestamps, AI disclaimer, localStorage persistence.
  * @author Michael Gavrilov
- * @version 1.0.0
+ * @version 1.1.0
  */
 
-import React, { memo, useState, useRef, useEffect, useCallback } from 'react';
-import { MessageCircle, X, Send, Trash2, Bot, User } from 'lucide-react';
+import React, { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { MessageCircle, X, Send, Trash2, Bot, User, Sparkles } from 'lucide-react';
 import { useChat } from '../hooks/useChat';
 import type { ChatMessage } from '../types';
 
@@ -17,6 +18,9 @@ import type { ChatMessage } from '../types';
 /** Maximum input length (aligned with backend) */
 const MAX_INPUT_LENGTH = 500;
 
+/** Typing animation speed (ms per character) - respects prefers-reduced-motion */
+const TYPING_SPEED_MS = 12;
+
 /** Suggested questions for new users */
 const QUICK_QUESTIONS: readonly string[] = [
   "What is Michael's experience?",
@@ -25,58 +29,179 @@ const QUICK_QUESTIONS: readonly string[] = [
 ] as const;
 
 // ============================================================================
+// Utility Functions
+// ============================================================================
+
+/**
+ * Formats a timestamp for display.
+ * Shows relative time for recent messages, full time for older ones.
+ * @param date - The date to format
+ * @returns Formatted string
+ */
+function formatTimestamp(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+
+  // Just now (< 1 minute)
+  if (diffMins < 1) {
+    return 'Just now';
+  }
+
+  // Minutes ago (< 60 minutes)
+  if (diffMins < 60) {
+    return `${diffMins}m ago`;
+  }
+
+  // Hours ago (< 24 hours)
+  if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  }
+
+  // Full date for older messages
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
+// ============================================================================
 // Sub-Components
 // ============================================================================
 
 /** Props for MessageBubble component */
 interface MessageBubbleProps {
   message: ChatMessage;
+  isLatestAssistant?: boolean;
+  onTypingComplete?: () => void;
 }
 
 /**
- * Individual message bubble component.
+ * Hook for typing animation effect.
+ * Respects prefers-reduced-motion preference.
+ */
+function useTypingAnimation(
+  content: string,
+  shouldAnimate: boolean,
+  onComplete?: () => void
+): { displayedText: string; isTyping: boolean } {
+  const [displayedText, setDisplayedText] = useState<string>(shouldAnimate ? '' : content);
+  const [isTyping, setIsTyping] = useState<boolean>(shouldAnimate);
+
+  // Check for reduced motion preference
+  const prefersReducedMotion = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }, []);
+
+  useEffect(() => {
+    // Skip animation if not needed or user prefers reduced motion
+    if (!shouldAnimate || prefersReducedMotion) {
+      setDisplayedText(content);
+      setIsTyping(false);
+      onComplete?.();
+      return;
+    }
+
+    let index = 0;
+    setDisplayedText('');
+    setIsTyping(true);
+
+    const intervalId = setInterval(() => {
+      if (index < content.length) {
+        setDisplayedText(content.slice(0, index + 1));
+        index++;
+      } else {
+        clearInterval(intervalId);
+        setIsTyping(false);
+        onComplete?.();
+      }
+    }, TYPING_SPEED_MS);
+
+    return () => clearInterval(intervalId);
+  }, [content, shouldAnimate, prefersReducedMotion, onComplete]);
+
+  return { displayedText, isTyping };
+}
+
+/**
+ * Individual message bubble component with optional typing animation.
  * Memoized to prevent unnecessary re-renders.
  */
-const MessageBubble = memo<MessageBubbleProps>(({ message }) => {
-  const isUser = message.role === 'user';
+const MessageBubble = memo<MessageBubbleProps>(
+  ({ message, isLatestAssistant = false, onTypingComplete }) => {
+    const isUser = message.role === 'user';
 
-  return (
-    <div className={`flex gap-2 ${isUser ? 'justify-end' : 'justify-start'}`} role="listitem">
-      {/* Assistant Avatar */}
-      {!isUser && (
-        <div
-          className="w-7 h-7 rounded-full bg-primary-600 flex items-center 
+    // Only animate the latest assistant message
+    const shouldAnimate = !isUser && isLatestAssistant;
+    const { displayedText, isTyping } = useTypingAnimation(
+      message.content,
+      shouldAnimate,
+      onTypingComplete
+    );
+
+    // Format timestamp for display
+    const formattedTime = useMemo(() => formatTimestamp(message.timestamp), [message.timestamp]);
+
+    return (
+      <div className={`flex gap-2 ${isUser ? 'justify-end' : 'justify-start'}`} role="listitem">
+        {/* Assistant Avatar */}
+        {!isUser && (
+          <div
+            className="w-7 h-7 rounded-full bg-primary-600 flex items-center 
                      justify-center flex-shrink-0 mt-0.5"
-          aria-hidden="true"
-        >
-          <Bot className="w-4 h-4 text-white" />
-        </div>
-      )}
+            aria-hidden="true"
+          >
+            <Bot className="w-4 h-4 text-white" />
+          </div>
+        )}
 
-      {/* Message Bubble */}
-      <div
-        className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
-          isUser
-            ? 'bg-primary-600 text-white rounded-br-md'
-            : 'bg-slate-800 text-slate-200 rounded-bl-md'
-        }`}
-      >
-        {message.content}
+        {/* Message Content */}
+        <div className="flex flex-col max-w-[80%]">
+          {/* Message Bubble */}
+          <div
+            className={`px-3 py-2 rounded-2xl text-sm leading-relaxed ${
+              isUser
+                ? 'bg-primary-600 text-white rounded-br-md'
+                : 'bg-slate-800 text-slate-200 rounded-bl-md'
+            }`}
+          >
+            {isUser ? message.content : displayedText}
+            {/* Typing cursor for animation effect */}
+            {isTyping && (
+              <span
+                className="inline-block w-0.5 h-4 bg-primary-400 ml-0.5 animate-pulse"
+                aria-hidden="true"
+              />
+            )}
+          </div>
+
+          {/* Timestamp */}
+          <span
+            className={`text-xs text-slate-500 mt-1 ${isUser ? 'text-right' : 'text-left'}`}
+            aria-label={`Sent ${formattedTime}`}
+          >
+            {formattedTime}
+          </span>
+        </div>
+
+        {/* User Avatar */}
+        {isUser && (
+          <div
+            className="w-7 h-7 rounded-full bg-slate-700 flex items-center 
+                     justify-center flex-shrink-0 mt-0.5"
+            aria-hidden="true"
+          >
+            <User className="w-4 h-4 text-slate-300" />
+          </div>
+        )}
       </div>
-
-      {/* User Avatar */}
-      {isUser && (
-        <div
-          className="w-7 h-7 rounded-full bg-slate-700 flex items-center 
-                     justify-center flex-shrink-0 mt-0.5"
-          aria-hidden="true"
-        >
-          <User className="w-4 h-4 text-slate-300" />
-        </div>
-      )}
-    </div>
-  );
-});
+    );
+  }
+);
 
 MessageBubble.displayName = 'MessageBubble';
 
@@ -120,6 +245,23 @@ const LoadingIndicator = memo(() => (
 
 LoadingIndicator.displayName = 'LoadingIndicator';
 
+/**
+ * AI Disclaimer footer component.
+ * Provides transparency about AI-generated responses.
+ */
+const AiDisclaimer = memo(() => (
+  <div
+    className="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800/50 
+               border-t border-slate-700/50 text-xs text-slate-500"
+    aria-label="Disclaimer"
+  >
+    <Sparkles className="w-3 h-3" aria-hidden="true" />
+    <span>Powered by AI · Responses may not be 100% accurate</span>
+  </div>
+));
+
+AiDisclaimer.displayName = 'AiDisclaimer';
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -137,9 +279,40 @@ LoadingIndicator.displayName = 'LoadingIndicator';
 const ChatWidget: React.FC = memo(() => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [input, setInput] = useState<string>('');
+  const [isTypingAnimation, setIsTypingAnimation] = useState<boolean>(false);
   const { messages, isLoading, error, isRateLimited, sendMessage, clearHistory } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Find the latest assistant message ID for typing animation
+  const latestAssistantMessageId = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const msg = messages[i];
+      if (msg && msg.role === 'assistant') {
+        return msg.id;
+      }
+    }
+    return null;
+  }, [messages]);
+
+  // Track when a new assistant message arrives for typing animation
+  const prevMessagesLengthRef = useRef<number>(0);
+  useEffect(() => {
+    const currentLength = messages.length;
+    const lastMessage = messages[currentLength - 1];
+
+    // Start typing animation when a new assistant message arrives
+    if (currentLength > prevMessagesLengthRef.current && lastMessage?.role === 'assistant') {
+      setIsTypingAnimation(true);
+    }
+
+    prevMessagesLengthRef.current = currentLength;
+  }, [messages]);
+
+  // Callback when typing animation completes
+  const handleTypingComplete = useCallback(() => {
+    setIsTypingAnimation(false);
+  }, []);
 
   // Auto-scroll to latest message
   useEffect(() => {
@@ -268,7 +441,8 @@ const ChatWidget: React.FC = memo(() => {
             <button
               onClick={handleClearHistory}
               className="p-2 text-primary-200 hover:text-white hover:bg-white/10 
-                         rounded-lg transition-colors focus-ring"
+                         rounded-lg transition-colors focus-ring
+                         disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
               aria-label="Clear chat history"
               disabled={messages.length === 0}
             >
@@ -322,7 +496,12 @@ const ChatWidget: React.FC = memo(() => {
 
             {/* Message List */}
             {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
+              <MessageBubble
+                key={message.id}
+                message={message}
+                isLatestAssistant={message.id === latestAssistantMessageId && isTypingAnimation}
+                onTypingComplete={handleTypingComplete}
+              />
             ))}
 
             {/* Loading Indicator */}
@@ -342,6 +521,9 @@ const ChatWidget: React.FC = memo(() => {
             {/* Scroll anchor */}
             <div ref={messagesEndRef} aria-hidden="true" />
           </div>
+
+          {/* AI Disclaimer */}
+          <AiDisclaimer />
 
           {/* Input Form */}
           <form onSubmit={handleSubmit} className="p-3 border-t border-slate-700 flex-shrink-0">

@@ -1,7 +1,7 @@
 /**
  * @fileoverview Unit tests for ChatWidget component.
  * @author Michael Gavrilov
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -12,14 +12,21 @@ import ChatWidget from '../components/ChatWidget';
 const mockFetch = vi.fn() as Mock;
 global.fetch = mockFetch;
 
+// localStorage key used by useChat hook
+const STORAGE_KEY = 'aboutme-chat-history';
+
 describe('ChatWidget', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFetch.mockReset();
+    // Clear localStorage before each test to ensure clean state
+    localStorage.removeItem(STORAGE_KEY);
   });
 
   afterEach(() => {
     vi.clearAllMocks();
+    // Clean up localStorage after tests
+    localStorage.removeItem(STORAGE_KEY);
   });
 
   describe('Initial State', () => {

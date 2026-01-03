@@ -302,10 +302,10 @@ export function useChat({
           setIsRateLimited(true);
           setFailedMessage(trimmedContent);
 
-          // Start countdown from 30 seconds
+          // Start countdown from 30 seconds (visual indicator handles display)
           const countdownSeconds = Math.ceil(RATE_LIMIT_COOLDOWN_MS / 1000);
           setRateLimitSecondsRemaining(countdownSeconds);
-          setError(`Too many requests. Please wait ${countdownSeconds} seconds.`);
+          // Don't set error - RateLimitIndicator handles the message
 
           // Update countdown every second
           rateLimitIntervalRef.current = setInterval(() => {
@@ -319,7 +319,6 @@ export function useChat({
                 }
                 return 0;
               }
-              setError(`Too many requests. Please wait ${newValue} seconds.`);
               return newValue;
             });
           }, 1000);
@@ -327,7 +326,6 @@ export function useChat({
           // Auto-clear rate limit after cooldown
           rateLimitTimeoutRef.current = setTimeout(() => {
             setIsRateLimited(false);
-            setError(null);
             setRateLimitSecondsRemaining(0);
             if (rateLimitIntervalRef.current) {
               clearInterval(rateLimitIntervalRef.current);

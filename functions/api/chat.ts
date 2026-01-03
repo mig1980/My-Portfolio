@@ -492,7 +492,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     let geminiResponse: globalThis.Response;
     try {
       geminiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

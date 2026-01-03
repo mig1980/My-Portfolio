@@ -29,7 +29,10 @@ const Expertise: React.FC = memo(() => {
 
       <div className="flex flex-wrap justify-center gap-6">
         {SKILLS.map((group) => (
-          <Card key={group.category} className="h-full w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+          <Card
+            key={group.category}
+            className="h-full w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+          >
             <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-primary-500/10 rounded-lg text-primary-400">{group.icon}</div>
               <h3 className="text-xl font-bold text-slate-100">{group.category}</h3>

@@ -23,3 +23,12 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+# Cloudflare local development
+wrangler.toml
+.wrangler/
+.dev.vars
+
+# Local environment files
+.env.local
+.env.*.local

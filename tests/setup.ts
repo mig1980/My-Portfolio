@@ -32,6 +32,11 @@ Object.defineProperty(window, 'scrollTo', {
 });
 
 /**
+ * Mock Element.scrollIntoView for chat widget tests.
+ */
+Element.prototype.scrollIntoView = () => {};
+
+/**
  * Mock IntersectionObserver for lazy loading and visibility tests.
  */
 class MockIntersectionObserver {

@@ -140,3 +140,52 @@ export interface StatItem {
   /** Label describing the statistic */
   label: string;
 }
+
+// ============================================================================
+// Chat Types - Used by ChatWidget and useChat hook
+// ============================================================================
+
+/**
+ * Represents a chat message in the AI assistant conversation.
+ * Used in the ChatWidget component for message display.
+ */
+export interface ChatMessage {
+  /** Unique identifier for the message */
+  id: string;
+  /** Message sender role */
+  role: 'user' | 'assistant';
+  /** Message text content */
+  content: string;
+  /** When the message was created */
+  timestamp: Date;
+}
+
+/**
+ * Chat history item format for API requests.
+ * Uses 'model' instead of 'assistant' to match Gemini API format.
+ * @internal Used by useChat hook
+ */
+export interface ChatHistoryItem {
+  /** Role in the conversation */
+  role: 'user' | 'model';
+  /** Message content */
+  content: string;
+}
+
+/**
+ * API request format for chat endpoint.
+ * @internal Used by useChat hook
+ */
+export interface ChatApiRequest {
+  /** User's message text */
+  message: string;
+  /** Previous conversation history */
+  history?: ChatHistoryItem[];
+}
+
+/**
+ * API response format from chat endpoint.
+ * Uses discriminated union for type-safe response handling.
+ * @internal Used by useChat hook
+ */
+export type ChatApiResponse = { reply: string; error?: never } | { error: string; reply?: never };

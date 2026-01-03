@@ -17,6 +17,7 @@ import ThoughtLeadership from './components/ThoughtLeadership';
 import Education from './components/Education';
 import Contact from './components/Contact';
 import BackToTop from './components/BackToTop';
+import ChatWidget from './components/ChatWidget';
 import Legal from './components/Legal';
 import PageWrapper from './components/ui/PageWrapper';
 
@@ -62,6 +63,7 @@ const App: React.FC = () => {
         <Contact />
       </PageWrapper>
       <BackToTop />
+      <ChatWidget />
     </>
   );
 };

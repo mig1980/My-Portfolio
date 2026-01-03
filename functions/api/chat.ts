@@ -259,7 +259,9 @@ RESPONSE GUIDELINES
 4. Do NOT make up information not provided above
 5. For detailed inquiries, suggest connecting via LinkedIn or email
 6. Keep responses under 150 words unless more detail is requested
-7. Use bullet points for lists to improve readability`;
+7. Use plain text only - NO markdown formatting (no **, *, #, or bullet symbols)
+8. For lists, use simple dashes (-) or numbered lists (1. 2. 3.)
+9. Write in a natural, conversational tone`;
 
 // ============================================================================
 // Response Helpers

@@ -9,6 +9,8 @@
 import React, { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { MessageCircle, X, Send, Trash2, Bot, User, Sparkles } from 'lucide-react';
 import { useChat } from '../hooks/useChat';
+import { useIsMobile } from '../hooks/useIsMobile';
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import type { ChatMessage } from '../types';
 
 // ============================================================================
@@ -284,6 +286,13 @@ const ChatWidget: React.FC = memo(() => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Mobile responsiveness
+  const isMobile = useIsMobile();
+  const isFullscreen = isMobile && isOpen;
+
+  // Lock body scroll when fullscreen on mobile
+  useBodyScrollLock(isFullscreen);
+
   // Find the latest assistant message ID for typing animation
   const latestAssistantMessageId = useMemo(() => {
     for (let i = messages.length - 1; i >= 0; i--) {
@@ -387,33 +396,45 @@ const ChatWidget: React.FC = memo(() => {
 
   return (
     <>
-      {/* Floating Toggle Button - positioned bottom-left to avoid BackToTop conflict */}
-      <button
-        onClick={toggleChat}
-        className="fixed bottom-6 left-6 z-50 w-14 h-14 bg-primary-600 hover:bg-primary-700 
-                   text-white rounded-full shadow-lg flex items-center justify-center 
-                   transition-all duration-300 hover:scale-110 focus-ring
-                   motion-reduce:transition-none motion-reduce:hover:transform-none"
-        aria-label={isOpen ? 'Close chat' : 'Open AI assistant'}
-        aria-expanded={isOpen}
-        aria-controls="chat-dialog"
-      >
-        {isOpen ? (
-          <X className="w-6 h-6" aria-hidden="true" />
-        ) : (
-          <MessageCircle className="w-6 h-6" aria-hidden="true" />
-        )}
-      </button>
+      {/* Floating Toggle Button - hidden when fullscreen on mobile */}
+      {!isFullscreen && (
+        <button
+          onClick={toggleChat}
+          className="fixed bottom-6 left-6 z-50 w-14 h-14 bg-primary-600 hover:bg-primary-700 
+                     text-white rounded-full shadow-lg flex items-center justify-center 
+                     transition-all duration-300 hover:scale-110 focus-ring
+                     motion-reduce:transition-none motion-reduce:hover:transform-none"
+          aria-label={isOpen ? 'Close chat' : 'Open AI assistant'}
+          aria-expanded={isOpen}
+          aria-controls="chat-dialog"
+        >
+          {isOpen ? (
+            <X className="w-6 h-6" aria-hidden="true" />
+          ) : (
+            <MessageCircle className="w-6 h-6" aria-hidden="true" />
+          )}
+        </button>
+      )}
 
       {/* Chat Window */}
       {isOpen && (
         <div
           id="chat-dialog"
-          className="fixed bottom-24 left-6 z-50 w-[380px] max-w-[calc(100vw-48px)] 
-                     bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl 
-                     flex flex-col overflow-hidden
-                     motion-safe:animate-[slideUp_0.2s_ease-out]"
-          style={{ height: 'min(520px, calc(100vh - 150px))' }}
+          className={`fixed z-50 bg-slate-900 flex flex-col overflow-hidden
+                      motion-safe:animate-[slideUp_0.2s_ease-out]
+                      ${
+                        isFullscreen
+                          ? 'inset-0 rounded-none border-0'
+                          : 'bottom-24 left-6 w-[380px] max-w-[calc(100vw-48px)] border border-slate-700 rounded-2xl shadow-2xl'
+                      }`}
+          style={{
+            height: isFullscreen ? '100%' : 'min(520px, calc(100vh - 150px))',
+            // Safe area insets for notched devices
+            paddingTop: isFullscreen ? 'env(safe-area-inset-top, 0px)' : undefined,
+            paddingBottom: isFullscreen ? 'env(safe-area-inset-bottom, 0px)' : undefined,
+            paddingLeft: isFullscreen ? 'env(safe-area-inset-left, 0px)' : undefined,
+            paddingRight: isFullscreen ? 'env(safe-area-inset-right, 0px)' : undefined,
+          }}
           role="dialog"
           aria-label="AI Assistant Chat"
           aria-describedby="chat-description"
@@ -426,10 +447,22 @@ const ChatWidget: React.FC = memo(() => {
 
           {/* Header */}
           <div
-            className="bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-3 
-                       flex items-center justify-between flex-shrink-0"
+            className={`bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-3 
+                       flex items-center justify-between flex-shrink-0
+                       ${isFullscreen ? 'py-4' : ''}`}
           >
             <div className="flex items-center gap-2">
+              {/* Close button for mobile fullscreen - positioned first for easy thumb reach */}
+              {isFullscreen && (
+                <button
+                  onClick={toggleChat}
+                  className="p-2 -ml-2 mr-1 text-white hover:bg-white/10 
+                             rounded-lg transition-colors focus-ring"
+                  aria-label="Close chat"
+                >
+                  <X className="w-5 h-5" aria-hidden="true" />
+                </button>
+              )}
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                 <Bot className="w-5 h-5 text-white" aria-hidden="true" />
               </div>
@@ -455,6 +488,7 @@ const ChatWidget: React.FC = memo(() => {
             className="flex-1 overflow-y-auto p-4 space-y-4"
             role="list"
             aria-label="Chat messages"
+            data-scroll-container
           >
             {/* Welcome Message */}
             {messages.length === 0 && (
@@ -526,7 +560,10 @@ const ChatWidget: React.FC = memo(() => {
           <AiDisclaimer />
 
           {/* Input Form */}
-          <form onSubmit={handleSubmit} className="p-3 border-t border-slate-700 flex-shrink-0">
+          <form
+            onSubmit={handleSubmit}
+            className={`p-3 border-t border-slate-700 flex-shrink-0 ${isFullscreen ? 'p-4' : ''}`}
+          >
             <div className="flex gap-2">
               <label htmlFor="chat-input" className="sr-only">
                 Type your message
@@ -541,22 +578,24 @@ const ChatWidget: React.FC = memo(() => {
                 placeholder={isRateLimited ? 'Please wait...' : 'Type your message...'}
                 maxLength={MAX_INPUT_LENGTH}
                 disabled={isLoading || isRateLimited}
-                className="flex-1 bg-slate-800 text-slate-200 placeholder-slate-500 
-                           px-4 py-2 rounded-full text-sm border border-slate-700
+                className={`flex-1 bg-slate-800 text-slate-200 placeholder-slate-500 
+                           px-4 rounded-full text-sm border border-slate-700
                            focus:outline-none focus:border-primary-500 focus:ring-1 
-                           focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                           focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed
+                           ${isFullscreen ? 'py-3 text-base' : 'py-2'}`}
                 aria-label="Type your message"
                 aria-describedby="char-count"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading || isRateLimited}
-                className="w-10 h-10 bg-primary-600 hover:bg-primary-700 disabled:bg-slate-700 
+                className={`bg-primary-600 hover:bg-primary-700 disabled:bg-slate-700 
                            text-white rounded-full flex items-center justify-center 
-                           transition-colors focus-ring disabled:cursor-not-allowed"
+                           transition-colors focus-ring disabled:cursor-not-allowed
+                           ${isFullscreen ? 'w-12 h-12' : 'w-10 h-10'}`}
                 aria-label="Send message"
               >
-                <Send className="w-4 h-4" aria-hidden="true" />
+                <Send className={isFullscreen ? 'w-5 h-5' : 'w-4 h-4'} aria-hidden="true" />
               </button>
             </div>
             {/* Character count for accessibility */}

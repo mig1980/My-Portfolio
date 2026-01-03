@@ -41,6 +41,18 @@ const QUICK_QUESTIONS: readonly string[] = [
   'Current role?',
 ] as const;
 
+/** Greeting bubble configuration */
+const GREETING_BUBBLE = {
+  /** Delay before showing bubble (ms) */
+  SHOW_DELAY_MS: 3000,
+  /** Auto-hide after this duration (ms) - 0 to disable */
+  AUTO_HIDE_MS: 15000,
+  /** localStorage key for tracking dismissal */
+  STORAGE_KEY: 'aboutme-greeting-dismissed',
+  /** Greeting message text */
+  MESSAGE: "👋 Hi! Ask me anything about Michael's experience",
+} as const;
+
 // ============================================================================
 // Utility Functions
 // ============================================================================
@@ -404,6 +416,60 @@ const RetryButton = memo<RetryButtonProps>(({ onRetry, disabled = false }) => (
 
 RetryButton.displayName = 'RetryButton';
 
+/** Props for GreetingBubble component */
+interface GreetingBubbleProps {
+  onDismiss: () => void;
+  onClick: () => void;
+}
+
+/**
+ * Animated greeting bubble to attract attention to the chat.
+ * Shows after a delay for first-time visitors.
+ */
+const GreetingBubble = memo<GreetingBubbleProps>(({ onDismiss, onClick }) => (
+  <div
+    className="fixed bottom-24 left-6 z-40 max-w-[280px]
+               motion-safe:animate-[fadeSlideIn_0.3s_ease-out]"
+    role="status"
+    aria-live="polite"
+  >
+    {/* Speech bubble with tail */}
+    <div className="relative">
+      <button
+        type="button"
+        onClick={onClick}
+        className="w-full text-left bg-white text-slate-800 px-4 py-3 rounded-2xl 
+                   shadow-lg hover:shadow-xl transition-shadow cursor-pointer
+                   focus-ring"
+        aria-label="Open chat assistant"
+      >
+        <p className="text-sm font-medium leading-relaxed">{GREETING_BUBBLE.MESSAGE}</p>
+      </button>
+      {/* Dismiss button */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDismiss();
+        }}
+        className="absolute -top-2 -right-2 w-6 h-6 bg-slate-700 hover:bg-slate-600
+                   text-white rounded-full flex items-center justify-center
+                   shadow-md transition-colors focus-ring"
+        aria-label="Dismiss greeting"
+      >
+        <X className="w-3.5 h-3.5" aria-hidden="true" />
+      </button>
+      {/* Bubble tail pointing to chat button */}
+      <div
+        className="absolute -bottom-2 left-6 w-4 h-4 bg-white transform rotate-45"
+        aria-hidden="true"
+      />
+    </div>
+  </div>
+));
+
+GreetingBubble.displayName = 'GreetingBubble';
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -422,6 +488,7 @@ const ChatWidget: React.FC = memo(() => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [input, setInput] = useState<string>('');
   const [isTypingAnimation, setIsTypingAnimation] = useState<boolean>(false);
+  const [showGreetingBubble, setShowGreetingBubble] = useState<boolean>(false);
   const {
     messages,
     isLoading,
@@ -436,6 +503,10 @@ const ChatWidget: React.FC = memo(() => {
   } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const greetingTimersRef = useRef<{
+    show: ReturnType<typeof setTimeout> | null;
+    hide: ReturnType<typeof setTimeout> | null;
+  }>({ show: null, hide: null });
 
   // Mobile responsiveness
   const isMobile = useIsMobile();
@@ -446,6 +517,101 @@ const ChatWidget: React.FC = memo(() => {
 
   // Lock body scroll when fullscreen on mobile
   useBodyScrollLock(isFullscreen);
+
+  // ============================================================================
+  // Greeting Bubble Logic
+  // ============================================================================
+
+  /**
+   * Check if greeting was previously dismissed (stored in localStorage).
+   * Returns true if user has dismissed or interacted with chat before.
+   */
+  const wasGreetingDismissed = useCallback((): boolean => {
+    try {
+      const dismissed = localStorage.getItem(GREETING_BUBBLE.STORAGE_KEY);
+      return dismissed === 'true';
+    } catch {
+      // localStorage not available (SSR, private browsing, etc.)
+      return false;
+    }
+  }, []);
+
+  /**
+   * Mark greeting as dismissed in localStorage.
+   */
+  const markGreetingDismissed = useCallback((): void => {
+    try {
+      localStorage.setItem(GREETING_BUBBLE.STORAGE_KEY, 'true');
+    } catch {
+      // Silently fail if localStorage unavailable
+    }
+  }, []);
+
+  /**
+   * Dismiss the greeting bubble and remember the dismissal.
+   */
+  const dismissGreeting = useCallback((): void => {
+    setShowGreetingBubble(false);
+    markGreetingDismissed();
+
+    // Clear auto-hide timer if set
+    if (greetingTimersRef.current.hide) {
+      clearTimeout(greetingTimersRef.current.hide);
+      greetingTimersRef.current.hide = null;
+    }
+  }, [markGreetingDismissed]);
+
+  /**
+   * Handle greeting bubble click - open chat and dismiss greeting.
+   */
+  const handleGreetingClick = useCallback((): void => {
+    setIsOpen(true);
+    dismissGreeting();
+  }, [dismissGreeting]);
+
+  // Show greeting bubble after delay for first-time visitors
+  useEffect(() => {
+    // Don't show if: already dismissed, chat is open, or already showing
+    if (wasGreetingDismissed() || isOpen) {
+      return;
+    }
+
+    // Capture ref values for cleanup
+    const timers = greetingTimersRef.current;
+
+    // Show after delay
+    timers.show = setTimeout(() => {
+      // Double-check chat isn't open (user might have opened during delay)
+      if (!isOpen) {
+        setShowGreetingBubble(true);
+
+        // Auto-hide after duration (if configured)
+        if (GREETING_BUBBLE.AUTO_HIDE_MS > 0) {
+          timers.hide = setTimeout(() => {
+            setShowGreetingBubble(false);
+            // Don't mark as dismissed on auto-hide - show again on next visit
+          }, GREETING_BUBBLE.AUTO_HIDE_MS);
+        }
+      }
+    }, GREETING_BUBBLE.SHOW_DELAY_MS);
+
+    // Cleanup timers on unmount
+    return () => {
+      if (timers.show) {
+        clearTimeout(timers.show);
+      }
+      if (timers.hide) {
+        clearTimeout(timers.hide);
+      }
+    };
+  }, [isOpen, wasGreetingDismissed]);
+
+  // Hide greeting when chat opens
+  useEffect(() => {
+    if (isOpen && showGreetingBubble) {
+      dismissGreeting();
+    }
+  }, [isOpen, showGreetingBubble, dismissGreeting]);
 
   // Find the latest assistant message ID for typing animation
   const latestAssistantMessageId = useMemo(() => {
@@ -564,6 +730,11 @@ const ChatWidget: React.FC = memo(() => {
 
   return (
     <>
+      {/* Greeting Bubble - shows after delay for first-time visitors */}
+      {showGreetingBubble && !isOpen && !isFullscreen && (
+        <GreetingBubble onDismiss={dismissGreeting} onClick={handleGreetingClick} />
+      )}
+
       {/* Floating Toggle Button - hidden when fullscreen on mobile */}
       {!isFullscreen && (
         <button

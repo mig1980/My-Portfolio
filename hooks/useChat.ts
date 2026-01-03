@@ -22,6 +22,8 @@ export interface UseChatReturn {
   error: string | null;
   /** Whether rate limited (429 response) */
   isRateLimited: boolean;
+  /** Seconds remaining until rate limit expires (0 when not limited) */
+  rateLimitSecondsRemaining: number;
   /** Follow-up question suggestions from AI */
   suggestions: string[];
   /** Failed message content for retry */
@@ -203,6 +205,7 @@ export function useChat({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, setIsRateLimited] = useState<boolean>(false);
+  const [rateLimitSecondsRemaining, setRateLimitSecondsRemaining] = useState<number>(0);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [failedMessage, setFailedMessage] = useState<string | null>(null);
 
@@ -213,8 +216,9 @@ export function useChat({
   const messagesRef = useRef<ChatMessage[]>([]);
   messagesRef.current = messages;
 
-  // Track rate limit timeout
+  // Track rate limit timeout and countdown interval
   const rateLimitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rateLimitIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Load messages from localStorage on mount
   useEffect(() => {
@@ -236,11 +240,14 @@ export function useChat({
     saveToStorage(storageKey, messages);
   }, [messages, storageKey]);
 
-  // Cleanup rate limit timeout on unmount
+  // Cleanup rate limit timeout and interval on unmount
   useEffect(() => {
     return () => {
       if (rateLimitTimeoutRef.current) {
         clearTimeout(rateLimitTimeoutRef.current);
+      }
+      if (rateLimitIntervalRef.current) {
+        clearInterval(rateLimitIntervalRef.current);
       }
     };
   }, []);
@@ -290,16 +297,42 @@ export function useChat({
 
         clearTimeout(timeoutId);
 
-        // Handle rate limiting with specific UX
+        // Handle rate limiting with specific UX and countdown timer
         if (response.status === 429) {
           setIsRateLimited(true);
-          setError('Too many requests. Please wait 30 seconds before trying again.');
           setFailedMessage(trimmedContent);
+
+          // Start countdown from 30 seconds
+          const countdownSeconds = Math.ceil(RATE_LIMIT_COOLDOWN_MS / 1000);
+          setRateLimitSecondsRemaining(countdownSeconds);
+          setError(`Too many requests. Please wait ${countdownSeconds} seconds.`);
+
+          // Update countdown every second
+          rateLimitIntervalRef.current = setInterval(() => {
+            setRateLimitSecondsRemaining((prev) => {
+              const newValue = prev - 1;
+              if (newValue <= 0) {
+                // Clear interval when countdown reaches 0
+                if (rateLimitIntervalRef.current) {
+                  clearInterval(rateLimitIntervalRef.current);
+                  rateLimitIntervalRef.current = null;
+                }
+                return 0;
+              }
+              setError(`Too many requests. Please wait ${newValue} seconds.`);
+              return newValue;
+            });
+          }, 1000);
 
           // Auto-clear rate limit after cooldown
           rateLimitTimeoutRef.current = setTimeout(() => {
             setIsRateLimited(false);
             setError(null);
+            setRateLimitSecondsRemaining(0);
+            if (rateLimitIntervalRef.current) {
+              clearInterval(rateLimitIntervalRef.current);
+              rateLimitIntervalRef.current = null;
+            }
           }, RATE_LIMIT_COOLDOWN_MS);
 
           return;
@@ -391,14 +424,19 @@ export function useChat({
     setMessages([]);
     setError(null);
     setIsRateLimited(false);
+    setRateLimitSecondsRemaining(0);
     setSuggestions([]);
     setFailedMessage(null);
     clearStorage(storageKey);
 
-    // Clear any pending rate limit timeout
+    // Clear any pending rate limit timeout and countdown interval
     if (rateLimitTimeoutRef.current) {
       clearTimeout(rateLimitTimeoutRef.current);
       rateLimitTimeoutRef.current = null;
+    }
+    if (rateLimitIntervalRef.current) {
+      clearInterval(rateLimitIntervalRef.current);
+      rateLimitIntervalRef.current = null;
     }
   }, [storageKey]);
 
@@ -407,6 +445,7 @@ export function useChat({
     isLoading,
     error,
     isRateLimited,
+    rateLimitSecondsRemaining,
     suggestions,
     failedMessage,
     sendMessage,

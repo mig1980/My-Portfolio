@@ -299,6 +299,46 @@ const OfflineIndicator = memo<OfflineIndicatorProps>(({ isFullscreen = false }) 
 
 OfflineIndicator.displayName = 'OfflineIndicator';
 
+/** Props for RateLimitIndicator component */
+interface RateLimitIndicatorProps {
+  secondsRemaining: number;
+  isFullscreen?: boolean;
+}
+
+/**
+ * Rate limit indicator with countdown.
+ * Shows progress bar and time remaining.
+ */
+const RateLimitIndicator = memo<RateLimitIndicatorProps>(
+  ({ secondsRemaining, isFullscreen = false }) => {
+    // Calculate progress percentage (30 seconds max)
+    const maxSeconds = 30;
+    const progress = ((maxSeconds - secondsRemaining) / maxSeconds) * 100;
+
+    return (
+      <div
+        className={`px-3 py-2 bg-amber-900/30 border-t border-amber-700/50 
+                   ${isFullscreen ? 'py-3' : ''}`}
+        role="status"
+        aria-live="polite"
+      >
+        <div className="flex items-center justify-between text-xs text-amber-400 mb-1.5">
+          <span>Rate limit - please wait</span>
+          <span className="font-mono">{secondsRemaining}s</span>
+        </div>
+        <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-amber-500 transition-all duration-1000 ease-linear"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+    );
+  }
+);
+
+RateLimitIndicator.displayName = 'RateLimitIndicator';
+
 /** Props for FollowUpSuggestions component */
 interface FollowUpSuggestionsProps {
   suggestions: string[];
@@ -387,6 +427,7 @@ const ChatWidget: React.FC = memo(() => {
     isLoading,
     error,
     isRateLimited,
+    rateLimitSecondsRemaining,
     suggestions,
     failedMessage,
     sendMessage,
@@ -697,6 +738,14 @@ const ChatWidget: React.FC = memo(() => {
 
           {/* Offline Indicator */}
           {!isOnline && <OfflineIndicator isFullscreen={isFullscreen} />}
+
+          {/* Rate Limit Indicator with countdown */}
+          {isOnline && isRateLimited && rateLimitSecondsRemaining > 0 && (
+            <RateLimitIndicator
+              secondsRemaining={rateLimitSecondsRemaining}
+              isFullscreen={isFullscreen}
+            />
+          )}
 
           {/* AI Disclaimer */}
           <AiDisclaimer />

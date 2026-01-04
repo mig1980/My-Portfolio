@@ -67,3 +67,16 @@ AboutMe/
 ## Deployment
 
 Deployed on Cloudflare Pages with security headers configured in `public/_headers`.
+
+## SEO / Indexing
+
+- Verify these return HTTP 200 in production:
+	- `https://gavrilov.ai/robots.txt`
+	- `https://gavrilov.ai/sitemap.xml`
+- Google Search Console:
+	- Add property for `https://gavrilov.ai/` (or a Domain property if you prefer DNS verification)
+	- Submit sitemap: `https://gavrilov.ai/sitemap.xml`
+	- Use URL Inspection to request indexing for:
+		- `https://gavrilov.ai/`
+		- `https://gavrilov.ai/legal`
+- Validate SPA deep links load directly (no 404): `/legal` (Cloudflare Pages routing is configured via `public/_redirects`).

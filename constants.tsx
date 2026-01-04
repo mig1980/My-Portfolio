@@ -187,21 +187,18 @@ export const EDUCATION: EducationItem[] = [
     institution: 'New York University Tandon School of Engineering',
     type: 'Master',
     logo: getLogoUrl('nyu.edu'),
-    url: '', // TODO: Add diploma URL
   },
   {
     degree: "Master's degree, Information Systems Engineering",
     institution: 'Bauman Moscow State Technical University',
     type: 'Master',
     logo: getLogoUrl('bmstu.ru'),
-    url: '', // TODO: Add diploma URL
   },
   {
     degree: "Bachelor's degree, Computer Engineering",
     institution: 'Bauman Moscow State Technical University',
     type: 'Bachelor',
     logo: getLogoUrl('bmstu.ru'),
-    url: '', // TODO: Add diploma URL
   },
 ];
 
@@ -214,31 +211,26 @@ export const CERTIFICATIONS: Certification[] = [
     name: 'Microsoft Certified: Azure Solutions Architect Expert',
     issuer: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
-    url: '', // TODO: Add certificate URL
   },
   {
     name: 'Selling to the C-Suite',
     issuer: 'Wharton Executive Education',
     logo: getLogoUrl('wharton.upenn.edu'),
-    url: '', // TODO: Add certificate URL
   },
   {
     name: 'Business Strategy and Financial Acumen',
     issuer: 'INSEAD Executive Education',
     logo: getLogoUrl('insead.edu'),
-    url: '', // TODO: Add certificate URL
   },
   {
     name: 'Value Negotiation',
     issuer: 'INSEAD Executive Education',
     logo: getLogoUrl('insead.edu'),
-    url: '', // TODO: Add certificate URL
   },
   {
     name: 'AWS Certified Cloud Practitioner',
     issuer: 'Amazon Web Services',
     logo: getLogoUrl('aws.amazon.com'),
-    url: '', // TODO: Add certificate URL
   },
 ];
 

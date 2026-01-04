@@ -80,3 +80,17 @@ Deployed on Cloudflare Pages with security headers configured in `public/_header
 		- `https://gavrilov.ai/`
 		- `https://gavrilov.ai/legal`
 - Validate SPA deep links load directly (no 404): `/legal` (Cloudflare Pages routing is configured via `public/_redirects`).
+
+## Chat Analytics (GA4)
+
+The chat widget emits privacy-safe GA4 events (no raw message text).
+
+- Create a custom dimension for chat session IDs:
+	- GA4 → Admin → Custom definitions → Create custom dimension
+	- Scope: Event
+	- Event parameter: `chat_session_id`
+- To analyze “how many questions per chat session”:
+	- GA4 → Explore → Free form
+	- Filter: Event name = `chat_message_sent`
+	- Rows: your `chat_session_id` custom dimension
+	- Values: Event count

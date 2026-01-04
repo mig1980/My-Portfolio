@@ -7,6 +7,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ChatMessage, ChatApiResponse, ChatHistoryItem } from '../types';
+import { getOrCreateChatSessionId, trackEvent } from '../utils/analytics';
 
 // ============================================================================
 // Types
@@ -280,6 +281,16 @@ export function useChat({
       setIsLoading(true);
       setError(null);
 
+      const chatSessionId = getOrCreateChatSessionId();
+      const requestStartMs = typeof performance !== 'undefined' ? performance.now() : Date.now();
+
+      trackEvent('chat_message_sent', {
+        chat_session_id: chatSessionId,
+        message_length: trimmedContent.length,
+        history_length: currentHistory.length,
+        is_online: typeof navigator !== 'undefined' ? navigator.onLine : undefined,
+      });
+
       // Setup abort controller for timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -299,6 +310,11 @@ export function useChat({
 
         // Handle rate limiting with specific UX and countdown timer
         if (response.status === 429) {
+          trackEvent('chat_message_rate_limited', {
+            chat_session_id: chatSessionId,
+            message_length: trimmedContent.length,
+          });
+
           setIsRateLimited(true);
           setFailedMessage(trimmedContent);
 
@@ -340,6 +356,10 @@ export function useChat({
         const data = (await response.json()) as ChatApiResponse;
 
         if (!response.ok) {
+          trackEvent('chat_message_failed', {
+            chat_session_id: chatSessionId,
+            http_status: response.status,
+          });
           throw new Error(data.error ?? `Request failed: ${response.status}`);
         }
 
@@ -348,8 +368,20 @@ export function useChat({
         }
 
         if (!('reply' in data) || !data.reply) {
+          trackEvent('chat_message_failed', {
+            chat_session_id: chatSessionId,
+            error_type: 'empty_reply',
+          });
           throw new Error('Empty response from AI service');
         }
+
+        const requestEndMs = typeof performance !== 'undefined' ? performance.now() : Date.now();
+        const responseTimeMs = Math.max(0, Math.round(requestEndMs - requestStartMs));
+        trackEvent('chat_response_received', {
+          chat_session_id: chatSessionId,
+          response_time_ms: responseTimeMs,
+          reply_length: data.reply.length,
+        });
 
         // Add assistant response
         const assistantMessage: ChatMessage = {
@@ -368,16 +400,25 @@ export function useChat({
       } catch (err) {
         // Handle specific error types
         let errorMessage: string;
+        let errorType: string | undefined;
 
         if (err instanceof Error) {
           if (err.name === 'AbortError') {
             errorMessage = 'Request timed out. Please try again.';
+            errorType = 'timeout';
           } else {
             errorMessage = err.message;
+            errorType = 'error';
           }
         } else {
           errorMessage = 'An unexpected error occurred';
+          errorType = 'unknown';
         }
+
+        trackEvent('chat_message_failed', {
+          chat_session_id: chatSessionId,
+          error_type: errorType,
+        });
 
         setError(errorMessage);
         setFailedMessage(trimmedContent);

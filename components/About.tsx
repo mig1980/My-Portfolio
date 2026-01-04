@@ -80,7 +80,7 @@ const About: React.FC = memo(() => {
           </h2>
           <div className="text-slate-300 space-y-4">
             <p className="text-slate-400 text-sm">
-              Based in {PERSONAL_INFO.location} • Father to a daughter
+              Based in {PERSONAL_INFO.location}
             </p>
             <p className="text-lg leading-relaxed">
               Colleagues know me as someone who listens first, gives honest advice, and turns

@@ -43,7 +43,8 @@ const Hero: React.FC = memo(() => {
 
           <p className="text-xl text-slate-300 max-w-lg leading-relaxed">
             Strategic Account Director at Microsoft, leading AI transformation for Fortune 500
-            accounts—turning executive vision into multi-year partnerships and measurable adoption.
+            accounts—turning executive vision into multi-year partnerships, measurable adoption, and
+            governance-ready deployments.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">

@@ -60,7 +60,9 @@ export const EXPERIENCE: JobRole[] = [
     period: 'Jan 2017 - Present',
     description: [
       'Lead AI transformation for a strategic pharmaceutical customer, aligning Microsoft’s advanced technologies with client priorities.',
+      'Lead a cross-functional virtual team across Azure, Microsoft 365 (including Copilot), and Security to deliver targeted business outcomes.',
       'Navigate complex, multi-stakeholder negotiations with C-suite executives to unlock transformational AI adoption.',
+      'Challenge legacy assumptions with data-driven, security-aware recommendations—accelerating adoption without increasing risk.',
       'Architect novel deal structures involving product partnerships and multi-year revenue commitments totaling $250M+ TCV.',
       'Build and sustain trusted executive relationships across global accounts, unlocking new opportunities.',
     ],

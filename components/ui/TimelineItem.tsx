@@ -3,7 +3,7 @@
  * @description Displays a single job entry with expand/collapse functionality.
  */
 
-import React, { memo } from 'react';
+import React, { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { JobRole } from '../../types';
 import { Calendar, ChevronDown } from 'lucide-react';
 import { getInitials } from '../../utils/string';
@@ -36,10 +36,42 @@ interface TimelineItemProps {
  */
 const TimelineItem: React.FC<TimelineItemProps> = memo(
   ({ job, isExpanded, isCurrent, onToggle }) => {
+    const descriptionRef = useRef<HTMLDivElement>(null);
+    const [descriptionMaxHeight, setDescriptionMaxHeight] = useState<string>('0px');
+
     // Extract year from period (e.g., "Jan 2017 - Present" → "2017")
     // For current role, show "Now" instead of start year
     const startYear = job.period.match(/\d{4}/)?.[0] || '';
     const displayYear = isCurrent ? 'Now' : startYear;
+
+    const updateDescriptionHeight = (): void => {
+      const el = descriptionRef.current;
+      if (!el) return;
+
+      if (!isExpanded) {
+        setDescriptionMaxHeight('0px');
+        return;
+      }
+
+      // scrollHeight is the full height of content, regardless of current max-height.
+      setDescriptionMaxHeight(`${el.scrollHeight}px`);
+    };
+
+    // Measure after DOM updates so iOS gets the correct scrollHeight.
+    useLayoutEffect(() => {
+      updateDescriptionHeight();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isExpanded, job.description.length]);
+
+    // Keep height correct on viewport changes (mobile address bar, orientation).
+    useEffect(() => {
+      if (!isExpanded) return;
+
+      const handleResize = (): void => updateDescriptionHeight();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isExpanded]);
 
     return (
       <div className="relative flex gap-3 md:gap-6 group">
@@ -138,24 +170,21 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
 
             {/* Expandable description */}
             <div
+              ref={descriptionRef}
+              style={{ maxHeight: descriptionMaxHeight }}
               className={`
-                grid min-h-0 transition-all duration-300 ease-in-out
-                ${isExpanded ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0'}
+                overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out
+                ${isExpanded ? 'opacity-100 mt-4' : 'opacity-0'}
               `}
             >
-              <div className="overflow-hidden min-h-0">
-                <ul className="space-y-2 border-t border-slate-700/50 pt-4">
-                  {job.description.map((desc, i) => (
-                    <li
-                      key={i}
-                      className="text-slate-400 text-sm leading-relaxed flex items-start gap-2"
-                    >
-                      <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
-                      {desc}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <ul className="space-y-2 border-t border-slate-700/50 pt-4">
+                {job.description.map((desc, i) => (
+                  <li key={i} className="text-slate-400 text-sm leading-relaxed flex items-start gap-2">
+                    <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
+                    {desc}
+                  </li>
+                ))}
+              </ul>
             </div>
           </button>
         </div>

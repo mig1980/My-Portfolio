@@ -6,7 +6,7 @@
 import React, { memo } from 'react';
 import Section from './ui/Section';
 import { THOUGHT_LEADERSHIP } from '../constants';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Github } from 'lucide-react';
 
 /**
  * Thought Leadership section component for showcasing publications.
@@ -26,6 +26,14 @@ const ThoughtLeadership: React.FC = memo(() => {
     <Section id="thoughts" darker>
       <div className="text-center max-w-3xl mx-auto mb-8">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">What I'm Building</h2>
+        <p className="text-slate-400 leading-relaxed">
+          Want a personal site like this? You’re welcome to fork it on GitHub and make it your own.
+          Swap the content, keep the craftsmanship, and ship something you’re proud to share.
+        </p>
+        <div className="mt-4 inline-flex items-center gap-2 text-slate-400">
+          <Github className="w-4 h-4" aria-hidden="true" focusable="false" />
+          <span className="text-sm">Fork it on GitHub</span>
+        </div>
       </div>
 
       {/* QuantumInvestor Card */}

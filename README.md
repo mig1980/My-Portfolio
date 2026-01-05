@@ -1,4 +1,4 @@
-# AboutMe Portfolio
+# My-Portfolio
 
 A modern, performant portfolio website built with React 19, TypeScript, and Tailwind CSS v4.
 
@@ -34,7 +34,7 @@ npm run test:run
 ## Project Structure
 
 ```
-AboutMe/
+My-Portfolio/
 ├── components/          # React components
 │   ├── ui/             # Reusable primitives (Card, Section, PageWrapper, etc.)
 │   └── [Feature].tsx   # Feature components

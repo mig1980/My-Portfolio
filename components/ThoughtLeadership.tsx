@@ -23,6 +23,8 @@ const ThoughtLeadership: React.FC = memo(() => {
     item.link?.includes('quantuminvestor.net')
   );
 
+  const portfolioRepoUrl = 'https://github.com/mig1980/My-Portfolio';
+
   return (
     <Section id="thoughts" darker>
       <div className="text-center max-w-3xl mx-auto mb-8">
@@ -59,20 +61,6 @@ const ThoughtLeadership: React.FC = memo(() => {
               <p className="text-sm text-slate-400 mt-1">
                 Personal Project • Live AI Investment Experiment
               </p>
-              <div className="mt-3 inline-flex flex-col gap-1 items-start">
-                <div className="inline-flex items-center gap-2 text-slate-300">
-                  <img
-                    src={getLogoUrl('github.com', { size: 16 })}
-                    alt="GitHub logo"
-                    loading="lazy"
-                    className="w-4 h-4 rounded-sm object-contain"
-                  />
-                  <span className="text-sm font-semibold">Fork this site on GitHub</span>
-                </div>
-                <p className="text-sm text-slate-400">
-                  Open source • Fork-friendly portfolio starter
-                </p>
-              </div>
             </div>
           </div>
 
@@ -108,6 +96,63 @@ const ThoughtLeadership: React.FC = memo(() => {
 
           {/* Disclaimer */}
           <p className="text-xs text-slate-500 italic">Not financial advice.</p>
+        </div>
+
+        {/* GitHub Fork Card */}
+        <div className="mt-6 p-6 rounded-2xl border border-slate-800 bg-slate-800/30 transition-colors duration-300 hover:border-slate-700">
+          <div className="flex items-center gap-5 mb-6">
+            <a
+              href={portfolioRepoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0"
+            >
+              <img
+                src={getLogoUrl('github.com', { size: 80 })}
+                alt="GitHub logo"
+                loading="lazy"
+                className="w-20 h-20 rounded-xl object-contain hover:opacity-80 transition-opacity"
+              />
+            </a>
+            <div className="flex flex-col justify-center">
+              <a
+                href={portfolioRepoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xl font-bold text-white hover:text-primary-400 transition-colors"
+              >
+                Fork this portfolio starter
+              </a>
+              <p className="text-sm text-slate-400 mt-1">Open source • Make it yours in minutes</p>
+            </div>
+          </div>
+
+          <p className="text-slate-300 mb-8 leading-relaxed">
+            Want a similar “About Me” website that feels polished and fast? This portfolio is
+            designed to be fork-friendly: clone it, swap in your name, photos, and links, and ship
+            your own version. You’ll get a modern React + TypeScript + Tailwind stack with sensible
+            structure, performance-minded defaults, and tests already in place.
+          </p>
+
+          <div className="flex flex-wrap gap-4">
+            <a
+              href={portfolioRepoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-lg font-semibold transition-colors"
+            >
+              Fork on GitHub
+            </a>
+            <a
+              href={`${portfolioRepoUrl}#readme`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white rounded-lg font-medium transition-colors"
+            >
+              Setup notes
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
         </div>
       </div>
     </Section>

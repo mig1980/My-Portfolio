@@ -1,4 +1,4 @@
-# AboutMe Portfolio - Contributing Guide
+# My-Portfolio - Contributing Guide
 
 This is a personal portfolio project. I’m not actively looking for outside contributions, but you’re absolutely welcome to fork it and adapt it for your own use.
 
@@ -19,8 +19,8 @@ This is a personal portfolio project. I’m not actively looking for outside con
 
 ```bash
 # Clone your fork
-git clone https://github.com/<your-username>/AboutMe.git
-cd AboutMe
+git clone https://github.com/<your-username>/My-Portfolio.git
+cd My-Portfolio
 
 # Install dependencies
 npm install
@@ -75,7 +75,7 @@ The best way to suggest changes is to open an issue with:
 ### Project Structure
 
 ```
-AboutMe/
+My-Portfolio/
 ├── components/          # React components
 │   ├── ui/             # Reusable UI primitives (Card, Section, PageWrapper, etc.)
 │   └── [Feature].tsx   # Feature components (About, Hero, Timeline, etc.)

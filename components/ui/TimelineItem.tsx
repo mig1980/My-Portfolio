@@ -3,7 +3,7 @@
  * @description Displays a single job entry with expand/collapse functionality.
  */
 
-import React, { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { memo } from 'react';
 import type { JobRole } from '../../types';
 import { Calendar, ChevronDown } from 'lucide-react';
 import { getInitials } from '../../utils/string';
@@ -36,56 +36,14 @@ interface TimelineItemProps {
  */
 const TimelineItem: React.FC<TimelineItemProps> = memo(
   ({ job, isExpanded, isCurrent, onToggle }) => {
-    const descriptionRef = useRef<HTMLDivElement>(null);
-    const descriptionContentRef = useRef<HTMLDivElement>(null);
-    const [descriptionMaxHeight, setDescriptionMaxHeight] = useState<string>('0px');
-
     // Extract year from period (e.g., "Jan 2017 - Present" → "2017")
     // For current role, show "Now" instead of start year
     const startYear = job.period.match(/\d{4}/)?.[0] || '';
     const displayYear = isCurrent ? 'Now' : startYear;
 
-    const updateDescriptionHeight = (): void => {
-      const container = descriptionRef.current;
-      const content = descriptionContentRef.current;
-      if (!container || !content) return;
-
-      if (!isExpanded) {
-        setDescriptionMaxHeight('0px');
-        return;
-      }
-
-      // Measure the inner content (unconstrained) for iOS WebKit reliability.
-      setDescriptionMaxHeight(`${content.scrollHeight}px`);
-    };
-
-    // Measure after DOM updates so iOS gets the correct scrollHeight.
-    useLayoutEffect(() => {
-      updateDescriptionHeight();
-
-      // WebKit can report 0/partial heights on the same frame; re-measure next frame.
-      let rafId: number | null = null;
-      if (isExpanded) {
-        rafId = window.requestAnimationFrame(() => updateDescriptionHeight());
-      }
-
-      return () => {
-        if (rafId !== null) {
-          window.cancelAnimationFrame(rafId);
-        }
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isExpanded, job.description.length]);
-
-    // Keep height correct on viewport changes (mobile address bar, orientation).
-    useEffect(() => {
-      if (!isExpanded) return;
-
-      const handleResize = (): void => updateDescriptionHeight();
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isExpanded]);
+    // iOS WebKit can be finicky with measuring/animating content height.
+    // Using a generous max-height keeps the layout correct while still animating.
+    const expandedMaxHeight = '1000px';
 
     return (
       <div className="relative flex gap-3 md:gap-6 group">
@@ -184,26 +142,20 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
 
             {/* Expandable description */}
             <div
-              ref={descriptionRef}
-              style={{ maxHeight: descriptionMaxHeight }}
+              style={{ maxHeight: isExpanded ? expandedMaxHeight : '0px' }}
               className={`
                 overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out
                 ${isExpanded ? 'opacity-100 mt-4' : 'opacity-0'}
               `}
             >
-              <div ref={descriptionContentRef} className="min-h-0">
-                <ul className="space-y-2 border-t border-slate-700/50 pt-4">
-                  {job.description.map((desc, i) => (
-                    <li
-                      key={i}
-                      className="text-slate-400 text-sm leading-relaxed flex items-start gap-2"
-                    >
-                      <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
-                      {desc}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <ul className="space-y-2 border-t border-slate-700/50 pt-4">
+                {job.description.map((desc, i) => (
+                  <li key={i} className="text-slate-400 text-sm leading-relaxed flex items-start gap-2">
+                    <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
+                    {desc}
+                  </li>
+                ))}
+              </ul>
             </div>
           </button>
         </div>

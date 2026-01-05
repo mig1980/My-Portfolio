@@ -26,11 +26,7 @@ import {
   Linkedin,
   Mail,
   BookOpen,
-  Waves,
   Dumbbell,
-  Mountain,
-  Flag,
-  Snowflake,
   LineChart,
   Handshake,
 } from 'lucide-react';
@@ -287,11 +283,7 @@ export const AWARDS: AwardItem[] = [
 export const INTERESTS: InterestItem[] = [
   { label: 'Continuous Learning', icon: <BookOpen className="w-4 h-4" /> },
   { label: 'Investing', icon: <LineChart className="w-4 h-4" /> },
-  { label: 'Swimming', icon: <Waves className="w-4 h-4" /> },
-  { label: 'Boxing', icon: <Dumbbell className="w-4 h-4" /> },
-  { label: 'Snowboarding', icon: <Snowflake className="w-4 h-4" /> },
-  { label: 'Horseback Riding', icon: <Mountain className="w-4 h-4" /> },
-  { label: 'Golfing', icon: <Flag className="w-4 h-4" /> },
+  { label: 'Active Lifestyle', icon: <Dumbbell className="w-4 h-4" /> },
 ];
 
 /**

@@ -1,7 +1,3 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
-
 # AboutMe Portfolio
 
 A modern, performant portfolio website built with React 19, TypeScript, and Tailwind CSS v4.
@@ -107,3 +103,8 @@ The chat widget emits privacy-safe GA4 events (no raw message text).
 	- Filter: Event name = `chat_message_sent`
 	- Rows: your `chat_session_id` custom dimension
 	- Values: Event count
+
+## License
+
+- Code is licensed under the MIT License (see `LICENSE`).
+- Personal content and assets are not covered by the MIT license, including name/biographical content, images, and PDFs under `public/CV/` and `public/Awards/`.

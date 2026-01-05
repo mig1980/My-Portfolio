@@ -38,7 +38,7 @@ const Expertise: React.FC = memo(() => {
               <h3 className="text-xl font-bold text-slate-100">{group.category}</h3>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-3">
               {group.skills.map((skill) => (
                 <div key={skill} className="flex items-start gap-2 text-sm text-slate-300">
                   <CheckCircle2 className="w-4 h-4 text-primary-500 mt-0.5 shrink-0" />

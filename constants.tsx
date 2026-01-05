@@ -319,14 +319,14 @@ export const INTERESTS: InterestItem[] = [
     label: 'Creativity & Impact',
     icon: <Lightbulb className="w-5 h-5" />,
     description:
-      'I build in public to create value for others. Through my blog, side projects, and mentoring, I turn ideas into products, stories, and tools that help people think differently about technology and investing.',
+      'I connect dots others miss. Whether writing about technology and investing, mentoring rising leaders, or solving problems no one asked me to solve—I turn complexity into clarity and ideas into outcomes.',
   },
   {
     id: 'relationships',
-    label: 'Relationships & Inner Game',
+    label: 'Relationships & Foundation',
     icon: <Users className="w-5 h-5" />,
     description:
-      'I invest in the people and practices that keep me grounded. Time with family, intentional reading, and simple mental fitness habits help me stay centered, resilient, and aligned with what actually matters over the long term.',
+      'I invest in the people who matter most. Family comes first. Beyond that, I read voraciously, stay curious, and keep a long-term perspective—the same approach I bring to partnerships that outlast any single deal.',
   },
 ];
 

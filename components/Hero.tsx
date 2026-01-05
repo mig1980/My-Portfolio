@@ -47,7 +47,7 @@ const Hero: React.FC = memo(() => {
             governance-ready deployments.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-4">
             <a
               href="#contact"
               className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white rounded-lg font-semibold transition-all shadow-lg shadow-primary-900/20 focus-ring"

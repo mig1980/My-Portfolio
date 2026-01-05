@@ -139,21 +139,23 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
             {/* Expandable description */}
             <div
               className={`
-                overflow-hidden transition-all duration-300 ease-in-out
-                ${isExpanded ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'}
+                grid transition-all duration-300 ease-in-out
+                ${isExpanded ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0'}
               `}
             >
-              <ul className="space-y-2 border-t border-slate-700/50 pt-4">
-                {job.description.map((desc, i) => (
-                  <li
-                    key={i}
-                    className="text-slate-400 text-sm leading-relaxed flex items-start gap-2"
-                  >
-                    <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
-                    {desc}
-                  </li>
-                ))}
-              </ul>
+              <div className="overflow-hidden">
+                <ul className="space-y-2 border-t border-slate-700/50 pt-4">
+                  {job.description.map((desc, i) => (
+                    <li
+                      key={i}
+                      className="text-slate-400 text-sm leading-relaxed flex items-start gap-2"
+                    >
+                      <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
+                      {desc}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </button>
         </div>

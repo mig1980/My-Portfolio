@@ -152,13 +152,6 @@ const Education: React.FC = memo(() => {
             })}
           </div>
         </div>
-
-        {/* Languages */}
-        <div className="mt-12 pt-8 border-t border-slate-800/50">
-          <p className="text-slate-400 text-sm">
-            <span className="text-slate-500">Languages:</span> English • Russian
-          </p>
-        </div>
       </div>
     </Section>
   );

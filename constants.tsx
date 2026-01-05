@@ -84,7 +84,7 @@ export const EXPERIENCE: JobRole[] = [
     logo: getLogoUrl('microsoft.com'),
     period: 'July 2008 - Mar 2011',
     description: [
-      'Advised senior executives on AI-driven technology strategies aligning with business goals.',
+      'Advised senior executives on technology transformation strategies aligning with business goals.',
       'Drove adoption strategies, ensuring sustained momentum and value realization.',
       'Executed tailored sales strategies, consistently exceeding targets and securing contract renewals.',
     ],

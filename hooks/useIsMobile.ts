@@ -37,8 +37,11 @@ const MOBILE_BREAKPOINT = 640;
  * ```
  */
 export function useIsMobile(breakpoint: number = MOBILE_BREAKPOINT): boolean {
-  // Initialize to false for SSR, will update on mount
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  // Initialize with actual value if available (avoids flash on mobile)
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < breakpoint;
+  });
 
   useEffect(() => {
     // Check if window is available (client-side)
@@ -46,9 +49,6 @@ export function useIsMobile(breakpoint: number = MOBILE_BREAKPOINT): boolean {
 
     // Create media query
     const mediaQuery = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
-
-    // Set initial value
-    setIsMobile(mediaQuery.matches);
 
     // Handler for media query changes
     const handleChange = (event: MediaQueryListEvent): void => {

@@ -732,7 +732,7 @@ const ChatWidget: React.FC = memo(() => {
           onClick={toggleChat}
           className="fixed bottom-6 left-6 z-50 w-14 h-14 bg-primary-600 hover:bg-primary-700 
                      text-white rounded-full shadow-lg flex items-center justify-center 
-                     transition-all duration-300 hover:scale-110 focus-ring
+                     transition-all duration-150 hover:scale-110 focus-ring
                      motion-reduce:transition-none motion-reduce:hover:transform-none"
           aria-label={isOpen ? 'Close chat' : 'Open AI assistant'}
           aria-expanded={isOpen}

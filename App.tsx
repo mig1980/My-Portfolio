@@ -21,6 +21,7 @@ import ChatWidget from './components/ChatWidget';
 import Legal from './components/Legal';
 import NotFound from './components/NotFound';
 import PageWrapper from './components/ui/PageWrapper';
+import ErrorBoundary from './components/ErrorBoundary';
 
 /**
  * Root application component.
@@ -73,7 +74,10 @@ const App: React.FC = () => {
         <Contact />
       </PageWrapper>
       <BackToTop />
-      <ChatWidget />
+      {/* ChatWidget wrapped in its own ErrorBoundary to prevent chat errors from crashing the portfolio */}
+      <ErrorBoundary>
+        <ChatWidget />
+      </ErrorBoundary>
     </>
   );
 };

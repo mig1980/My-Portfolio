@@ -63,7 +63,9 @@ const ThoughtLeadership: React.FC = memo(() => {
                   <Github className="w-4 h-4" aria-hidden="true" focusable="false" />
                   <span className="text-sm font-semibold">Fork this site on GitHub</span>
                 </div>
-                <p className="text-sm text-slate-400">Open source • Fork-friendly portfolio starter</p>
+                <p className="text-sm text-slate-400">
+                  Open source • Fork-friendly portfolio starter
+                </p>
               </div>
             </div>
           </div>

@@ -509,8 +509,6 @@ const ChatWidget: React.FC = memo(() => {
   // Lock body scroll when fullscreen on mobile
   useBodyScrollLock(isFullscreen);
 
-
-
   // ============================================================================
   // Greeting Bubble Logic
   // ============================================================================

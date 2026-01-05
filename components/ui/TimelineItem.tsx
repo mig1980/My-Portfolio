@@ -69,7 +69,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
         </div>
 
         {/* Content card */}
-        <div className="flex-1 pb-4 md:pb-8">
+        <div className="flex-1 pb-2 md:pb-6">
           <button
             onClick={onToggle}
             className={`

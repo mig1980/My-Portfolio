@@ -4,6 +4,7 @@
  */
 
 import React, { memo, type ReactNode } from 'react';
+import { useInView } from '../../hooks/useInView';
 
 /**
  * Props for the Section component.
@@ -17,12 +18,15 @@ interface SectionProps {
   children: ReactNode;
   /** Whether to apply a darker background variant */
   darker?: boolean;
+  /** Whether to animate on scroll (default: true) */
+  animate?: boolean;
 }
 
 /**
  * A reusable page section wrapper component.
  * Provides consistent vertical padding, horizontal margins, and
  * optional darker background for visual separation between sections.
+ * Includes subtle fade-in animation when scrolling into view.
  *
  * @param props - Component props
  * @returns A styled section container with centered content
@@ -35,16 +39,25 @@ interface SectionProps {
  * </Section>
  * ```
  */
-const Section: React.FC<SectionProps> = memo(({ id, className = '', children, darker = false }) => {
-  return (
-    <section
-      id={id}
-      className={`py-20 md:py-32 px-6 md:px-12 lg:px-24 transition-colors duration-500 ${darker ? 'bg-slate-900/50' : 'bg-transparent'} ${className}`}
-    >
-      <div className="max-w-6xl mx-auto">{children}</div>
-    </section>
-  );
-});
+const Section: React.FC<SectionProps> = memo(
+  ({ id, className = '', children, darker = false, animate = true }) => {
+    const [ref, isVisible] = useInView();
+
+    return (
+      <section
+        ref={ref as React.RefObject<HTMLElement>}
+        id={id}
+        className={`py-20 md:py-32 px-6 md:px-12 lg:px-24 transition-colors duration-500 
+                   ${darker ? 'bg-slate-900/50' : 'bg-transparent'} 
+                   ${animate ? 'transition-all duration-700 ease-out' : ''}
+                   ${animate && !isVisible ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'}
+                   ${className}`}
+      >
+        <div className="max-w-6xl mx-auto">{children}</div>
+      </section>
+    );
+  }
+);
 
 Section.displayName = 'Section';
 

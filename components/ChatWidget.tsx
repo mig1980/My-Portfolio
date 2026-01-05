@@ -860,14 +860,16 @@ const ChatWidget: React.FC = memo(() => {
             )}
 
             {/* Message List */}
-            {messages.map((message) => (
-              <MessageBubble
-                key={message.id}
-                message={message}
-                isLatestAssistant={message.id === latestAssistantMessageId && isTypingAnimation}
-                onTypingComplete={handleTypingComplete}
-              />
-            ))}
+            <div aria-live="polite" aria-atomic="false" aria-relevant="additions">
+              {messages.map((message) => (
+                <MessageBubble
+                  key={message.id}
+                  message={message}
+                  isLatestAssistant={message.id === latestAssistantMessageId && isTypingAnimation}
+                  onTypingComplete={handleTypingComplete}
+                />
+              ))}
+            </div>
 
             {/* Follow-up Suggestions */}
             {!isLoading && !error && suggestions.length > 0 && messages.length > 0 && (

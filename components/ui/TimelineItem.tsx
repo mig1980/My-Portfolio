@@ -71,6 +71,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
         {/* Content card */}
         <div className="flex-1 pb-1 md:pb-4">
           <button
+            type="button"
             onClick={onToggle}
             className={`
               w-full text-left p-3 md:p-5 rounded-xl border transition-all duration-300
@@ -122,7 +123,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
                 <h3 className="text-lg font-bold text-slate-100 mb-1">{job.title}</h3>
 
                 <div className="flex items-center gap-2 text-slate-500 text-sm">
-                  <Calendar className="w-3 h-3" />
+                  <Calendar className="w-3 h-3" aria-hidden="true" focusable="false" />
                   {job.period}
                 </div>
               </div>
@@ -133,6 +134,8 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
                   w-5 h-5 text-slate-500 transition-transform duration-300 flex-shrink-0 mt-1
                   ${isExpanded ? 'rotate-180' : ''}
                 `}
+                aria-hidden="true"
+                focusable="false"
               />
             </div>
 

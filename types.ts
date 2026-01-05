@@ -99,6 +99,8 @@ export interface SocialLink {
  * Used in the About section to highlight achievements.
  */
 export interface AwardItem {
+  /** Unique identifier for the award (for React key) */
+  id: string;
   /** Name of the award */
   title: string;
   /** Organization that granted the award */

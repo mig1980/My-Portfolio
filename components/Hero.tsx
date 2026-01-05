@@ -19,10 +19,14 @@ import { useScrollPosition } from '../hooks/useScrollPosition';
  * @returns The hero section with intro content and visual elements
  */
 const Hero: React.FC = memo(() => {
+  // 100px threshold: hide scroll indicator after user starts scrolling
   const hasScrolled = useScrollPosition({ threshold: 100 });
 
   return (
-    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <section
+      id="hero"
+      className="relative min-h-screen flex items-center pt-20 overflow-hidden"
+    >
       {/* Abstract Background Elements */}
       <div className="absolute top-0 right-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] lg:w-[800px] lg:h-[800px] bg-primary-900/20 rounded-full blur-[60px] md:blur-[100px] lg:blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[200px] h-[200px] md:w-[400px] md:h-[400px] lg:w-[600px] lg:h-[600px] bg-indigo-900/10 rounded-full blur-[50px] md:blur-[80px] lg:blur-[100px] translate-y-1/3 -translate-x-1/4 pointer-events-none" />

@@ -26,6 +26,7 @@ const navItems = [
  * @returns The navigation header element
  */
 const Navigation: React.FC = memo(() => {
+  // 50px threshold: trigger compact header after minimal scroll
   const isScrolled = useScrollPosition({ threshold: 50 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

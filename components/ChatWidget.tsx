@@ -649,14 +649,14 @@ const ChatWidget: React.FC = memo(() => {
 
   // Focus input when chat opens
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      // Small delay to ensure animation completes
-      const timeoutId = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-      return () => clearTimeout(timeoutId);
-    }
-    return undefined;
+    if (!isOpen || !inputRef.current) return;
+
+    // Small delay to ensure animation completes
+    const timeoutId = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [isOpen]);
 
   // Handle escape key to close

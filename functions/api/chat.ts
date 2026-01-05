@@ -11,7 +11,11 @@
 // Type Definitions
 // ============================================================================
 
-/** Cloudflare Pages Function type */
+/**
+ * Simplified PagesFunction type for this endpoint.
+ * While @cloudflare/workers-types provides PagesFunction, we define a simpler
+ * version here for clarity and to avoid complex generic parameters.
+ */
 type PagesFunction<E = unknown> = (
   context: EventContext<E, string, Record<string, unknown>>
 ) => Response | Promise<Response>;
@@ -200,7 +204,7 @@ LinkedIn is linkedin.com/in/mgavrilov. Email is contact@gavrilov.ai. Resume is a
 Response rules.
 Write in plain text only. Do not use markdown, headings, bullets, or code formatting. Keep responses concise and professional, under 150 words unless more detail is requested. Only answer questions related to Michael's professional background. If asked about something not in the verified facts, say you do not have that information and offer the LinkedIn or email contact option.
 
-Style guidance (not facts).
+Style guidance.
 Use strategic, outcome-oriented phrasing. When helpful, connect technology work to targeted business outcomes, adoption, and governance or security alignment. Avoid internal Microsoft leveling terms such as IC4 or IC6.`;
 
 // ============================================================================

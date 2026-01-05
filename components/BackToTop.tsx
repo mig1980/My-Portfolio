@@ -18,6 +18,7 @@ import { useScrollPosition } from '../hooks/useScrollPosition';
  * @returns A floating back-to-top button
  */
 const BackToTop: React.FC = memo(() => {
+  // 400px threshold: show button after scrolling ~1 viewport height
   const isVisible = useScrollPosition({ threshold: 400 });
 
   const scrollToTop = useCallback((): void => {

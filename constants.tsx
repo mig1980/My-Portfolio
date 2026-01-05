@@ -238,6 +238,7 @@ export const CERTIFICATIONS: Certification[] = [
  */
 export const AWARDS: AwardItem[] = [
   {
+    id: 'platinum-club',
     title: 'Platinum Club',
     issuer: 'Microsoft',
     awardLevel: '2x Recipient',
@@ -247,6 +248,7 @@ export const AWARDS: AwardItem[] = [
     badgeUrl: '/Awards/PlatinumClub.png',
   },
   {
+    id: 'gold-club',
     title: 'Gold Club Award',
     issuer: 'Microsoft',
     awardLevel: '2x Recipient',
@@ -257,6 +259,7 @@ export const AWARDS: AwardItem[] = [
     link: '/Awards/Gold_Club_Award_Letter.pdf',
   },
   {
+    id: 'champion',
     title: 'Champion Award',
     issuer: 'Microsoft',
     awardLevel: 'FY23 Q4',
@@ -267,6 +270,7 @@ export const AWARDS: AwardItem[] = [
     link: '/Awards/Champion_Award_Letter.pdf',
   },
   {
+    id: 'attainment-100',
     title: '100% Attainment',
     issuer: 'Microsoft',
     awardLevel: 'FY25',

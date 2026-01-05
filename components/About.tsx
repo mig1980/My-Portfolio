@@ -104,7 +104,7 @@ const About: React.FC = memo(() => {
             </h3>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
-              {AWARDS.map((award, idx) => {
+              {AWARDS.map((award) => {
                 // Look up pre-computed styles or use default
                 const style = award.color ? AWARD_STYLES[award.color] : DEFAULT_AWARD_STYLE;
                 const { accentColor, borderColor, bgGradient, isShimmer } = style;
@@ -121,7 +121,7 @@ const About: React.FC = memo(() => {
 
                 return (
                   <CardWrapper
-                    key={idx}
+                    key={award.id}
                     {...cardProps}
                     className={`
                       group relative p-5 rounded-xl border border-slate-800 bg-slate-900/50 

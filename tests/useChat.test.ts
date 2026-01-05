@@ -234,7 +234,10 @@ describe('useChat', () => {
 
     it('uses retryAfterMs from response for countdown', async () => {
       mockFetch.mockResolvedValueOnce(
-        createMockResponse({ error: 'Rate limited', retryAfterMs: 10000 }, { ok: false, status: 429 })
+        createMockResponse(
+          { error: 'Rate limited', retryAfterMs: 10000 },
+          { ok: false, status: 429 }
+        )
       );
 
       const { result } = renderHook(() => useChat());
@@ -248,7 +251,10 @@ describe('useChat', () => {
 
     it('clears rate limit after countdown', async () => {
       mockFetch.mockResolvedValueOnce(
-        createMockResponse({ error: 'Rate limited', retryAfterMs: 2000 }, { ok: false, status: 429 })
+        createMockResponse(
+          { error: 'Rate limited', retryAfterMs: 2000 },
+          { ok: false, status: 429 }
+        )
       );
 
       const { result } = renderHook(() => useChat());
@@ -269,7 +275,10 @@ describe('useChat', () => {
 
     it('prevents sending while rate limited', async () => {
       mockFetch.mockResolvedValueOnce(
-        createMockResponse({ error: 'Rate limited', retryAfterMs: 5000 }, { ok: false, status: 429 })
+        createMockResponse(
+          { error: 'Rate limited', retryAfterMs: 5000 },
+          { ok: false, status: 429 }
+        )
       );
 
       const { result } = renderHook(() => useChat());
@@ -291,9 +300,7 @@ describe('useChat', () => {
   describe('retryLastMessage', () => {
     it('retries the failed message', async () => {
       mockFetch
-        .mockResolvedValueOnce(
-          createMockResponse({ error: 'Error' }, { ok: false, status: 500 })
-        )
+        .mockResolvedValueOnce(createMockResponse({ error: 'Error' }, { ok: false, status: 500 }))
         .mockResolvedValueOnce(createMockResponse({ reply: 'Success' }));
 
       const { result } = renderHook(() => useChat());
@@ -364,7 +371,10 @@ describe('useChat', () => {
 
     it('clears rate limit state', async () => {
       mockFetch.mockResolvedValueOnce(
-        createMockResponse({ error: 'Rate limited', retryAfterMs: 30000 }, { ok: false, status: 429 })
+        createMockResponse(
+          { error: 'Rate limited', retryAfterMs: 30000 },
+          { ok: false, status: 429 }
+        )
       );
 
       const { result } = renderHook(() => useChat());

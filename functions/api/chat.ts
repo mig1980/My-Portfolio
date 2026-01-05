@@ -80,10 +80,10 @@ const API_TIMEOUT_MS = 25000;
 
 /** Ordered model fallback chain (first = primary) */
 const MODEL_CHAIN: readonly string[] = [
-  'gemini-2.5-flash',         // Primary: fast, capable
-  'gemini-2.5-flash-lite',    // Fallback: lighter/faster
-  'gemini-3-flash-preview',   // Fallback: newest (preview)
-  'gemma-3-27b-it',           // Fallback: open model
+  'gemini-2.5-flash', // Primary: fast, capable
+  'gemini-2.5-flash-lite', // Fallback: lighter/faster
+  'gemini-3-flash-preview', // Fallback: newest (preview)
+  'gemma-3-27b-it', // Fallback: open model
 ] as const;
 
 /** Allowed production origins */

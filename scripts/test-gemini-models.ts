@@ -22,9 +22,20 @@ interface TestResult {
   responseTime?: number;
 }
 
+interface GeminiResponse {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{ text?: string }>;
+    };
+  }>;
+  error?: {
+    message?: string;
+  };
+}
+
 async function testModel(apiKey: string, modelName: string): Promise<TestResult> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-  
+
   const body = {
     contents: [
       {
@@ -40,7 +51,7 @@ async function testModel(apiKey: string, modelName: string): Promise<TestResult>
   const startTime = Date.now();
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-  
+
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -51,7 +62,7 @@ async function testModel(apiKey: string, modelName: string): Promise<TestResult>
     clearTimeout(timeoutId);
 
     const responseTime = Date.now() - startTime;
-    const data = await response.json();
+    const data = (await response.json()) as GeminiResponse;
 
     if (response.ok) {
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No text';
@@ -83,7 +94,7 @@ async function testModel(apiKey: string, modelName: string): Promise<TestResult>
 
 async function main() {
   const apiKey = process.argv[2];
-  
+
   if (!apiKey) {
     console.error('Usage: npx tsx scripts/test-gemini-models.ts YOUR_GEMINI_API_KEY');
     process.exit(1);
@@ -109,20 +120,20 @@ async function main() {
   console.log('\n' + '='.repeat(80));
   console.log('\nSUMMARY:');
   console.log('-'.repeat(40));
-  
-  const working = results.filter(r => r.status === 'success');
-  const failed = results.filter(r => r.status === 'error');
+
+  const working = results.filter((r) => r.status === 'success');
+  const failed = results.filter((r) => r.status === 'error');
 
   console.log(`\n✅ Working models (${working.length}):`);
-  working.forEach(r => console.log(`   - ${r.model}`));
+  working.forEach((r) => console.log(`   - ${r.model}`));
 
   console.log(`\n❌ Failed models (${failed.length}):`);
-  failed.forEach(r => console.log(`   - ${r.model}: ${r.message?.substring(0, 60)}...`));
+  failed.forEach((r) => console.log(`   - ${r.model}: ${r.message?.substring(0, 60)}...`));
 
   console.log('\n' + '='.repeat(80));
   console.log('\nRecommended MODEL_CHAIN for functions/api/chat.ts:');
   console.log('const MODEL_CHAIN = [');
-  working.forEach(r => console.log(`  '${r.model}',`));
+  working.forEach((r) => console.log(`  '${r.model}',`));
   console.log('];');
 }
 

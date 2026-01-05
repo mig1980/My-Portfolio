@@ -20,20 +20,16 @@ const NotFound: React.FC = memo(() => {
   return (
     <Section id="not-found" className="min-h-screen flex items-center justify-center pt-0">
       <div className="text-center max-w-lg mx-auto px-6">
-        {/* Error Code */}
-        <div className="relative mb-8">
-          <span className="text-[150px] md:text-[200px] font-bold text-slate-800/50 leading-none select-none">
-            404
-          </span>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500/20 to-primary-600/10 border border-primary-500/30 flex items-center justify-center">
-              <MessageCircle className="w-10 h-10 text-primary-400" />
-            </div>
-          </div>
+        {/* Error Icon */}
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500/20 to-primary-600/10 border border-primary-500/30 mb-8">
+          <MessageCircle className="w-10 h-10 text-primary-400" />
         </div>
 
+        {/* Error Code */}
+        <h1 className="text-8xl md:text-9xl font-bold text-slate-800/80 mb-4 select-none">404</h1>
+
         {/* Message */}
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Page Not Found</h1>
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Page Not Found</h2>
         <p className="text-slate-400 mb-8 leading-relaxed">
           The page you&apos;re looking for doesn&apos;t exist or has been moved. Let&apos;s get you
           back on track.

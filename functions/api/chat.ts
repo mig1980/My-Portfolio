@@ -59,6 +59,8 @@ interface ApiSuccessResponse {
 
 interface ApiErrorResponse {
   error: string;
+  retryAfterMs?: number;
+  attemptedModels?: string[];
 }
 
 type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
@@ -75,6 +77,14 @@ const MAX_HISTORY_ITEMS = 10;
 
 /** API request timeout in milliseconds */
 const API_TIMEOUT_MS = 25000;
+
+/** Ordered model fallback chain (first = primary) */
+const MODEL_CHAIN: readonly string[] = [
+  'gemini-3-flash',
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',
+  'gemma-3-27b-it',
+] as const;
 
 /** Allowed production origins */
 const ALLOWED_ORIGINS: readonly string[] = [
@@ -285,6 +295,25 @@ function jsonResponse(data: ApiResponse, status: number, origin: string): Respon
   });
 }
 
+/** Parses Retry-After header (seconds or HTTP date). Returns ms or null when absent/invalid. */
+function parseRetryAfterMs(response: Response): number | null {
+  const retryAfter = response.headers.get('retry-after');
+  if (!retryAfter) return null;
+
+  const seconds = Number(retryAfter);
+  if (!Number.isNaN(seconds)) {
+    return Math.max(0, Math.round(seconds * 1000));
+  }
+
+  const dateMs = Date.parse(retryAfter);
+  if (!Number.isNaN(dateMs)) {
+    const delta = dateMs - Date.now();
+    return delta > 0 ? delta : null;
+  }
+
+  return null;
+}
+
 // ============================================================================
 // Main Handler
 // ============================================================================
@@ -349,128 +378,169 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       { role: 'user', parts: [{ text: sanitizedMessage }] },
     ];
 
-    // Call Gemini API with timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+    // Shared request payload
+    const requestPayload = {
+      contents,
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 500,
+      },
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+      ],
+    } as const;
 
-    let geminiResponse: globalThis.Response;
-    try {
-      geminiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents,
-            generationConfig: {
-              temperature: 0.7,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 500,
-            },
-            safetySettings: [
-              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-            ],
-          }),
-          signal: controller.signal,
-        }
-      );
-    } catch (fetchError) {
-      clearTimeout(timeoutId);
-      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-        return jsonResponse({ error: 'Request timed out. Please try again.' }, 504, origin);
+    const attemptedModels: string[] = [];
+    let lastStatus: number | null = null;
+    let lastErrorMessage: string | null = null;
+    let sawRateLimit = false;
+    let bestRetryAfterMs: number | null = null;
+
+    for (const modelName of MODEL_CHAIN) {
+      attemptedModels.push(modelName);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
+      let geminiResponse: globalThis.Response;
+      try {
+        geminiResponse = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestPayload),
+            signal: controller.signal,
+          }
+        );
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        lastStatus = 504;
+        lastErrorMessage = fetchError instanceof Error ? fetchError.message : 'Request failed';
+        // Timeout or network error: try next model
+        continue;
+      } finally {
+        clearTimeout(timeoutId);
       }
-      throw fetchError;
-    } finally {
-      clearTimeout(timeoutId);
-    }
 
-    // Handle non-OK responses
-    if (!geminiResponse.ok) {
-      const errorText = await geminiResponse.text();
-      console.error('Gemini API error:', geminiResponse.status, errorText);
+      if (!geminiResponse.ok) {
+        const errorText = await geminiResponse.text();
+        lastStatus = geminiResponse.status;
+        lastErrorMessage = errorText;
 
-      // Handle specific error codes
-      if (geminiResponse.status === 429) {
+        const retryAfterMs = parseRetryAfterMs(geminiResponse);
+        if (retryAfterMs !== null) {
+          bestRetryAfterMs = Math.max(bestRetryAfterMs ?? 0, retryAfterMs);
+        }
+
+        if (geminiResponse.status === 429) {
+          sawRateLimit = true;
+          // Try next model with remaining quota
+          continue;
+        }
+
+        if (geminiResponse.status === 401 || geminiResponse.status === 403) {
+          console.error('Gemini API authentication error');
+          return jsonResponse({ error: 'AI service authentication error' }, 503, origin);
+        }
+
+        // Retry with next model on 5xx; otherwise stop
+        if (geminiResponse.status >= 500) {
+          continue;
+        }
+
+        return jsonResponse({ error: 'AI service temporarily unavailable' }, 502, origin);
+      }
+
+      let data: GeminiResponse;
+      try {
+        data = (await geminiResponse.json()) as GeminiResponse;
+      } catch {
+        lastStatus = 502;
+        lastErrorMessage = 'Invalid JSON from model';
+        // Try next model
+        continue;
+      }
+
+      if (data.error) {
+        lastStatus = geminiResponse.status || 502;
+        lastErrorMessage = data.error.message ?? 'Unknown model error';
+        // Try next model
+        continue;
+      }
+
+      const candidates = data.candidates;
+      if (!candidates || candidates.length === 0) {
+        lastStatus = geminiResponse.status || 502;
+        lastErrorMessage = 'No candidates in response';
+        continue;
+      }
+
+      const firstCandidate = candidates[0];
+      if (!firstCandidate) {
+        lastStatus = geminiResponse.status || 502;
+        lastErrorMessage = 'Empty candidate';
+        continue;
+      }
+
+      if (firstCandidate.finishReason === 'SAFETY') {
         return jsonResponse(
-          { error: 'Too many requests. Please wait a moment and try again.' },
-          429,
+          {
+            reply:
+              "I'm sorry, but I can't respond to that type of question. Please ask about Michael's professional background.",
+          },
+          200,
           origin
         );
       }
 
-      if (geminiResponse.status === 401 || geminiResponse.status === 403) {
-        console.error('Gemini API authentication error');
-        return jsonResponse({ error: 'AI service authentication error' }, 503, origin);
+      const parts = firstCandidate.content?.parts;
+      if (!parts || parts.length === 0) {
+        lastStatus = geminiResponse.status || 502;
+        lastErrorMessage = 'No content parts';
+        continue;
       }
 
-      return jsonResponse({ error: 'AI service temporarily unavailable' }, 502, origin);
+      const reply = parts[0]?.text;
+      if (!reply || reply.trim().length === 0) {
+        lastStatus = geminiResponse.status || 502;
+        lastErrorMessage = 'Empty text in AI response';
+        continue;
+      }
+
+      const suggestions = generateFollowUpSuggestions(sanitizedMessage, reply, recentHistory);
+      return jsonResponse({ reply: reply.trim(), suggestions }, 200, origin);
     }
 
-    // Parse Gemini response
-    let data: GeminiResponse;
-    try {
-      data = (await geminiResponse.json()) as GeminiResponse;
-    } catch {
-      console.error('Failed to parse Gemini response as JSON');
-      return jsonResponse({ error: 'Invalid response from AI service' }, 502, origin);
-    }
-
-    // Check for API-level errors
-    if (data.error) {
-      console.error('Gemini API returned error:', data.error);
-      return jsonResponse(
-        { error: 'AI service error: ' + (data.error.message ?? 'Unknown') },
-        502,
-        origin
-      );
-    }
-
-    // Extract response text with proper null checking
-    const candidates = data.candidates;
-    if (!candidates || candidates.length === 0) {
-      console.error('No candidates in Gemini response:', JSON.stringify(data));
-      return jsonResponse(
-        { error: 'I could not generate a response. Please try rephrasing your question.' },
-        200,
-        origin
-      );
-    }
-
-    const firstCandidate = candidates[0];
-    if (!firstCandidate) {
-      return jsonResponse({ error: 'Empty response from AI. Please try again.' }, 200, origin);
-    }
-
-    // Check if response was blocked by safety filters
-    if (firstCandidate.finishReason === 'SAFETY') {
+    if (sawRateLimit) {
       return jsonResponse(
         {
-          reply:
-            "I'm sorry, but I can't respond to that type of question. Please ask about Michael's professional background.",
+          error: 'Too many requests. Please wait a moment and try again.',
+          retryAfterMs: bestRetryAfterMs ?? undefined,
+          attemptedModels,
         },
-        200,
+        429,
         origin
       );
     }
 
-    const parts = firstCandidate.content?.parts;
-    if (!parts || parts.length === 0) {
-      return jsonResponse({ error: 'No content in AI response. Please try again.' }, 200, origin);
-    }
+    console.error('Gemini API fallback exhausted', {
+      lastStatus,
+      lastErrorMessage,
+      attemptedModels,
+    });
+    const statusCode = lastStatus === 504 ? 504 : 502;
+    const errorMessage =
+      statusCode === 504
+        ? 'Request timed out. Please try again.'
+        : 'AI service temporarily unavailable';
 
-    const reply = parts[0]?.text;
-    if (!reply || reply.trim().length === 0) {
-      return jsonResponse({ error: 'Empty text in AI response. Please try again.' }, 200, origin);
-    }
-
-    // Generate follow-up suggestions based on conversation context
-    const suggestions = generateFollowUpSuggestions(sanitizedMessage, reply, recentHistory);
-
-    return jsonResponse({ reply: reply.trim(), suggestions }, 200, origin);
+    return jsonResponse({ error: errorMessage, attemptedModels }, statusCode, origin);
   } catch (error) {
     console.error('Chat API error:', error);
     return jsonResponse({ error: 'An unexpected error occurred. Please try again.' }, 500, origin);

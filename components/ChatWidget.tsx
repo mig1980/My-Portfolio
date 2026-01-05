@@ -174,7 +174,7 @@ const MessageBubble = memo<MessageBubbleProps>(
     const formattedTime = useMemo(() => formatTimestamp(message.timestamp), [message.timestamp]);
 
     return (
-      <div className={`flex gap-2 ${isUser ? 'justify-end' : 'justify-start'}`} role="listitem">
+      <div className={`flex gap-2 ${isUser ? 'justify-end' : 'justify-start'}`} role="article">
         {/* Assistant Avatar */}
         {!isUser && (
           <div
@@ -237,7 +237,7 @@ MessageBubble.displayName = 'MessageBubble';
  * Respects prefers-reduced-motion.
  */
 const LoadingIndicator = memo(() => (
-  <div className="flex gap-2 justify-start" role="listitem">
+  <div className="flex gap-2 justify-start" role="status">
     <div
       className="w-7 h-7 rounded-full bg-primary-600 flex items-center 
                  justify-center flex-shrink-0"
@@ -251,18 +251,9 @@ const LoadingIndicator = memo(() => (
         role="status"
         aria-label="Loading response"
       >
-        <span
-          className="w-2 h-2 bg-slate-500 rounded-full animate-bounce"
-          style={{ animationDelay: '0ms' }}
-        />
-        <span
-          className="w-2 h-2 bg-slate-500 rounded-full animate-bounce"
-          style={{ animationDelay: '150ms' }}
-        />
-        <span
-          className="w-2 h-2 bg-slate-500 rounded-full animate-bounce"
-          style={{ animationDelay: '300ms' }}
-        />
+        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" />
+        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce animation-delay-150" />
+        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce animation-delay-300" />
       </div>
       {/* Fallback for reduced motion */}
       <span className="hidden motion-reduce:block text-slate-400 text-sm">Thinking...</span>
@@ -860,7 +851,7 @@ const ChatWidget: React.FC = memo(() => {
           {/* Messages Container */}
           <div
             className="flex-1 overflow-y-auto p-4 space-y-4"
-            role="list"
+            role="log"
             aria-label="Chat messages"
             data-scroll-container
             data-block-swipe="true"

@@ -13,7 +13,7 @@ interface UseCountUpReturn {
   /** Current animated value */
   count: number;
   /** Ref to attach to the element for intersection observation */
-  ref: React.RefObject<HTMLDivElement>;
+  ref: React.RefObject<HTMLDivElement | null>;
   /** Whether the element is in view */
   inView: boolean;
 }
@@ -100,5 +100,5 @@ export function useCountUp({
     }
   }, [inView, start, hasAnimated, animate]);
 
-  return { count, ref: ref as React.RefObject<HTMLDivElement>, inView };
+  return { count, ref, inView };
 }

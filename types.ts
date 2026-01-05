@@ -190,4 +190,10 @@ export interface ChatApiRequest {
  */
 export type ChatApiResponse =
   | { reply: string; suggestions?: string[]; error?: never }
-  | { error: string; reply?: never; suggestions?: never };
+  | {
+      error: string;
+      retryAfterMs?: number;
+      attemptedModels?: string[];
+      reply?: never;
+      suggestions?: never;
+    };

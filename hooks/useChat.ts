@@ -318,8 +318,16 @@ export function useChat({
           setIsRateLimited(true);
           setFailedMessage(trimmedContent);
 
-          // Start countdown from 30 seconds (visual indicator handles display)
-          const countdownSeconds = Math.ceil(RATE_LIMIT_COOLDOWN_MS / 1000);
+          let countdownSeconds = Math.ceil(RATE_LIMIT_COOLDOWN_MS / 1000);
+          try {
+            const rateLimitData = (await response.json()) as ChatApiResponse;
+            if ('retryAfterMs' in rateLimitData && rateLimitData.retryAfterMs) {
+              countdownSeconds = Math.max(1, Math.ceil(rateLimitData.retryAfterMs / 1000));
+            }
+          } catch {
+            // Ignore JSON parse errors; fall back to default cooldown
+          }
+
           setRateLimitSecondsRemaining(countdownSeconds);
           // Don't set error - RateLimitIndicator handles the message
 
@@ -328,7 +336,6 @@ export function useChat({
             setRateLimitSecondsRemaining((prev) => {
               const newValue = prev - 1;
               if (newValue <= 0) {
-                // Clear interval when countdown reaches 0
                 if (rateLimitIntervalRef.current) {
                   clearInterval(rateLimitIntervalRef.current);
                   rateLimitIntervalRef.current = null;
@@ -347,7 +354,7 @@ export function useChat({
               clearInterval(rateLimitIntervalRef.current);
               rateLimitIntervalRef.current = null;
             }
-          }, RATE_LIMIT_COOLDOWN_MS);
+          }, countdownSeconds * 1000);
 
           return;
         }
@@ -422,7 +429,6 @@ export function useChat({
 
         setError(errorMessage);
         setFailedMessage(trimmedContent);
-        console.error('Chat error:', err);
       } finally {
         clearTimeout(timeoutId);
         setIsLoading(false);

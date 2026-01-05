@@ -67,6 +67,15 @@
   .focus-ring-inset {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500;
   }
+
+  /* Animation delay utilities for loading dots */
+  .animation-delay-150 {
+    animation-delay: 150ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
 }
 
 @keyframes fadeInUp {

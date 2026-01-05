@@ -6,7 +6,8 @@
 import React, { memo } from 'react';
 import Section from './ui/Section';
 import { THOUGHT_LEADERSHIP } from '../constants';
-import { ExternalLink, Github } from 'lucide-react';
+import { getLogoUrl } from '../utils/logo';
+import { ExternalLink } from 'lucide-react';
 
 /**
  * Thought Leadership section component for showcasing publications.
@@ -60,7 +61,12 @@ const ThoughtLeadership: React.FC = memo(() => {
               </p>
               <div className="mt-3 inline-flex flex-col gap-1 items-start">
                 <div className="inline-flex items-center gap-2 text-slate-300">
-                  <Github className="w-4 h-4" aria-hidden="true" focusable="false" />
+                  <img
+                    src={getLogoUrl('github.com', { size: 16 })}
+                    alt="GitHub logo"
+                    loading="lazy"
+                    className="w-4 h-4 rounded-sm object-contain"
+                  />
                   <span className="text-sm font-semibold">Fork this site on GitHub</span>
                 </div>
                 <p className="text-sm text-slate-400">

@@ -1,481 +1,163 @@
-# GitHub Copilot Instructions for AboutMe - React/TypeScript Portfolio Website
+# GitHub Copilot Instructions - AboutMe Portfolio
 
-> This document provides GitHub Copilot with context and guidelines for generating high-quality, secure, and maintainable code in this repository.
+> Concise instructions for Copilot to work efficiently in this repository.
 
----
+## Project Overview
 
-## 📊 Repository Audit Summary
+**Type:** React 19 SPA - Professional Portfolio Website  
+**Stack:** TypeScript (strict), Tailwind CSS v4, Vite 6, Vitest  
+**Deployment:** Cloudflare Pages with Edge Functions  
+**Node:** ≥20.0.0 | **npm:** ≥10.0.0
 
-### Audit Date: December 15, 2025
+## Build & Validation Commands
 
-### 🔍 Expert Review Panel Assigned
+**Always run these commands from the repository root:**
 
-| Role | Expert Area | Review Focus |
-|------|-------------|--------------|
-| **Lead TypeScript Architect** | TypeScript/React Patterns | Type safety, strict mode compliance, interface design |
-| **Security Engineer** | Application Security | XSS prevention, environment variables, CSP headers |
-| **React Performance Engineer** | React Optimization | Component patterns, memoization, render optimization |
-| **UX/Accessibility Specialist** | WCAG Compliance | ARIA labels, keyboard navigation, semantic HTML |
-| **DevOps/Cloudflare Engineer** | Deployment & CI/CD | Build optimization, edge deployment, caching |
-| **Code Quality Analyst** | Best Practices | Linting, testing, documentation standards |
+```bash
+# Install dependencies (run first, or after package.json changes)
+npm install
 
----
+# Development server
+npm run dev
 
-## ✅ Audit Findings & Recommendations
+# Type checking (run before committing)
+npm run type-check
 
-### 1. TypeScript Configuration - ✅ COMPLETE
+# Linting (run before committing)
+npm run lint
 
-**Current State:**
-- Using TypeScript 5.8.2 ✅
-- Full strict mode enabled ✅
-- All strict options configured ✅
+# Format code
+npm run format
 
-**tsconfig.json Configuration:**
-```json
-{
-  "compilerOptions": {
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "forceConsistentCasingInFileNames": true
-  }
-}
+# Run all tests
+npm run test:run
+
+# Production build (includes type-check)
+npm run build
+
+# Full validation sequence
+npm run type-check && npm run lint && npm run test:run && npm run build
 ```
 
-### 2. Project Structure - ✅ COMPLETE
-
-**Current Structure:**
-```
-AboutMe/
-├── App.tsx                 # Root component
-├── components/             # UI components
-│   ├── ui/                 # Reusable primitives ✅
-│   │   ├── Card.tsx        # Reusable card component (memo)
-│   │   ├── Section.tsx     # Reusable section wrapper (memo)
-│   │   ├── PageWrapper.tsx # Page layout wrapper (memo)
-│   │   ├── StatCounter.tsx # Animated stat counter (memo)
-│   │   └── TimelineItem.tsx# Timeline entry component (memo)
-│   └── [feature].tsx       # Feature components
-├── hooks/                  # Custom React hooks ✅
-│   ├── useScrollPosition.ts# Scroll position tracking
-│   └── useCountUp.ts       # Animated counting hook
-├── utils/                  # Shared utility functions ✅
-│   ├── string.ts           # String utilities (getInitials)
-│   ├── dom.ts              # DOM utilities (handleImageError)
-│   └── logo.ts             # Logo URL generation
-├── styles/                 # Global styles ✅
-│   └── globals.css         # Tailwind v4 + custom utilities
-├── tests/                  # Unit tests ✅
-├── public/                 # Static files ✅
-│   ├── _headers
-│   └── _redirects
-├── constants.tsx           # Data/constants
-├── types.ts               # Type definitions ✅
-└── index.tsx              # Entry point
-```
-
-### 3. React Patterns - ✅ COMPLETE
-
-**Positive Findings:**
-- ✅ All components are functional with hooks
-- ✅ Proper use of `React.FC` typing
-- ✅ Props interfaces defined for all components
-- ✅ Proper cleanup in `useEffect` (Navigation.tsx)
-- ✅ `React.memo()` applied to presentational components
-- ✅ `useCallback` for event handlers in Navigation
-- ✅ Custom hooks extracted (useScrollPosition, useCountUp)
-- ✅ Shared utilities extracted (getInitials, handleImageError)
-- ✅ CSS utility classes for focus states (.focus-ring, .focus-ring-inset)
-- ✅ Vite build optimizations (manualChunks, cssCodeSplit)
-
-### 4. Security Audit - ✅ COMPLETE
-
-**Security Headers:** ✅ Configured in `public/_headers`
-- X-Frame-Options: DENY
-- X-Content-Type-Options: nosniff
-- X-XSS-Protection: 1; mode=block
-- Referrer-Policy: strict-origin-when-cross-origin
-- Permissions-Policy configured
-- Content-Security-Policy configured
-
-**External Links:** ✅ All have `rel="noopener noreferrer"`
-
-### 5. Infrastructure Files - ✅ COMPLETE
-
-All required files present:
-- ✅ `public/_headers` - Security headers
-- ✅ `public/_redirects` - SPA routing
-- ✅ `.env.example` - Environment variable template
-- ✅ `eslint.config.js` - ESLint flat config (v9)
-- ✅ `.prettierrc` - Prettier configuration
-- ✅ `vitest.config.ts` - Test configuration
-- ✅ `tests/` - Unit tests with 100% coverage
-- ✅ `.github/workflows/ci.yml` - CI/CD pipeline
-
----
-
-## 📋 Project Overview
-
-- **Project Type:** React Single Page Application (SPA) - Portfolio/Personal Website
-- **Language:** TypeScript (strict mode should be enabled)
-- **Framework:** React 19.x with functional components and hooks
-- **Styling:** Tailwind CSS v4 (build-time compilation via @tailwindcss/postcss)
-- **State Management:** Local component state (no external state management needed)
-- **Build Tool:** Vite 6.x
-- **Testing:** Vitest + React Testing Library
-- **Deployment Target:** Cloudflare Pages
-- **Package Manager:** npm
-
----
-
-## 🏗️ Current Project Structure
+## Project Structure
 
 ```
 AboutMe/
-├── App.tsx                      # Root application component
-├── index.tsx                    # React DOM entry point
-├── index.html                   # HTML template
-├── types.ts                     # Shared TypeScript interfaces
-├── constants.tsx                # Application data and content
+├── App.tsx                 # Root component (routing logic)
+├── index.tsx               # React DOM entry point
+├── types.ts                # ALL shared TypeScript interfaces
+├── constants.tsx           # Application data/content
 ├── components/
-│   ├── About.tsx                # About section with awards (memo)
-│   ├── BackToTop.tsx            # Floating back-to-top button (memo)
-│   ├── Contact.tsx              # Contact/footer section (memo)
-│   ├── Education.tsx            # Education & certifications (memo)
-│   ├── Expertise.tsx            # Skills/competencies grid (memo)
-│   ├── Hero.tsx                 # Hero/landing section (memo)
-│   ├── MyApproach.tsx           # Professional approach section (memo)
-│   ├── Navigation.tsx           # Responsive navigation (memo, useCallback)
-│   ├── Privacy.tsx              # Privacy policy page (memo)
-│   ├── Stats.tsx                # Key statistics section (memo)
-│   ├── Terms.tsx                # Terms of use page (memo)
-│   ├── ThoughtLeadership.tsx    # Blog/publications section (memo)
-│   ├── Timeline.tsx             # Interactive career timeline (memo)
-│   └── ui/
-│       ├── Card.tsx             # Reusable card component (memo)
-│       ├── PageWrapper.tsx      # Page layout wrapper (memo)
-│       ├── Section.tsx          # Reusable section wrapper (memo)
-│       ├── StatCounter.tsx      # Animated stat counter (memo)
-│       └── TimelineItem.tsx     # Timeline entry component (memo)
-├── hooks/
-│   ├── useScrollPosition.ts     # Custom scroll position hook
-│   └── useCountUp.ts            # Animated counting hook with IntersectionObserver
-├── utils/
-│   ├── string.ts                # String utilities (getInitials)
-│   ├── dom.ts                   # DOM utilities (handleImageError)
-│   └── logo.ts                  # Logo URL generation utility
-├── styles/
-│   └── globals.css              # Tailwind v4 global styles + utility classes
-├── tests/
-│   ├── setup.ts                 # Test setup with mocks
-│   ├── Card.test.tsx            # Card component tests
-│   ├── Section.test.tsx         # Section component tests
-│   └── useScrollPosition.test.ts # Hook tests
-├── public/
-│   ├── _headers                 # Cloudflare security headers
-│   └── _redirects               # SPA routing
-├── .github/
-│   └── workflows/ci.yml         # GitHub Actions CI/CD
-├── vite.config.ts               # Vite configuration (with build optimizations)
-├── vitest.config.ts             # Vitest configuration
-├── tsconfig.json                # TypeScript configuration (strict)
-├── eslint.config.js             # ESLint flat config
-├── .prettierrc                  # Prettier configuration
-├── tailwind.config.js           # Tailwind v4 configuration (content paths only)
-├── postcss.config.js            # PostCSS configuration
-└── package.json                 # Dependencies and scripts
+│   ├── ChatWidget.tsx      # AI chat widget (complex, 1000+ lines)
+│   ├── Navigation.tsx      # Responsive nav with scroll detection
+│   ├── [Section].tsx       # Page sections (Hero, About, Stats, etc.)
+│   └── ui/                 # Reusable primitives (Card, Section, etc.)
+├── hooks/                  # Custom React hooks
+│   ├── useChat.ts          # Chat state management
+│   ├── useScrollPosition.ts
+│   ├── useIsMobile.ts
+│   ├── useOnlineStatus.ts
+│   ├── useBodyScrollLock.ts
+│   ├── useSwipeToDismiss.ts
+│   └── useCountUp.ts
+├── utils/                  # Pure utility functions
+│   ├── analytics.ts        # GA4 tracking
+│   ├── string.ts           # String helpers (getInitials)
+│   ├── dom.ts              # DOM helpers
+│   └── logo.ts             # Logo URL generation
+├── functions/api/          # Cloudflare Pages Functions
+│   └── chat.ts             # Gemini API proxy with 4-model fallback
+├── styles/globals.css      # Tailwind v4 + custom utilities
+├── tests/                  # Vitest tests (119 tests, 12 files)
+└── public/
+    ├── _headers            # Security headers (CSP, CORS)
+    └── _redirects          # SPA routing
 ```
 
----
+## Code Patterns (Follow These)
 
-## 🎯 Code Standards & Best Practices
-
-### TypeScript Guidelines for This Project
-
-- **Enable and maintain strict TypeScript** - Configure `strict: true` in tsconfig
-- **All interfaces are defined in `types.ts`** - Keep this pattern
-- **Use explicit return types** for all exported functions and components
-- **Prefer interfaces for component props** - Already implemented correctly
+### TypeScript
+- **Strict mode enabled** - Never use `any`
+- **Interfaces in `types.ts`** - Keep all shared types there
+- **Explicit return types** for exported functions
 
 ```typescript
-// ✅ Current Pattern - Continue using this
-interface SectionProps {
+// ✅ Correct pattern
+interface ComponentProps {
   id: string;
-  className?: string;
   children: ReactNode;
-  darker?: boolean;
 }
 
-const Section: React.FC<SectionProps> = ({ id, className = "", children, darker = false }) => {
-  // implementation
+const Component: React.FC<ComponentProps> = ({ id, children }) => {
+  // ...
 };
 ```
 
-### React Component Guidelines for This Project
-
-- **Use functional components** with hooks exclusively ✅
-- **Keep components small and focused** - Single section per component ✅
-- **Use `React.memo()`** for pure presentational components
-- **Extract custom hooks** for reusable stateful logic
+### React Components
+- **Functional components only** with hooks
+- **Use `React.memo()`** for presentational components
+- **Use `useCallback`** for event handlers passed to children
+- **Cleanup `useEffect`** - Always return cleanup function for listeners
 
 ```typescript
-// ✅ Recommended: Add memoization for static content components
-import React, { memo } from 'react';
+// ✅ Correct pattern
+const Component = memo(() => {
+  const handleClick = useCallback(() => {
+    // handler logic
+  }, []);
 
-const Education: React.FC = memo(() => {
-  // Component implementation
-});
-
-// ✅ Recommended: Extract scroll handling to custom hook
-// hooks/useScrollPosition.ts
-function useScrollPosition(threshold: number = 50): boolean {
-  const [scrolled, setScrolled] = useState(false);
-  
   useEffect(() => {
-    const handleScroll = (): void => {
-      setScrolled(window.scrollY > threshold);
-    };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [threshold]);
-  
-  return scrolled;
-}
+    return () => window.removeEventListener('scroll', handleScroll); // cleanup
+  }, []);
+
+  return <button onClick={handleClick}>Click</button>;
+});
 ```
 
-### Naming Conventions (Already in Use)
+### Naming Conventions
+| Element | Convention | Example |
+|---------|------------|---------|
+| Components | PascalCase | `ChatWidget.tsx` |
+| Hooks | camelCase with `use` | `useScrollPosition` |
+| Interfaces | PascalCase | `ChatMessage` |
+| Constants | SCREAMING_SNAKE_CASE | `MAX_MESSAGE_LENGTH` |
+| Booleans | `is`/`has` prefix | `isLoading`, `hasError` |
 
-| Element | Convention | Examples in Codebase |
-|---------|------------|---------------------|
-| Components | PascalCase | `Navigation.tsx`, `ThoughtLeadership.tsx` |
-| Interfaces | PascalCase | `JobRole`, `SkillGroup`, `SectionProps` |
-| Constants | SCREAMING_SNAKE_CASE | `PERSONAL_INFO`, `EXPERIENCE`, `SKILLS` |
-| Event Handlers | camelCase with `handle` prefix | `handleScroll` |
-| Boolean variables | camelCase with `is/has` prefix | `scrolled` → should be `isScrolled` |
-| CSS Classes | kebab-case (Tailwind) | `text-slate-400`, `bg-primary-500` |
+## Security Requirements
 
----
+- **External links:** Always use `rel="noopener noreferrer"` with `target="_blank"`
+- **No `dangerouslySetInnerHTML`** unless absolutely necessary and sanitized
+- **Environment variables:** Use `VITE_` prefix for client-side, server vars in Cloudflare
+- **CSP headers:** Defined in `public/_headers` - update when adding external resources
 
-## 🔒 Security Guidelines
+## Testing
 
-### CRITICAL: Required Security Implementations
+- **Framework:** Vitest + React Testing Library
+- **Location:** `tests/` directory
+- **Naming:** `[filename].test.ts` or `[filename].test.tsx`
+- **Run tests before committing:** `npm run test:run`
 
-#### 1. Add Security Headers
-
-Create `public/_headers`:
-```
-/*
-  X-Frame-Options: DENY
-  X-Content-Type-Options: nosniff
-  X-XSS-Protection: 1; mode=block
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://picsum.photos https://logo.clearbit.com https://ui-avatars.com; font-src 'self'; connect-src 'self'
-```
-
-#### 2. Add SPA Routing Support
-
-Create `public/_redirects`:
-```
-/* /index.html 200
-```
-
-#### 3. External Resource Policy
-
-Current external resources used:
-- `https://cdn.tailwindcss.com` - Tailwind CSS (consider build-time compilation)
-- `https://picsum.photos` - Placeholder images
-- `https://logo.clearbit.com` - Company logos
-- `https://ui-avatars.com` - Avatar fallbacks
-
-**Recommendation:** Host critical assets locally or use a CDN you control.
-
----
-
-## ☁️ Cloudflare Deployment Guidelines
-
-### Required Configuration for Cloudflare Pages
-
-1. **Build Command:** `npm run build`
-2. **Build Output Directory:** `dist`
-3. **Node.js Version:** 18.x or higher
-
-### Performance Optimization Checklist
-
-- [ ] Migrate Tailwind from CDN to build-time compilation
-- [ ] Implement image optimization (WebP format)
-- [ ] Add lazy loading for below-the-fold content
-- [ ] Enable code splitting for route-based loading (if routes added)
-- [ ] Configure proper cache headers for static assets
+## Patterns to Avoid
 
 ```typescript
-// ✅ Future: Code splitting example
-import { lazy, Suspense } from 'react';
-
-const ThoughtLeadership = lazy(() => import('./components/ThoughtLeadership'));
-
-// In App.tsx - only if routing is added
-<Suspense fallback={<SectionSkeleton />}>
-  <ThoughtLeadership />
-</Suspense>
+// ❌ Avoid
+const data: any = getData();           // No 'any' types
+<button onClick={() => handler()}>     // No inline handlers
+console.log('debug');                  // No console.log in production
+document.getElementById('x');          // No direct DOM manipulation
 ```
 
----
+## CI/CD Validation
 
-## 📦 Package.json Improvements
+GitHub Actions runs on every PR:
+1. `npm run type-check`
+2. `npm run lint`
+3. `npm run test:run`
+4. `npm run build`
 
-### Missing Scripts (Add these)
-
-```json
-{
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "type-check": "tsc --noEmit",
-    "lint": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "test": "vitest",
-    "test:coverage": "vitest --coverage"
-  }
-}
-```
-
-### Missing DevDependencies
-
-```json
-{
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "vitest": "^2.0.0",
-    "@testing-library/react": "^15.0.0",
-    "autoprefixer": "^10.4.0",
-    "postcss": "^8.4.0",
-    "tailwindcss": "^3.4.0"
-  }
-}
-```
+**All must pass before merge.**
 
 ---
 
-## ✅ Code Review Checklist
-
-Before submitting code to this repository:
-
-- [x] TypeScript has no errors (`npm run type-check`)
-- [x] ESLint passes with no warnings (`npm run lint`)
-- [x] No `console.log` statements in production code
-- [x] No hardcoded secrets or sensitive data
-- [x] Components have proper TypeScript interfaces
-- [ ] Loading states handled where applicable
-- [ ] Error boundaries implemented for critical sections
-- [x] Accessibility: Images have alt text
-- [x] Accessibility: Links have aria-labels
-- [x] Responsive design verified on mobile viewports
-- [x] External links open in new tab with `rel="noopener noreferrer"`
-
----
-
-## 🚨 Patterns to Avoid in This Codebase
-
-```typescript
-// ❌ Avoid: Missing types (not currently an issue, but prevent regression)
-const data: any = getData();
-
-// ❌ Avoid: Inline handlers in render (minor issue in current code)
-<button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-
-// ✅ Better: Use useCallback
-const toggleMobileMenu = useCallback(() => {
-  setMobileMenuOpen(prev => !prev);
-}, []);
-
-// ❌ Avoid: Direct DOM manipulation (not currently used)
-document.getElementById('root').innerHTML = '<div>Hello</div>';
-
-// ✅ Current code correctly avoids this pattern
-
-// ❌ Avoid: Forgetting cleanup in useEffect
-// ✅ Current Navigation.tsx correctly implements cleanup:
-useEffect(() => {
-  const handleScroll = () => setScrolled(window.scrollY > 50);
-  window.addEventListener('scroll', handleScroll);
-  return () => window.removeEventListener('scroll', handleScroll); // ✅ Cleanup
-}, []);
-```
-
----
-
-## 🤖 Working with Copilot in This Repository
-
-### Prompt Tips
-
-1. **Reference existing patterns:**
-   - "Following the pattern in types.ts, create a new interface for..."
-   - "Using the same structure as Card.tsx, create a new reusable component..."
-
-2. **Be specific about Tailwind classes:**
-   - "Create a button component using the primary color palette (primary-500, primary-600)"
-   - "Use the slate color scheme consistent with the existing components"
-
-3. **Include security context:**
-   - "Create a form component with XSS-safe input handling"
-   - "Add an external link with proper security attributes"
-
-4. **Request proper TypeScript:**
-   - "Create a typed hook that returns the scroll position"
-   - "Add proper generic types for the Card component"
-
-### When to Question Copilot Suggestions
-
-- If it suggests using `any` type - request proper typing
-- If it uses class components - request functional component with hooks
-- If it lacks error handling - ask for proper error states
-- If it adds `dangerouslySetInnerHTML` - verify if necessary and sanitized
-- If it adds new npm dependencies - evaluate if truly needed
-
----
-
-## 📝 Action Items for Repository Compliance
-
-### All Items Complete ✅
-
-| Priority | Item | Status |
-|----------|------|--------|
-| 🔴 High | Security headers (`public/_headers`) | ✅ Complete |
-| 🔴 High | SPA routing (`public/_redirects`) | ✅ Complete |
-| 🟡 Medium | TypeScript strict mode | ✅ Complete |
-| 🟡 Medium | Tailwind build-time migration | ✅ Complete |
-| 🟡 Medium | ESLint configuration | ✅ Complete |
-| 🟡 Medium | Prettier configuration | ✅ Complete |
-| 🟢 Low | Custom hooks (useScrollPosition) | ✅ Complete |
-| 🟢 Low | React.memo for components | ✅ Complete |
-| 🟢 Low | GitHub Actions CI/CD | ✅ Complete |
-| 🟢 Low | Unit tests | ✅ Complete |
-
----
-
-## 📚 Additional Resources
-
-- [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/)
-- [Cloudflare Pages Documentation](https://developers.cloudflare.com/pages/)
-- [Vite Configuration Guide](https://vitejs.dev/config/)
-- [Tailwind CSS with Vite](https://tailwindcss.com/docs/guides/vite)
-- [OWASP Security Guidelines](https://owasp.org/www-project-web-security-testing-guide/)
-
----
-
-*Audit Performed: December 15, 2025*  
-*Next Review Scheduled: Quarterly*  
-*Maintain this document as the project evolves to keep Copilot suggestions aligned with current standards.*
+*Last updated: January 4, 2026*

@@ -19,6 +19,7 @@ import Contact from './components/Contact';
 import BackToTop from './components/BackToTop';
 import ChatWidget from './components/ChatWidget';
 import Legal from './components/Legal';
+import NotFound from './components/NotFound';
 import PageWrapper from './components/ui/PageWrapper';
 
 /**
@@ -37,6 +38,15 @@ const App: React.FC = () => {
     return (
       <PageWrapper>
         <Legal />
+      </PageWrapper>
+    );
+  }
+
+  // Show 404 for unknown routes (except hash routes on home page)
+  if (normalizedPathname !== '/' && !normalizedPathname.startsWith('/#')) {
+    return (
+      <PageWrapper>
+        <NotFound />
       </PageWrapper>
     );
   }

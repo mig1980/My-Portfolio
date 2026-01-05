@@ -37,6 +37,7 @@ interface TimelineItemProps {
 const TimelineItem: React.FC<TimelineItemProps> = memo(
   ({ job, isExpanded, isCurrent, onToggle }) => {
     const descriptionRef = useRef<HTMLDivElement>(null);
+    const descriptionContentRef = useRef<HTMLDivElement>(null);
     const [descriptionMaxHeight, setDescriptionMaxHeight] = useState<string>('0px');
 
     // Extract year from period (e.g., "Jan 2017 - Present" → "2017")
@@ -45,21 +46,34 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
     const displayYear = isCurrent ? 'Now' : startYear;
 
     const updateDescriptionHeight = (): void => {
-      const el = descriptionRef.current;
-      if (!el) return;
+      const container = descriptionRef.current;
+      const content = descriptionContentRef.current;
+      if (!container || !content) return;
 
       if (!isExpanded) {
         setDescriptionMaxHeight('0px');
         return;
       }
 
-      // scrollHeight is the full height of content, regardless of current max-height.
-      setDescriptionMaxHeight(`${el.scrollHeight}px`);
+      // Measure the inner content (unconstrained) for iOS WebKit reliability.
+      setDescriptionMaxHeight(`${content.scrollHeight}px`);
     };
 
     // Measure after DOM updates so iOS gets the correct scrollHeight.
     useLayoutEffect(() => {
       updateDescriptionHeight();
+
+      // WebKit can report 0/partial heights on the same frame; re-measure next frame.
+      let rafId: number | null = null;
+      if (isExpanded) {
+        rafId = window.requestAnimationFrame(() => updateDescriptionHeight());
+      }
+
+      return () => {
+        if (rafId !== null) {
+          window.cancelAnimationFrame(rafId);
+        }
+      };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isExpanded, job.description.length]);
 
@@ -177,14 +191,19 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
                 ${isExpanded ? 'opacity-100 mt-4' : 'opacity-0'}
               `}
             >
-              <ul className="space-y-2 border-t border-slate-700/50 pt-4">
-                {job.description.map((desc, i) => (
-                  <li key={i} className="text-slate-400 text-sm leading-relaxed flex items-start gap-2">
-                    <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
-                    {desc}
-                  </li>
-                ))}
-              </ul>
+              <div ref={descriptionContentRef} className="min-h-0">
+                <ul className="space-y-2 border-t border-slate-700/50 pt-4">
+                  {job.description.map((desc, i) => (
+                    <li
+                      key={i}
+                      className="text-slate-400 text-sm leading-relaxed flex items-start gap-2"
+                    >
+                      <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
+                      {desc}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </button>
         </div>

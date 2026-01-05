@@ -19,6 +19,23 @@ vi.mock('../utils/analytics', () => ({
 
 const STORAGE_KEY = 'aboutme-chat-history';
 
+/**
+ * Helper to create a mock fetch response with both json() and text() methods
+ */
+function createMockResponse(
+  data: object,
+  options: { ok?: boolean; status?: number } = {}
+): { ok: boolean; status: number; json: () => Promise<object>; text: () => Promise<string> } {
+  const { ok = true, status = 200 } = options;
+  const jsonString = JSON.stringify(data);
+  return {
+    ok,
+    status,
+    json: () => Promise.resolve(data),
+    text: () => Promise.resolve(jsonString),
+  };
+}
+
 describe('useChat', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -61,11 +78,7 @@ describe('useChat', () => {
 
   describe('sendMessage', () => {
     it('adds user message to messages array', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve({ reply: 'Test response' }),
-      });
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'Test response' }));
 
       const { result } = renderHook(() => useChat());
 
@@ -80,11 +93,7 @@ describe('useChat', () => {
     });
 
     it('adds assistant response to messages array', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve({ reply: 'AI response' }),
-      });
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'AI response' }));
 
       const { result } = renderHook(() => useChat());
 
@@ -102,15 +111,7 @@ describe('useChat', () => {
       mockFetch.mockImplementationOnce(
         () =>
           new Promise((resolve) =>
-            setTimeout(
-              () =>
-                resolve({
-                  ok: true,
-                  status: 200,
-                  json: () => Promise.resolve({ reply: 'Response' }),
-                }),
-              50
-            )
+            setTimeout(() => resolve(createMockResponse({ reply: 'Response' })), 50)
           )
       );
 
@@ -144,11 +145,7 @@ describe('useChat', () => {
     });
 
     it('trims message content', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve({ reply: 'Response' }),
-      });
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'Response' }));
 
       const { result } = renderHook(() => useChat());
 
@@ -160,15 +157,9 @@ describe('useChat', () => {
     });
 
     it('updates suggestions from response', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: () =>
-          Promise.resolve({
-            reply: 'Response',
-            suggestions: ['Follow up 1', 'Follow up 2'],
-          }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ reply: 'Response', suggestions: ['Follow up 1', 'Follow up 2'] })
+      );
 
       const { result } = renderHook(() => useChat());
 
@@ -182,11 +173,9 @@ describe('useChat', () => {
 
   describe('error handling', () => {
     it('sets error on API failure', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        json: () => Promise.resolve({ error: 'Server error' }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Server error' }, { ok: false, status: 500 })
+      );
 
       const { result } = renderHook(() => useChat());
 
@@ -198,11 +187,9 @@ describe('useChat', () => {
     });
 
     it('sets failedMessage on error', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        json: () => Promise.resolve({ error: 'Error' }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Error' }, { ok: false, status: 500 })
+      );
 
       const { result } = renderHook(() => useChat());
 
@@ -232,11 +219,9 @@ describe('useChat', () => {
 
   describe('rate limiting', () => {
     it('sets isRateLimited on 429 response', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 429,
-        json: () => Promise.resolve({ error: 'Rate limited' }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Rate limited' }, { ok: false, status: 429 })
+      );
 
       const { result } = renderHook(() => useChat());
 
@@ -248,11 +233,9 @@ describe('useChat', () => {
     });
 
     it('uses retryAfterMs from response for countdown', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 429,
-        json: () => Promise.resolve({ error: 'Rate limited', retryAfterMs: 10000 }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Rate limited', retryAfterMs: 10000 }, { ok: false, status: 429 })
+      );
 
       const { result } = renderHook(() => useChat());
 
@@ -264,11 +247,9 @@ describe('useChat', () => {
     });
 
     it('clears rate limit after countdown', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 429,
-        json: () => Promise.resolve({ error: 'Rate limited', retryAfterMs: 2000 }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Rate limited', retryAfterMs: 2000 }, { ok: false, status: 429 })
+      );
 
       const { result } = renderHook(() => useChat());
 
@@ -287,11 +268,9 @@ describe('useChat', () => {
     });
 
     it('prevents sending while rate limited', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 429,
-        json: () => Promise.resolve({ error: 'Rate limited', retryAfterMs: 5000 }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Rate limited', retryAfterMs: 5000 }, { ok: false, status: 429 })
+      );
 
       const { result } = renderHook(() => useChat());
 
@@ -312,16 +291,10 @@ describe('useChat', () => {
   describe('retryLastMessage', () => {
     it('retries the failed message', async () => {
       mockFetch
-        .mockResolvedValueOnce({
-          ok: false,
-          status: 500,
-          json: () => Promise.resolve({ error: 'Error' }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: () => Promise.resolve({ reply: 'Success' }),
-        });
+        .mockResolvedValueOnce(
+          createMockResponse({ error: 'Error' }, { ok: false, status: 500 })
+        )
+        .mockResolvedValueOnce(createMockResponse({ reply: 'Success' }));
 
       const { result } = renderHook(() => useChat());
 
@@ -352,11 +325,7 @@ describe('useChat', () => {
 
   describe('clearHistory', () => {
     it('clears all messages', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve({ reply: 'Response' }),
-      });
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'Response' }));
 
       const { result } = renderHook(() => useChat());
 
@@ -374,11 +343,9 @@ describe('useChat', () => {
     });
 
     it('clears error state', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        json: () => Promise.resolve({ error: 'Error' }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Error' }, { ok: false, status: 500 })
+      );
 
       const { result } = renderHook(() => useChat());
 
@@ -396,11 +363,9 @@ describe('useChat', () => {
     });
 
     it('clears rate limit state', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 429,
-        json: () => Promise.resolve({ error: 'Rate limited', retryAfterMs: 30000 }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Rate limited', retryAfterMs: 30000 }, { ok: false, status: 429 })
+      );
 
       const { result } = renderHook(() => useChat());
 
@@ -419,11 +384,7 @@ describe('useChat', () => {
     });
 
     it('clears localStorage', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve({ reply: 'Response' }),
-      });
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'Response' }));
 
       const { result } = renderHook(() => useChat());
 

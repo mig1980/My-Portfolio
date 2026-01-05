@@ -15,6 +15,23 @@ global.fetch = mockFetch;
 // localStorage key used by useChat hook
 const STORAGE_KEY = 'aboutme-chat-history';
 
+/**
+ * Helper to create a mock fetch response with both json() and text() methods
+ */
+function createMockResponse(
+  data: object,
+  options: { ok?: boolean; status?: number } = {}
+): { ok: boolean; status: number; json: () => Promise<object>; text: () => Promise<string> } {
+  const { ok = true, status = 200 } = options;
+  const jsonString = JSON.stringify(data);
+  return {
+    ok,
+    status,
+    json: () => Promise.resolve(data),
+    text: () => Promise.resolve(jsonString),
+  };
+}
+
 describe('ChatWidget', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -83,10 +100,9 @@ describe('ChatWidget', () => {
     });
 
     it('sends message when quick question is clicked', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ reply: 'Michael has 20+ years of experience.' }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ reply: 'Michael has 20+ years of experience.' })
+      );
 
       render(<ChatWidget />);
       fireEvent.click(screen.getByLabelText('Open AI assistant'));
@@ -102,10 +118,7 @@ describe('ChatWidget', () => {
 
   describe('Message Sending', () => {
     it('sends message when form is submitted', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ reply: 'Test response' }),
-      });
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'Test response' }));
 
       render(<ChatWidget />);
       fireEvent.click(screen.getByLabelText('Open AI assistant'));
@@ -124,10 +137,7 @@ describe('ChatWidget', () => {
     });
 
     it('clears input after sending message', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ reply: 'Response' }),
-      });
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'Response' }));
 
       render(<ChatWidget />);
       fireEvent.click(screen.getByLabelText('Open AI assistant'));
@@ -150,11 +160,9 @@ describe('ChatWidget', () => {
 
   describe('Error Handling', () => {
     it('displays error message on API failure', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        json: () => Promise.resolve({ error: 'Server error' }),
-      });
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Server error' }, { ok: false, status: 500 })
+      );
 
       render(<ChatWidget />);
       fireEvent.click(screen.getByLabelText('Open AI assistant'));
@@ -171,10 +179,7 @@ describe('ChatWidget', () => {
 
   describe('Clear History', () => {
     it('clears messages when clear button is clicked', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ reply: 'Response' }),
-      });
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'Response' }));
 
       render(<ChatWidget />);
       fireEvent.click(screen.getByLabelText('Open AI assistant'));

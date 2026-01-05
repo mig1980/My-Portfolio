@@ -308,6 +308,32 @@ export function useChat({
 
         clearTimeout(timeoutId);
 
+        // Safely parse JSON response (handles HTML error pages gracefully)
+        let data: ChatApiResponse;
+        try {
+          const responseText = await response.text();
+          // Check if response looks like HTML (error page) instead of JSON
+          if (responseText.trimStart().startsWith('<')) {
+            throw new Error(
+              response.status >= 500
+                ? 'The AI service is temporarily unavailable. Please try again in a moment.'
+                : `Server error (${response.status}). Please try again.`
+            );
+          }
+          data = JSON.parse(responseText) as ChatApiResponse;
+        } catch (parseError) {
+          // Re-throw if it's already our custom error
+          if (parseError instanceof Error && !parseError.message.includes('JSON')) {
+            throw parseError;
+          }
+          // JSON parse failed - server returned invalid response
+          throw new Error(
+            response.status >= 500
+              ? 'The AI service is temporarily unavailable. Please try again in a moment.'
+              : `Invalid response from server (${response.status}). Please try again.`
+          );
+        }
+
         // Handle rate limiting with specific UX and countdown timer
         if (response.status === 429) {
           trackEvent('chat_message_rate_limited', {
@@ -319,13 +345,8 @@ export function useChat({
           setFailedMessage(trimmedContent);
 
           let countdownSeconds = Math.ceil(RATE_LIMIT_COOLDOWN_MS / 1000);
-          try {
-            const rateLimitData = (await response.json()) as ChatApiResponse;
-            if ('retryAfterMs' in rateLimitData && rateLimitData.retryAfterMs) {
-              countdownSeconds = Math.max(1, Math.ceil(rateLimitData.retryAfterMs / 1000));
-            }
-          } catch {
-            // Ignore JSON parse errors; fall back to default cooldown
+          if ('retryAfterMs' in data && data.retryAfterMs) {
+            countdownSeconds = Math.max(1, Math.ceil(data.retryAfterMs / 1000));
           }
 
           setRateLimitSecondsRemaining(countdownSeconds);
@@ -358,9 +379,6 @@ export function useChat({
 
           return;
         }
-
-        // Parse response with type safety
-        const data = (await response.json()) as ChatApiResponse;
 
         if (!response.ok) {
           trackEvent('chat_message_failed', {

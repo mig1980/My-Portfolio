@@ -67,12 +67,16 @@ const Hero: React.FC = memo(() => {
         <div className="order-1 md:order-2 flex justify-center md:justify-end relative">
           {/* Professional Headshot */}
           <div className="relative w-72 h-72 md:w-96 md:h-96 rounded-2xl overflow-hidden border-2 border-slate-800 shadow-2xl bg-slate-900 group">
-            <img
-              src="/michael-gavrilov-headshot.jpg"
-              alt="Michael Gavrilov - Strategic Account Director at Microsoft specializing in Enterprise AI"
-              loading="lazy"
-              className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
-            />
+            <picture>
+              <source srcSet="/michael-gavrilov-headshot.webp" type="image/webp" />
+              <img
+                src="/michael-gavrilov-headshot.jpg"
+                alt="Michael Gavrilov - Strategic Account Director at Microsoft specializing in Enterprise AI"
+                loading="eager"
+                fetchPriority="high"
+                className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+              />
+            </picture>
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
             <div className="absolute bottom-6 left-6 right-6">
               <div className="text-white font-bold text-lg">{PERSONAL_INFO.name}</div>

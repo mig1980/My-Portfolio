@@ -25,7 +25,7 @@ const ThoughtLeadership: React.FC = memo(() => {
   return (
     <Section id="thoughts" darker>
       <div className="text-center max-w-3xl mx-auto mb-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Thought Leadership</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">What I'm Building</h2>
       </div>
 
       {/* QuantumInvestor Card */}

@@ -58,6 +58,7 @@ const Education: React.FC = memo(() => {
                         <img
                           src={edu.logo}
                           alt={`${edu.institution} logo`}
+                          loading="lazy"
                           className="w-10 h-10 rounded object-contain bg-white p-1"
                           onError={handleImageError}
                         />
@@ -124,6 +125,7 @@ const Education: React.FC = memo(() => {
                       <img
                         src={cert.logo}
                         alt={`${cert.issuer} logo`}
+                        loading="lazy"
                         className="w-8 h-8 rounded object-contain bg-white p-0.5"
                         onError={handleImageError}
                       />

@@ -115,6 +115,7 @@ const About: React.FC = memo(() => {
                       href: award.link,
                       target: '_blank',
                       rel: 'noopener noreferrer',
+                      'aria-label': `View ${award.title} certificate`,
                     }
                   : {};
 
@@ -140,6 +141,7 @@ const About: React.FC = memo(() => {
                         <img
                           src={award.badgeUrl}
                           alt={`${award.title} badge`}
+                          loading="lazy"
                           className={`w-12 h-12 object-contain ${award.title !== 'Champion Award' ? 'scale-150' : ''}`}
                         />
                       </div>

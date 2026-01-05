@@ -11,7 +11,9 @@
 export const getInitials = (name: string): string => {
   const words = name.split(' ').filter((word) => word.length > 0);
   if (words.length >= 2) {
-    return (words[0]![0]! + words[1]![0]!).toUpperCase();
+    const first = words[0]?.[0] ?? '';
+    const second = words[1]?.[0] ?? '';
+    return (first + second).toUpperCase();
   }
   return name.substring(0, 2).toUpperCase();
 };

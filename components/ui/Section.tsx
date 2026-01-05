@@ -45,7 +45,7 @@ const Section: React.FC<SectionProps> = memo(
 
     return (
       <section
-        ref={ref as React.RefObject<HTMLElement>}
+        ref={ref}
         id={id}
         className={`py-20 md:py-32 px-6 md:px-12 lg:px-24 transition-colors duration-500 
                    ${darker ? 'bg-slate-900/50' : 'bg-transparent'} 

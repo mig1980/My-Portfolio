@@ -66,6 +66,12 @@ const GREETING_BUBBLE = {
 function formatTimestamp(date: Date): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
+
+  // Guard against future dates (e.g., clock skew)
+  if (diffMs < 0) {
+    return 'Just now';
+  }
+
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
 

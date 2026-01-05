@@ -92,6 +92,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
                       <img
                         src={job.logo}
                         alt={`${job.company} logo`}
+                        loading="lazy"
                         className="w-8 h-8 rounded object-contain bg-white p-0.5"
                         onError={handleImageError}
                       />

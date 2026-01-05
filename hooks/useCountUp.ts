@@ -43,6 +43,7 @@ export function useCountUp({
   const [inView, setInView] = useState<boolean>(false);
   const [hasAnimated, setHasAnimated] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
+  const rafIdRef = useRef<number | null>(null);
 
   // Intersection Observer to detect when element is in viewport
   useEffect(() => {
@@ -83,15 +84,25 @@ export function useCountUp({
       setCount(currentValue);
 
       if (progress < 1) {
-        requestAnimationFrame(updateCount);
+        rafIdRef.current = requestAnimationFrame(updateCount);
       } else {
         setCount(end);
         setHasAnimated(true);
+        rafIdRef.current = null;
       }
     };
 
-    requestAnimationFrame(updateCount);
+    rafIdRef.current = requestAnimationFrame(updateCount);
   }, [end, duration]);
+
+  // Cleanup RAF on unmount to prevent memory leak
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
+  }, []);
 
   // Trigger animation when in view or when start prop is true
   useEffect(() => {

@@ -3,7 +3,7 @@
  * @description Provides site navigation with scroll-aware styling changes.
  */
 
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 
@@ -28,6 +28,8 @@ const navItems = [
 const Navigation: React.FC = memo(() => {
   const isScrolled = useScrollPosition({ threshold: 50 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
   const toggleMobileMenu = useCallback((): void => {
     setIsMobileMenuOpen((prev) => !prev);
@@ -36,6 +38,51 @@ const Navigation: React.FC = memo(() => {
   const closeMobileMenu = useCallback((): void => {
     setIsMobileMenuOpen(false);
   }, []);
+
+  // Escape key handler to close mobile menu
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const handleEscape = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') {
+        closeMobileMenu();
+        toggleButtonRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isMobileMenuOpen, closeMobileMenu]);
+
+  // Focus trap for mobile menu
+  useEffect(() => {
+    if (!isMobileMenuOpen || !menuRef.current) return;
+
+    const menu = menuRef.current;
+    const focusableElements = menu.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    const handleTabKey = (e: KeyboardEvent): void => {
+      if (e.key !== 'Tab') return;
+
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement?.focus();
+      } else if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement?.focus();
+      }
+    };
+
+    // Focus first menu item when opening
+    firstElement?.focus();
+
+    document.addEventListener('keydown', handleTabKey);
+    return () => document.removeEventListener('keydown', handleTabKey);
+  }, [isMobileMenuOpen]);
 
   return (
     <header
@@ -69,10 +116,12 @@ const Navigation: React.FC = memo(() => {
 
         {/* Mobile Toggle */}
         <button
+          ref={toggleButtonRef}
           className="md:hidden text-slate-300 hover:text-white focus-ring rounded-md p-1"
           onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-nav-menu"
         >
           {isMobileMenuOpen ? <X /> : <Menu />}
         </button>
@@ -80,7 +129,14 @@ const Navigation: React.FC = memo(() => {
 
       {/* Mobile Nav Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-slate-900 border-b border-slate-800 p-6 flex flex-col gap-4 shadow-2xl animate-fade-in-up">
+        <div
+          ref={menuRef}
+          id="mobile-nav-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+          className="md:hidden absolute top-full left-0 right-0 bg-slate-900 border-b border-slate-800 p-6 flex flex-col gap-4 shadow-2xl animate-fade-in-up"
+        >
           {navItems.map((item) => (
             <a
               key={item.label}

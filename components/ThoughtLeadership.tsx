@@ -42,6 +42,7 @@ const ThoughtLeadership: React.FC = memo(() => {
               <img
                 src="/LogoQI.png"
                 alt="QuantumInvestor logo"
+                loading="lazy"
                 className="w-20 h-20 rounded-xl object-contain hover:opacity-80 transition-opacity"
               />
             </a>

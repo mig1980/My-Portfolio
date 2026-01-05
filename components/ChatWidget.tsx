@@ -714,7 +714,20 @@ const ChatWidget: React.FC = memo(() => {
   }, [retryLastMessage, isOnline]);
 
   const toggleChat = useCallback((): void => {
-    setIsOpen((prev) => !prev);
+    setIsOpen((prev) => {
+      // On mobile, dismissing the keyboard can otherwise block quick re-taps.
+      if (prev) {
+        inputRef.current?.blur();
+        if (typeof document !== 'undefined') {
+          const active = document.activeElement;
+          if (active instanceof HTMLElement) {
+            active.blur();
+          }
+        }
+      }
+
+      return !prev;
+    });
   }, []);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -785,7 +798,7 @@ const ChatWidget: React.FC = memo(() => {
           <div
             className={`bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-3 
                        flex items-center justify-between flex-shrink-0
-                       ${isFullscreen ? 'pt-0 py-4' : ''}`}
+                       ${isFullscreen ? 'py-4' : ''}`}
           >
             <div className="flex items-center gap-2">
               {/* Close button for mobile fullscreen - positioned first for easy thumb reach */}

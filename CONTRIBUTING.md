@@ -1,6 +1,12 @@
 # AboutMe Portfolio - Contributing Guide
 
-Thank you for your interest in contributing to this project!
+This is a personal portfolio project. I’m not actively looking for outside contributions, but you’re absolutely welcome to fork it and adapt it for your own use.
+
+## Forking & Usage
+
+- Forks are welcome.
+- If you reuse parts of the design/content, please replace personal details (name, photos, contact info, resume files).
+- If you find a bug or have a suggestion, opening an issue is the best way to flag it.
 
 ## Development Workflow
 
@@ -12,9 +18,9 @@ Thank you for your interest in contributing to this project!
 ### Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/aboutme-portfolio.git
-cd aboutme-portfolio
+# Clone your fork
+git clone https://github.com/<your-username>/AboutMe.git
+cd AboutMe
 
 # Install dependencies
 npm install
@@ -50,30 +56,19 @@ Before submitting a PR, ensure:
 
 ### Commit Convention
 
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `docs:` - Documentation changes
-- `style:` - Code style changes (formatting, etc.)
-- `refactor:` - Code refactoring
-- `test:` - Adding or updating tests
-- `chore:` - Maintenance tasks
+Any clear commit message is fine. If you like Conventional Commits, feel free to use them — it’s optional.
 
 ### Branch Naming
 
-- `feature/description` - New features
-- `fix/description` - Bug fixes
-- `docs/description` - Documentation updates
+Not required for forks. If you do create branches, use whatever naming is convenient.
 
-### Pull Request Process
+### Submitting Suggestions
 
-1. Create a feature branch from `main`
-2. Make your changes
-3. Run all quality checks (lint, type-check, test)
-4. Push and create a Pull Request
-5. Wait for CI checks to pass
-6. Request review from maintainers
+The best way to suggest changes is to open an issue with:
+
+1. What you noticed
+2. What you expected
+3. A screenshot or steps to reproduce (if relevant)
 
 ## Architecture
 

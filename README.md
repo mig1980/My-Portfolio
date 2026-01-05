@@ -28,8 +28,11 @@ npm run dev
 # Build for production
 npm run build
 
-# Run tests
+# Run tests (watch)
 npm run test
+
+# Run tests (CI)
+npm run test:run
 ```
 
 ## Project Structure
@@ -42,6 +45,7 @@ AboutMe/
 ├── hooks/              # Custom hooks (useScrollPosition, useCountUp)
 ├── utils/              # Shared utilities (string, dom, logo)
 ├── styles/             # Global styles + CSS utilities
+├── functions/          # Cloudflare Pages Functions (server-side)
 ├── types.ts            # TypeScript interfaces
 └── constants.tsx       # Application data
 ```
@@ -62,7 +66,16 @@ AboutMe/
 | `npm run build` | Type-check and build for production |
 | `npm run type-check` | Run TypeScript type checking |
 | `npm run lint` | Run ESLint |
+| `npm run format` | Format code with Prettier |
 | `npm run test` | Run tests in watch mode |
+| `npm run test:run` | Run tests once (CI) |
+| `npm run preview` | Preview production build locally |
+
+## Configuration
+
+- Client-side environment variables use the `VITE_` prefix. See `.env.example`.
+- Local secrets belong in `.env.local` (ignored by git).
+- The chat API runs as a Cloudflare Pages Function and requires a server-side `GEMINI_API_KEY` secret (set in Cloudflare, not in the repo).
 
 ## Deployment
 

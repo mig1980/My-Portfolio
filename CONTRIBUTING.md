@@ -4,6 +4,8 @@ This is a personal portfolio project. I’m not actively looking for outside con
 
 ## Forking & Usage
 
+**Upstream repo:** https://github.com/mig1980/My-Portfolio
+
 - Forks are welcome.
 - If you reuse parts of the design/content, please replace personal details (name, photos, contact info, resume files).
 - If you find a bug or have a suggestion, opening an issue is the best way to flag it.
@@ -18,6 +20,9 @@ This is a personal portfolio project. I’m not actively looking for outside con
 ### Setup
 
 ```bash
+# 1) Fork the repo on GitHub (recommended)
+# https://github.com/mig1980/My-Portfolio
+
 # Clone your fork
 git clone https://github.com/<your-username>/My-Portfolio.git
 cd My-Portfolio

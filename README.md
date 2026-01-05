@@ -2,6 +2,8 @@
 
 A modern, performant portfolio website built with React 19, TypeScript, and Tailwind CSS v4.
 
+**Repository:** https://github.com/mig1980/My-Portfolio
+
 ## Tech Stack
 
 - **React 19** - UI framework with functional components and hooks
@@ -38,10 +40,13 @@ My-Portfolio/
 ├── components/          # React components
 │   ├── ui/             # Reusable primitives (Card, Section, PageWrapper, etc.)
 │   └── [Feature].tsx   # Feature components
+├── public/              # Static assets, _headers/_redirects, sitemap/robots
 ├── hooks/              # Custom hooks (useScrollPosition, useCountUp)
+├── tests/              # Vitest tests
 ├── utils/              # Shared utilities (string, dom, logo)
 ├── styles/             # Global styles + CSS utilities
 ├── functions/          # Cloudflare Pages Functions (server-side)
+├── scripts/            # Maintenance scripts
 ├── types.ts            # TypeScript interfaces
 └── constants.tsx       # Application data
 ```

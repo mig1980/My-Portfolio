@@ -111,7 +111,7 @@ const ThoughtLeadership: React.FC = memo(() => {
                 src={getLogoUrl('github.com', { size: 80 })}
                 alt="GitHub logo"
                 loading="lazy"
-                className="w-20 h-20 rounded-xl object-contain hover:opacity-80 transition-opacity"
+                className="w-20 h-20 rounded-xl object-contain hover:opacity-80 transition-opacity invert contrast-200"
               />
             </a>
             <div className="flex flex-col justify-center">

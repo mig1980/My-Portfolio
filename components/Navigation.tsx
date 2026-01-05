@@ -60,9 +60,7 @@ const Navigation: React.FC = memo(() => {
     if (!isMobileMenuOpen || !menuRef.current) return;
 
     const menu = menuRef.current;
-    const focusableElements = menu.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled])'
-    );
+    const focusableElements = menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
 
@@ -94,7 +92,11 @@ const Navigation: React.FC = memo(() => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <a href="#" className="p-1 -m-1 hover:opacity-80 transition-opacity focus-ring rounded-lg">
+        <a
+          href="#"
+          aria-label="Go to homepage"
+          className="p-1 -m-1 hover:opacity-80 transition-opacity focus-ring rounded-lg"
+        >
           <img
             src="/Logo.webp"
             alt="Michael Gavrilov"

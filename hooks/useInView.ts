@@ -20,10 +20,9 @@ import { useEffect, useRef, useState } from 'react';
  * return <div ref={ref} className={isVisible ? 'animate-in' : 'opacity-0'}>
  * ```
  */
-export function useInView(options: IntersectionObserverInit = {}): [
-  React.RefObject<HTMLElement | null>,
-  boolean,
-] {
+export function useInView(
+  options: IntersectionObserverInit = {}
+): [React.RefObject<HTMLElement | null>, boolean] {
   // Destructure options into primitives to avoid unstable object reference in deps
   const { threshold = 0.1, rootMargin = '0px 0px -50px 0px', root = null } = options;
 

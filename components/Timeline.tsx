@@ -46,7 +46,7 @@ const Timeline: React.FC = memo(() => {
         </div>
         {EXPERIENCE.map((job, index) => (
           <TimelineItem
-            key={index}
+            key={job.id}
             job={job}
             isExpanded={expandedItems.has(index)}
             isCurrent={index === 0}

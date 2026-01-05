@@ -12,6 +12,8 @@ import type React from 'react';
  * Used in the Experience section to display work history.
  */
 export interface JobRole {
+  /** Unique identifier for the role (for React key) */
+  id: string;
   title: string;
   company: string;
   logo?: string;
@@ -37,6 +39,8 @@ export interface SkillGroup {
  * Used in the Education section to display academic background.
  */
 export interface EducationItem {
+  /** Unique identifier for the education item (for React key) */
+  id: string;
   /** Name of the degree or program */
   degree: string;
   /** Name of the educational institution */
@@ -54,6 +58,8 @@ export interface EducationItem {
  * Used in the Education section to display credentials.
  */
 export interface Certification {
+  /** Unique identifier for the certification (for React key) */
+  id: string;
   /** Name of the certification */
   name: string;
   /** Organization that issued the certification */
@@ -122,6 +128,8 @@ export interface AwardItem {
  * Used in the About section to add personality.
  */
 export interface InterestItem {
+  /** Unique identifier for the interest (for React key) */
+  id: string;
   /** Name of the interest */
   label: string;
   /** React icon component representing the interest */

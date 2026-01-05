@@ -50,6 +50,7 @@ Whether architecting solutions or negotiating multi-year partnerships, I bring t
 
 export const EXPERIENCE: JobRole[] = [
   {
+    id: 'msft-sad-hls',
     title: 'Strategic Account Director | Healthcare & Life Sciences',
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
@@ -64,6 +65,7 @@ export const EXPERIENCE: JobRole[] = [
     ],
   },
   {
+    id: 'msft-sae',
     title: 'Senior Account Executive | Enterprise Accounts',
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
@@ -75,6 +77,7 @@ export const EXPERIENCE: JobRole[] = [
     ],
   },
   {
+    id: 'msft-ats',
     title: 'Account Technology Strategist | Enterprise Accounts',
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
@@ -86,6 +89,7 @@ export const EXPERIENCE: JobRole[] = [
     ],
   },
   {
+    id: 'msft-pts',
     title: 'Partner Technology Strategist',
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
@@ -97,6 +101,7 @@ export const EXPERIENCE: JobRole[] = [
     ],
   },
   {
+    id: 'systematica-architect',
     title: 'IT Solutions Architect',
     company: 'Systematica Group',
     logo: getLogoUrl('systematic.ru'),
@@ -107,6 +112,7 @@ export const EXPERIENCE: JobRole[] = [
     ],
   },
   {
+    id: 'allied-ops-manager',
     title: 'IT Operations Manager | Team Lead',
     company: 'Allied Testing',
     logo: getLogoUrl('alliedtesting.com'),
@@ -181,18 +187,21 @@ export const SKILLS: SkillGroup[] = [
  */
 export const EDUCATION: EducationItem[] = [
   {
+    id: 'nyu-mot',
     degree: "Master's degree, Management of Technology",
     institution: 'New York University Tandon School of Engineering',
     type: 'Master',
     logo: getLogoUrl('nyu.edu'),
   },
   {
+    id: 'bmstu-ms-ise',
     degree: "Master's degree, Information Systems Engineering",
     institution: 'Bauman Moscow State Technical University',
     type: 'Master',
     logo: getLogoUrl('bmstu.ru'),
   },
   {
+    id: 'bmstu-bs-ce',
     degree: "Bachelor's degree, Computer Engineering",
     institution: 'Bauman Moscow State Technical University',
     type: 'Bachelor',
@@ -206,26 +215,31 @@ export const EDUCATION: EducationItem[] = [
  */
 export const CERTIFICATIONS: Certification[] = [
   {
+    id: 'azure-solutions-architect',
     name: 'Microsoft Certified: Azure Solutions Architect Expert',
     issuer: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
   },
   {
+    id: 'wharton-csuite',
     name: 'Selling to the C-Suite',
     issuer: 'Wharton Executive Education',
     logo: getLogoUrl('wharton.upenn.edu'),
   },
   {
+    id: 'insead-strategy',
     name: 'Business Strategy and Financial Acumen',
     issuer: 'INSEAD Executive Education',
     logo: getLogoUrl('insead.edu'),
   },
   {
+    id: 'insead-negotiation',
     name: 'Value Negotiation',
     issuer: 'INSEAD Executive Education',
     logo: getLogoUrl('insead.edu'),
   },
   {
+    id: 'aws-cloud-practitioner',
     name: 'AWS Certified Cloud Practitioner',
     issuer: 'Amazon Web Services',
     logo: getLogoUrl('aws.amazon.com'),
@@ -285,9 +299,9 @@ export const AWARDS: AwardItem[] = [
  * Displayed in the About section.
  */
 export const INTERESTS: InterestItem[] = [
-  { label: 'Continuous Learning', icon: <BookOpen className="w-4 h-4" /> },
-  { label: 'Investing', icon: <LineChart className="w-4 h-4" /> },
-  { label: 'Active Lifestyle', icon: <Dumbbell className="w-4 h-4" /> },
+  { id: 'learning', label: 'Continuous Learning', icon: <BookOpen className="w-4 h-4" /> },
+  { id: 'investing', label: 'Investing', icon: <LineChart className="w-4 h-4" /> },
+  { id: 'active-lifestyle', label: 'Active Lifestyle', icon: <Dumbbell className="w-4 h-4" /> },
 ];
 
 /**

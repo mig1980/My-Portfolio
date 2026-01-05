@@ -176,9 +176,9 @@ const About: React.FC = memo(() => {
               Personal Interests
             </h3>
             <div className="flex flex-wrap gap-3">
-              {INTERESTS.map((interest, idx) => (
+              {INTERESTS.map((interest) => (
                 <div
-                  key={idx}
+                  key={interest.id}
                   className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-900/30 border border-slate-800 rounded-full text-slate-300 hover:text-white hover:border-slate-600 hover:bg-slate-800/50 transition-all cursor-default"
                 >
                   <span className="text-primary-400">{interest.icon}</span>

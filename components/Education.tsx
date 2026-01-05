@@ -31,7 +31,7 @@ const Education: React.FC = memo(() => {
             Education
           </h3>
           <div className="space-y-8">
-            {EDUCATION.map((edu, idx) => {
+            {EDUCATION.map((edu) => {
               const CardWrapper = edu.url ? 'a' : 'div';
               const cardProps = edu.url
                 ? {
@@ -43,7 +43,7 @@ const Education: React.FC = memo(() => {
 
               return (
                 <CardWrapper
-                  key={idx}
+                  key={edu.id}
                   {...cardProps}
                   className={`
                     pl-6 border-l-2 border-slate-800 relative block
@@ -99,7 +99,7 @@ const Education: React.FC = memo(() => {
             Certifications
           </h3>
           <div className="grid sm:grid-cols-2 gap-4">
-            {CERTIFICATIONS.map((cert, idx) => {
+            {CERTIFICATIONS.map((cert) => {
               const CardWrapper = cert.url ? 'a' : 'div';
               const cardProps = cert.url
                 ? {
@@ -111,7 +111,7 @@ const Education: React.FC = memo(() => {
 
               return (
                 <CardWrapper
-                  key={idx}
+                  key={cert.id}
                   {...cardProps}
                   className={`
                     p-4 bg-slate-900 border border-slate-800 rounded-lg 

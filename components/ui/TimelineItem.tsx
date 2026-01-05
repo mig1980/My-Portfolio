@@ -41,10 +41,6 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
     const startYear = job.period.match(/\d{4}/)?.[0] || '';
     const displayYear = isCurrent ? 'Now' : startYear;
 
-    // iOS WebKit can be finicky with measuring/animating content height.
-    // Using a generous max-height keeps the layout correct while still animating.
-    const expandedMaxHeight = '1000px';
-
     return (
       <div className="relative flex gap-3 md:gap-6 group">
         {/* Vertical line - positioned on row, stretches with row height */}
@@ -141,22 +137,21 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
             </div>
 
             {/* Expandable description */}
-            <div
-              style={{ maxHeight: isExpanded ? expandedMaxHeight : '0px' }}
-              className={`
-                overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out
-                ${isExpanded ? 'opacity-100 mt-4' : 'opacity-0'}
-              `}
-            >
-              <ul className="space-y-2 border-t border-slate-700/50 pt-4">
-                {job.description.map((desc, i) => (
-                  <li key={i} className="text-slate-400 text-sm leading-relaxed flex items-start gap-2">
-                    <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
-                    {desc}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {isExpanded && (
+              <div className="mt-4">
+                <ul className="space-y-2 border-t border-slate-700/50 pt-4">
+                  {job.description.map((desc, i) => (
+                    <li
+                      key={i}
+                      className="text-slate-400 text-sm leading-relaxed flex items-start gap-2"
+                    >
+                      <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
+                      {desc}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </button>
         </div>
       </div>

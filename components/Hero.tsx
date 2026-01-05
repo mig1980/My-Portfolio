@@ -4,7 +4,7 @@
  */
 
 import React, { memo } from 'react';
-import { ArrowRight, Download } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { PERSONAL_INFO } from '../constants';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 
@@ -60,14 +60,6 @@ const Hero: React.FC = memo(() => {
               className="inline-flex items-center justify-center px-8 py-4 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white rounded-lg font-semibold transition-all focus-ring"
             >
               View Experience
-            </a>
-            <a
-              href="/CV/Michael-Gavrilov-Resume.pdf"
-              download
-              className="inline-flex items-center justify-center gap-2 px-6 py-4 text-slate-400 hover:text-white transition-colors focus-ring rounded-lg"
-            >
-              <Download className="w-4 h-4" />
-              Resume
             </a>
           </div>
         </div>

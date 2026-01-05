@@ -42,7 +42,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
     const displayYear = isCurrent ? 'Now' : startYear;
 
     return (
-      <div className="relative flex gap-6 group">
+      <div className="relative flex gap-4 md:gap-6 group">
         {/* Timeline connector line */}
         <div className="flex flex-col items-center">
           {/* Year label */}
@@ -69,11 +69,11 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
         </div>
 
         {/* Content card */}
-        <div className="flex-1 pb-8">
+        <div className="flex-1 pb-4 md:pb-8">
           <button
             onClick={onToggle}
             className={`
-              w-full text-left p-5 rounded-xl border transition-all duration-300
+              w-full text-left p-4 md:p-5 rounded-xl border transition-all duration-300
               ${
                 isExpanded
                   ? 'bg-slate-800/80 border-primary-500/30'

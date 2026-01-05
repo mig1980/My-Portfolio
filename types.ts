@@ -130,10 +130,12 @@ export interface AwardItem {
 export interface InterestItem {
   /** Unique identifier for the interest (for React key) */
   id: string;
-  /** Name of the interest */
+  /** Name of the interest/pillar */
   label: string;
   /** React icon component representing the interest */
   icon: React.ReactNode;
+  /** Description explaining this interest/pillar */
+  description: string;
 }
 
 /**

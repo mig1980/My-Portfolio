@@ -27,7 +27,8 @@ import {
   Mail,
   BookOpen,
   Dumbbell,
-  LineChart,
+  Lightbulb,
+  Users,
   Handshake,
 } from 'lucide-react';
 import { getLogoUrl } from './utils/logo';
@@ -295,13 +296,38 @@ export const AWARDS: AwardItem[] = [
 ];
 
 /**
- * Personal interests and hobbies.
+ * Personal interests and life pillars.
  * Displayed in the About section.
  */
 export const INTERESTS: InterestItem[] = [
-  { id: 'learning', label: 'Continuous Learning', icon: <BookOpen className="w-4 h-4" /> },
-  { id: 'investing', label: 'Investing', icon: <LineChart className="w-4 h-4" /> },
-  { id: 'active-lifestyle', label: 'Active Lifestyle', icon: <Dumbbell className="w-4 h-4" /> },
+  {
+    id: 'sports',
+    label: 'Sports & Performance',
+    icon: <Dumbbell className="w-5 h-5" />,
+    description:
+      'I stay sharp through movement, discipline, and challenge. Snowboarding, swimming, boxing, golfing, and horseback riding are how I push my body, clear my mind, and practice performing under pressure.',
+  },
+  {
+    id: 'learning',
+    label: 'Continuous Learning',
+    icon: <BookOpen className="w-5 h-5" />,
+    description:
+      "I treat learning as a permanent competitive advantage. From AI and cloud technology to investing and leadership, I'm always exploring what's next—and turning new insights into real-world decisions and outcomes.",
+  },
+  {
+    id: 'creativity',
+    label: 'Creativity & Impact',
+    icon: <Lightbulb className="w-5 h-5" />,
+    description:
+      'I build in public to create value for others. Through my blog, side projects, and mentoring, I turn ideas into products, stories, and tools that help people think differently about technology and investing.',
+  },
+  {
+    id: 'relationships',
+    label: 'Relationships & Inner Game',
+    icon: <Users className="w-5 h-5" />,
+    description:
+      'I invest in the people and practices that keep me grounded. Time with family, intentional reading, and simple mental fitness habits help me stay centered, resilient, and aligned with what actually matters over the long term.',
+  },
 ];
 
 /**

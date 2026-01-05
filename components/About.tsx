@@ -169,20 +169,23 @@ const About: React.FC = memo(() => {
             </div>
           </div>
 
-          {/* Interests Subsection */}
+          {/* Life Pillars Subsection */}
           <div className="mt-12">
             <h3 className="text-sm uppercase tracking-widest text-slate-500 font-bold mb-6 flex items-center gap-2">
               <Heart className="w-4 h-4" />
-              Personal Interests
+              Life Pillars
             </h3>
-            <div className="flex flex-wrap gap-3">
+            <div className="grid sm:grid-cols-2 gap-4">
               {INTERESTS.map((interest) => (
                 <div
                   key={interest.id}
-                  className="flex items-center gap-2.5 px-4 py-2.5 bg-slate-900/30 border border-slate-800 rounded-full text-slate-300 hover:text-white hover:border-slate-600 hover:bg-slate-800/50 transition-all cursor-default"
+                  className="p-5 bg-slate-900/50 border border-slate-800 rounded-xl hover:border-slate-700 hover:bg-slate-800/50 transition-all"
                 >
-                  <span className="text-primary-400">{interest.icon}</span>
-                  <span className="text-sm font-medium">{interest.label}</span>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-primary-400">{interest.icon}</span>
+                    <h4 className="text-slate-100 font-semibold">{interest.label}</h4>
+                  </div>
+                  <p className="text-sm text-slate-400 leading-relaxed">{interest.description}</p>
                 </div>
               ))}
             </div>

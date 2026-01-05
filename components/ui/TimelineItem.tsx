@@ -44,7 +44,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
     return (
       <div className="relative flex gap-3 md:gap-6 group">
         {/* Vertical line - positioned on row, stretches with row height */}
-        <div className="absolute left-[1.25rem] md:left-[1.5rem] top-6 md:top-7 bottom-1 md:bottom-4 w-0.5 -translate-x-1/2 bg-gradient-to-b from-slate-700 to-slate-800/50" />
+        <div className="absolute left-5 md:left-6 top-7 md:top-8 bottom-1 md:bottom-4 w-0.5 -translate-x-1/2 bg-gradient-to-b from-slate-700 to-slate-800/50 transition-all duration-300" />
 
         {/* Timeline connector - year and dot */}
         <div className="flex flex-col items-center w-10 md:w-12 flex-shrink-0">

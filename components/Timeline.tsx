@@ -55,9 +55,11 @@ const Timeline: React.FC = memo(() => {
         ))}
 
         {/* Timeline end marker */}
-        <div className="flex gap-4 md:gap-6">
+        <div className="flex gap-3 md:gap-6">
           <div className="flex flex-col items-center">
-            <div className="text-xs font-bold text-slate-600 mb-2 w-12 text-center">Start</div>
+            <div className="text-xs font-bold text-slate-600 mb-1 md:mb-2 w-10 md:w-12 text-center">
+              Start
+            </div>
             <div className="w-3 h-3 rounded-full bg-slate-800 border-2 border-slate-700" />
           </div>
           <div className="text-sm text-slate-600 italic pt-1">Where it all began...</div>

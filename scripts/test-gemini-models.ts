@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * @fileoverview Test script to check Gemini model availability.
  * Run with: npx tsx scripts/test-gemini-models.ts YOUR_API_KEY

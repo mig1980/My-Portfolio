@@ -20,9 +20,13 @@ import { useEffect, useRef, useState } from 'react';
  * return <div ref={ref} className={isVisible ? 'animate-in' : 'opacity-0'}>
  * ```
  */
-export function useInView(
-  options: IntersectionObserverInit = {}
-): [React.RefObject<HTMLElement | null>, boolean] {
+export function useInView(options: IntersectionObserverInit = {}): [
+  React.RefObject<HTMLElement | null>,
+  boolean,
+] {
+  // Destructure options into primitives to avoid unstable object reference in deps
+  const { threshold = 0.1, rootMargin = '0px 0px -50px 0px', root = null } = options;
+
   const ref = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -38,18 +42,15 @@ export function useInView(
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
+      (entries) => {
+        const entry = entries[0];
         // Once visible, stay visible (no exit animation)
-        if (entry.isIntersecting) {
+        if (entry?.isIntersecting) {
           setIsVisible(true);
           observer.unobserve(element);
         }
       },
-      {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px',
-        ...options,
-      }
+      { threshold, rootMargin, root }
     );
 
     observer.observe(element);
@@ -57,7 +58,7 @@ export function useInView(
     return () => {
       observer.disconnect();
     };
-  }, [options]);
+  }, [threshold, rootMargin, root]);
 
   return [ref, isVisible];
 }

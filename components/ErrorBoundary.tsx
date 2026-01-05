@@ -37,11 +37,13 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    // Log error to console in development
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    // Only log to console in development
+    if (import.meta.env.DEV) {
+      console.error('ErrorBoundary caught an error:', error, errorInfo);
+    }
 
-    // In production, you could send this to an error tracking service
-    // e.g., Sentry, LogRocket, etc.
+    // In production, send to an error tracking service (Sentry, LogRocket, etc.)
+    // Example: Sentry.captureException(error, { extra: { componentStack: errorInfo.componentStack } });
   }
 
   handleReload = (): void => {

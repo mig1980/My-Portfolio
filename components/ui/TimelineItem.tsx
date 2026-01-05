@@ -43,10 +43,10 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
 
     return (
       <div className="relative flex gap-3 md:gap-6 group">
-        {/* Timeline connector line */}
-        <div className="flex flex-col items-center">
+        {/* Timeline connector - year, dot, and line */}
+        <div className="relative flex flex-col items-center w-10 md:w-12 flex-shrink-0">
           {/* Year label */}
-          <div className="text-xs font-bold text-slate-500 mb-1 md:mb-2 w-10 md:w-12 text-center">
+          <div className="text-xs font-bold text-slate-500 mb-1 md:mb-2 text-center">
             {displayYear}
           </div>
 
@@ -64,12 +64,12 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
             `}
           />
 
-          {/* Vertical line */}
-          <div className="w-0.5 flex-1 bg-gradient-to-b from-slate-700 to-slate-800/50" />
+          {/* Vertical line - absolute to stretch full height of row */}
+          <div className="absolute left-1/2 top-6 md:top-7 bottom-0 w-0.5 -translate-x-1/2 bg-gradient-to-b from-slate-700 to-slate-800/50" />
         </div>
 
         {/* Content card */}
-        <div className="flex-1 pb-0 md:pb-6">
+        <div className="flex-1 pb-1 md:pb-4">
           <button
             onClick={onToggle}
             className={`

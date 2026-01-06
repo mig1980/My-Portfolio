@@ -24,9 +24,9 @@ const Hero: React.FC = memo(() => {
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-      {/* Abstract Background Elements */}
-      <div className="absolute top-0 right-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] lg:w-[800px] lg:h-[800px] bg-primary-900/20 rounded-full blur-[60px] md:blur-[100px] lg:blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[200px] h-[200px] md:w-[400px] md:h-[400px] lg:w-[600px] lg:h-[600px] bg-indigo-900/10 rounded-full blur-[50px] md:blur-[80px] lg:blur-[100px] translate-y-1/3 -translate-x-1/4 pointer-events-none" />
+      {/* Abstract Background Elements - reduced blur for Safari GPU performance */}
+      <div className="absolute top-0 right-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] lg:w-[800px] lg:h-[800px] bg-primary-900/20 rounded-full blur-[30px] md:blur-[40px] lg:blur-[50px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[200px] h-[200px] md:w-[400px] md:h-[400px] lg:w-[600px] lg:h-[600px] bg-indigo-900/10 rounded-full blur-[25px] md:blur-[35px] lg:blur-[45px] translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         <div className="order-2 md:order-1 space-y-8 animate-fade-in-up">
@@ -73,6 +73,8 @@ const Hero: React.FC = memo(() => {
               <img
                 src="/michael-gavrilov-headshot.jpg"
                 alt="Michael Gavrilov - Strategic Account Director at Microsoft specializing in Enterprise AI"
+                width={384}
+                height={384}
                 loading="eager"
                 fetchPriority="high"
                 className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"

@@ -12,17 +12,19 @@ import Stats from './components/Stats';
 import About from './components/About';
 import MyApproach from './components/MyApproach';
 import Expertise from './components/Expertise';
-import Timeline from './components/Timeline';
-import ThoughtLeadership from './components/ThoughtLeadership';
-import Education from './components/Education';
-import Contact from './components/Contact';
 import BackToTop from './components/BackToTop';
 import Legal from './components/Legal';
 import NotFound from './components/NotFound';
 import PageWrapper from './components/ui/PageWrapper';
 import ErrorBoundary from './components/ErrorBoundary';
 
-// Lazy load ChatWidget - not needed for initial render, improves Safari iOS performance
+// Lazy load below-fold sections - not visible on initial viewport, improves Safari iOS performance
+const Timeline = lazy(() => import('./components/Timeline'));
+const Education = lazy(() => import('./components/Education'));
+const ThoughtLeadership = lazy(() => import('./components/ThoughtLeadership'));
+const Contact = lazy(() => import('./components/Contact'));
+
+// Lazy load ChatWidget - not needed for initial render
 const ChatWidget = lazy(() => import('./components/ChatWidget'));
 
 /**
@@ -70,10 +72,13 @@ const App: React.FC = () => {
         <About />
         <MyApproach />
         <Expertise />
-        <Timeline />
-        <Education />
-        <ThoughtLeadership />
-        <Contact />
+        {/* Below-fold sections lazy loaded for faster initial paint */}
+        <Suspense fallback={null}>
+          <Timeline />
+          <Education />
+          <ThoughtLeadership />
+          <Contact />
+        </Suspense>
       </PageWrapper>
       <BackToTop />
       {/* ChatWidget lazy loaded and wrapped in ErrorBoundary to prevent chat errors from crashing the portfolio */}

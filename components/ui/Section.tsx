@@ -52,8 +52,12 @@ const Section: React.FC<SectionProps> = memo(
                    ${animate ? 'transition-all duration-700 ease-out' : ''}
                    ${animate && !isVisible ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'}
                    ${className}`}
-        // CSS containment improves Safari layout performance by isolating reflows
-        style={{ contain: 'content' }}
+        style={{
+          // CSS containment improves Safari layout performance by isolating reflows
+          contain: 'content',
+          // will-change hints GPU acceleration for animations (removed after animation completes)
+          willChange: animate && !isVisible ? 'transform, opacity' : 'auto',
+        }}
       >
         <div className="max-w-6xl mx-auto">{children}</div>
       </section>

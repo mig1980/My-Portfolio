@@ -121,7 +121,7 @@ const ThoughtLeadership: React.FC = memo(() => {
                 rel="noopener noreferrer"
                 className="text-lg font-bold text-white hover:text-primary-400 transition-colors"
               >
-                Fork this portfolio starter
+                Fork this Website
               </a>
               <p className="text-xs text-slate-400 mt-0.5">
                 Open source • Make it yours in minutes
@@ -130,8 +130,8 @@ const ThoughtLeadership: React.FC = memo(() => {
           </div>
 
           <p className="text-slate-300 text-sm mb-5 leading-relaxed">
-            Want a similar portfolio? Fork-friendly: clone, swap your content, and ship. Modern
-            React + TypeScript + Tailwind stack with tests in place.
+            Want a similar portfolio website? Fork-friendly: clone, swap your content, and ship.
+            Modern React + TypeScript + Tailwind stack with tests in place.
           </p>
 
           <div className="flex flex-wrap gap-3">

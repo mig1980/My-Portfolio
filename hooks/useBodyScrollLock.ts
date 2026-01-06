@@ -70,8 +70,11 @@ export function useBodyScrollLock(isLocked: boolean): void {
       document.body.style.overflow = originalOverflow;
       document.body.style.paddingRight = originalPaddingRight;
 
-      // Restore scroll position
-      window.scrollTo(0, scrollY);
+      // Restore scroll position in next frame to avoid blocking the UI
+      // Using requestAnimationFrame prevents the synchronous reflow that causes freeze
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollY);
+      });
     };
   }, [isLocked]);
 }

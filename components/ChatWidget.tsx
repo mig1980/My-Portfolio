@@ -713,24 +713,22 @@ const ChatWidget: React.FC = memo(() => {
   }, [retryLastMessage, isOnline]);
 
   const toggleChat = useCallback((): void => {
-    setIsOpen((prev) => {
-      // Schedule blur for next frame to avoid blocking the state update
-      // This prevents jank on mobile when dismissing keyboard
-      if (prev) {
-        requestAnimationFrame(() => {
-          inputRef.current?.blur();
-          if (typeof document !== 'undefined') {
-            const active = document.activeElement;
-            if (active instanceof HTMLElement) {
-              active.blur();
-            }
+    // Check current state BEFORE updating
+    // This avoids doing work inside setState callback which can cause jank
+    if (isOpen) {
+      // Closing - blur elements in next frame to avoid blocking
+      requestAnimationFrame(() => {
+        inputRef.current?.blur();
+        if (typeof document !== 'undefined') {
+          const active = document.activeElement;
+          if (active instanceof HTMLElement) {
+            active.blur();
           }
-        });
-      }
-
-      return !prev;
-    });
-  }, []);
+        }
+      });
+    }
+    setIsOpen((prev) => !prev);
+  }, [isOpen]);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
     setInput(e.target.value);

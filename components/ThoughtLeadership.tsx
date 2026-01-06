@@ -121,7 +121,7 @@ const ThoughtLeadership: React.FC = memo(() => {
                 rel="noopener noreferrer"
                 className="text-lg font-bold text-white hover:text-primary-400 transition-colors"
               >
-                Fork this Website
+                Fork This Website
               </a>
               <p className="text-xs text-slate-400 mt-0.5">
                 Open source • Make it yours in minutes

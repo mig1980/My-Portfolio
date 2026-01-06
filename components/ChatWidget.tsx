@@ -500,10 +500,6 @@ const ChatWidget: React.FC = memo(() => {
   } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const greetingTimersRef = useRef<{
-    show: ReturnType<typeof setTimeout> | null;
-    hide: ReturnType<typeof setTimeout> | null;
-  }>({ show: null, hide: null });
 
   // Mobile responsiveness
   const isMobile = useIsMobile();
@@ -550,12 +546,6 @@ const ChatWidget: React.FC = memo(() => {
   const dismissGreeting = useCallback((): void => {
     setShowGreetingBubble(false);
     markGreetingDismissed();
-
-    // Clear auto-hide timer if set
-    if (greetingTimersRef.current.hide) {
-      clearTimeout(greetingTimersRef.current.hide);
-      greetingTimersRef.current.hide = null;
-    }
   }, [markGreetingDismissed]);
 
   /**
@@ -573,33 +563,33 @@ const ChatWidget: React.FC = memo(() => {
       return;
     }
 
-    // Capture ref values for cleanup
-    const timers = greetingTimersRef.current;
+    // Use local variables for cleanup (avoid stale ref issues)
+    let showTimer: ReturnType<typeof setTimeout> | null = null;
+    let hideTimer: ReturnType<typeof setTimeout> | null = null;
+    let isCancelled = false;
 
     // Show after delay
-    timers.show = setTimeout(() => {
-      // Double-check chat isn't open (user might have opened during delay)
-      if (!isOpen) {
-        setShowGreetingBubble(true);
+    showTimer = setTimeout(() => {
+      // Check if effect was cleaned up during the delay
+      if (isCancelled) return;
 
-        // Auto-hide after duration (if configured)
-        if (GREETING_BUBBLE.AUTO_HIDE_MS > 0) {
-          timers.hide = setTimeout(() => {
-            setShowGreetingBubble(false);
-            // Don't mark as dismissed on auto-hide - show again on next visit
-          }, GREETING_BUBBLE.AUTO_HIDE_MS);
-        }
+      setShowGreetingBubble(true);
+
+      // Auto-hide after duration (if configured)
+      if (GREETING_BUBBLE.AUTO_HIDE_MS > 0) {
+        hideTimer = setTimeout(() => {
+          if (isCancelled) return;
+          setShowGreetingBubble(false);
+          // Don't mark as dismissed on auto-hide - show again on next visit
+        }, GREETING_BUBBLE.AUTO_HIDE_MS);
       }
     }, GREETING_BUBBLE.SHOW_DELAY_MS);
 
-    // Cleanup timers on unmount
+    // Cleanup timers on unmount or when dependencies change
     return () => {
-      if (timers.show) {
-        clearTimeout(timers.show);
-      }
-      if (timers.hide) {
-        clearTimeout(timers.hide);
-      }
+      isCancelled = true;
+      if (showTimer) clearTimeout(showTimer);
+      if (hideTimer) clearTimeout(hideTimer);
     };
   }, [isOpen, wasGreetingDismissed]);
 
@@ -651,12 +641,21 @@ const ChatWidget: React.FC = memo(() => {
   useEffect(() => {
     if (!isOpen || !inputRef.current) return;
 
-    // Small delay to ensure animation completes
-    const timeoutId = setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
+    // Use requestAnimationFrame for smoother focus after paint
+    // This avoids blocking the animation and reduces jank
+    let timeoutId: ReturnType<typeof setTimeout>;
 
-    return () => clearTimeout(timeoutId);
+    const rafId = requestAnimationFrame(() => {
+      // Small additional delay to ensure animation completes
+      timeoutId = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(timeoutId);
+    };
   }, [isOpen]);
 
   // Handle escape key to close
@@ -715,15 +714,18 @@ const ChatWidget: React.FC = memo(() => {
 
   const toggleChat = useCallback((): void => {
     setIsOpen((prev) => {
-      // On mobile, dismissing the keyboard can otherwise block quick re-taps.
+      // Schedule blur for next frame to avoid blocking the state update
+      // This prevents jank on mobile when dismissing keyboard
       if (prev) {
-        inputRef.current?.blur();
-        if (typeof document !== 'undefined') {
-          const active = document.activeElement;
-          if (active instanceof HTMLElement) {
-            active.blur();
+        requestAnimationFrame(() => {
+          inputRef.current?.blur();
+          if (typeof document !== 'undefined') {
+            const active = document.activeElement;
+            if (active instanceof HTMLElement) {
+              active.blur();
+            }
           }
-        }
+        });
       }
 
       return !prev;

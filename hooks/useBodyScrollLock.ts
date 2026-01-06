@@ -22,6 +22,7 @@ import { useEffect } from 'react';
  * - Handles iOS Safari bounce scroll
  * - Restores original overflow on cleanup
  * - Safe for SSR (no-op on server)
+ * - Uses CSS-based approach for better performance (avoids passive:false)
  *
  * @example
  * ```tsx
@@ -39,11 +40,21 @@ export function useBodyScrollLock(isLocked: boolean): void {
     // Store original styles
     const originalOverflow = document.body.style.overflow;
     const originalPaddingRight = document.body.style.paddingRight;
+    const originalPosition = document.body.style.position;
+    const originalTop = document.body.style.top;
+    const originalWidth = document.body.style.width;
+
+    // Get current scroll position BEFORE modifying styles
+    const scrollY = window.scrollY;
 
     // Calculate scrollbar width to prevent layout shift
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
-    // Apply scroll lock
+    // Use position:fixed approach - more performant than touchmove preventDefault
+    // This avoids the need for passive:false which blocks the compositor thread
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
     document.body.style.overflow = 'hidden';
 
     // Add padding to compensate for scrollbar disappearing (prevents layout shift)
@@ -51,23 +62,16 @@ export function useBodyScrollLock(isLocked: boolean): void {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
 
-    // iOS Safari fix: prevent touchmove on body
-    const preventTouchMove = (e: TouchEvent): void => {
-      // Allow scrolling within the chat container
-      const target = e.target as HTMLElement;
-      if (target.closest('[data-scroll-container]')) {
-        return;
-      }
-      e.preventDefault();
-    };
-
-    document.body.addEventListener('touchmove', preventTouchMove, { passive: false });
-
-    // Cleanup: restore original styles
+    // Cleanup: restore original styles and scroll position
     return () => {
+      document.body.style.position = originalPosition;
+      document.body.style.top = originalTop;
+      document.body.style.width = originalWidth;
       document.body.style.overflow = originalOverflow;
       document.body.style.paddingRight = originalPaddingRight;
-      document.body.removeEventListener('touchmove', preventTouchMove);
+
+      // Restore scroll position
+      window.scrollTo(0, scrollY);
     };
   }, [isLocked]);
 }

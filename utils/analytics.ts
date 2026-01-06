@@ -80,12 +80,17 @@ function loadScript(src: string): Promise<void> {
 function initGtag(measurementId: string): void {
   window.dataLayer = window.dataLayer ?? [];
 
-  window.gtag = (...args: unknown[]) => {
-    window.dataLayer?.push(args);
-  };
+  // Standard gtag stub - must push arguments as-is, not as array
+  // This is the exact pattern Google requires
 
-  window.gtag('js', new Date());
-  window.gtag('config', measurementId, {
+  const gtag = function (..._args: unknown[]) {
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer?.push(arguments);
+  };
+  window.gtag = gtag;
+
+  gtag('js', new Date());
+  gtag('config', measurementId, {
     anonymize_ip: true,
     // Helps GA attribute properly when behind reverse proxies.
     transport_type: 'beacon',

@@ -23,7 +23,8 @@ export default defineConfig({
     },
     cssCodeSplit: true,
     minify: 'esbuild',
-    target: 'esnext',
+    // es2020 for better Safari iOS compatibility (esnext can cause parse delays)
+    target: 'es2020',
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'lucide-react'],

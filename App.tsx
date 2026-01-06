@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import Stats from './components/Stats';
@@ -17,11 +17,13 @@ import ThoughtLeadership from './components/ThoughtLeadership';
 import Education from './components/Education';
 import Contact from './components/Contact';
 import BackToTop from './components/BackToTop';
-import ChatWidget from './components/ChatWidget';
 import Legal from './components/Legal';
 import NotFound from './components/NotFound';
 import PageWrapper from './components/ui/PageWrapper';
 import ErrorBoundary from './components/ErrorBoundary';
+
+// Lazy load ChatWidget - not needed for initial render, improves Safari iOS performance
+const ChatWidget = lazy(() => import('./components/ChatWidget'));
 
 /**
  * Root application component.
@@ -74,9 +76,11 @@ const App: React.FC = () => {
         <Contact />
       </PageWrapper>
       <BackToTop />
-      {/* ChatWidget wrapped in its own ErrorBoundary to prevent chat errors from crashing the portfolio */}
+      {/* ChatWidget lazy loaded and wrapped in ErrorBoundary to prevent chat errors from crashing the portfolio */}
       <ErrorBoundary>
-        <ChatWidget />
+        <Suspense fallback={null}>
+          <ChatWidget />
+        </Suspense>
       </ErrorBoundary>
     </>
   );

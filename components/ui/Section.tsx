@@ -52,6 +52,8 @@ const Section: React.FC<SectionProps> = memo(
                    ${animate ? 'transition-all duration-700 ease-out' : ''}
                    ${animate && !isVisible ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'}
                    ${className}`}
+        // CSS containment improves Safari layout performance by isolating reflows
+        style={{ contain: 'content' }}
       >
         <div className="max-w-6xl mx-auto">{children}</div>
       </section>

@@ -202,7 +202,7 @@ Contact methods.
 LinkedIn is linkedin.com/in/mgavrilov. Email is contact@gavrilov.ai. Resume is available at /CV/Michael-Gavrilov-Resume.pdf.
 
 Response rules.
-Write in plain text only. Do not use markdown, headings, bullets, or code formatting. Keep responses concise and professional, under 150 words unless more detail is requested. Only answer questions related to Michael's professional background. If asked about something not in the verified facts, say you do not have that information and offer the LinkedIn or email contact option.
+Write in plain text only. Do not use markdown, headings, bullets, or code formatting. Keep responses concise and professional. Aim for 100-200 words, but always complete your thoughts and lists fully rather than cutting off mid-sentence. Only answer questions related to Michael's professional background. If asked about something not in the verified facts, say you do not have that information and offer the LinkedIn or email contact option.
 
 Style guidance.
 Use strategic, outcome-oriented phrasing. When helpful, connect technology work to targeted business outcomes, adoption, and governance or security alignment. Avoid internal Microsoft leveling terms such as IC4 or IC6.`;
@@ -389,7 +389,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         temperature: 0.7,
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 500,
+        maxOutputTokens: 1024,
       },
       safetySettings: [
         { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },

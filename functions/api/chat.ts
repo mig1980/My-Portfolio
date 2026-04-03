@@ -87,7 +87,7 @@ const MODEL_CHAIN: readonly string[] = [
   'gemini-2.5-flash', // Primary: fast, capable
   'gemini-2.5-flash-lite', // Fallback: lighter/faster
   'gemini-3-flash-preview', // Fallback: newest (preview)
-  'gemma-3-27b-it', // Fallback: open model
+  'gemma-4-26b-a4b-it', // Fallback: open model (Gemma 4)
 ] as const;
 
 /** Allowed production origins */

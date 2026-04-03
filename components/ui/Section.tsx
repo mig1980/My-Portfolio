@@ -49,8 +49,8 @@ const Section: React.FC<SectionProps> = memo(
         id={id}
         className={`py-20 md:py-32 px-6 md:px-12 lg:px-24 transition-colors duration-500 
                    ${darker ? 'bg-slate-900/50' : 'bg-transparent'} 
-                   ${animate ? 'transition-all duration-700 ease-out' : ''}
-                   ${animate && !isVisible ? 'opacity-0 translate-y-8' : 'opacity-100 translate-y-0'}
+                   ${animate ? 'transition-all duration-700 ease-out motion-reduce:transition-none' : ''}
+                   ${animate && !isVisible ? 'opacity-0 translate-y-8 motion-reduce:opacity-100 motion-reduce:translate-y-0' : 'opacity-100 translate-y-0'}
                    ${className}`}
         style={{
           // CSS containment improves Safari layout performance by isolating reflows

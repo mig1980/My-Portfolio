@@ -138,7 +138,7 @@ const Navigation: React.FC = memo(() => {
           role="dialog"
           aria-modal="true"
           aria-label="Navigation menu"
-          className="md:hidden absolute top-full left-0 right-0 bg-slate-900 border-b border-slate-800 p-6 flex flex-col gap-4 shadow-2xl animate-fade-in-up"
+          className="md:hidden absolute top-full left-0 right-0 bg-slate-900 border-b border-slate-800 p-6 flex flex-col gap-4 shadow-2xl animate-fade-in-up motion-reduce:animate-none"
         >
           {navItems.map((item) => (
             <a

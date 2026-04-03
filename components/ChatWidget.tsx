@@ -204,7 +204,7 @@ const MessageBubble = memo<MessageBubbleProps>(
             {/* Typing cursor for animation effect */}
             {isTyping && (
               <span
-                className="inline-block w-0.5 h-4 bg-primary-400 ml-0.5 animate-pulse"
+                className="inline-block w-0.5 h-4 bg-primary-400 ml-0.5 animate-pulse motion-reduce:animate-none"
                 aria-hidden="true"
               />
             )}

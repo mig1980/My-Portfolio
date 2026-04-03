@@ -47,7 +47,7 @@ const Education: React.FC = memo(() => {
                   {...cardProps}
                   className={`
                     pl-6 border-l-2 border-slate-800 relative block
-                    ${edu.url ? 'cursor-pointer group hover:border-slate-600 transition-colors' : ''}
+                    ${edu.url ? 'cursor-pointer group hover:border-slate-600 transition-colors focus-ring-inset rounded-sm' : ''}
                   `}
                 >
                   <span className="absolute -left-[5px] top-2 w-2.5 h-2.5 rounded-full bg-slate-600 ring-4 ring-slate-900" />
@@ -118,7 +118,7 @@ const Education: React.FC = memo(() => {
                   className={`
                     p-4 bg-slate-900 border border-slate-800 rounded-lg 
                     hover:border-slate-600 transition-colors flex items-start gap-3
-                    ${cert.url ? 'cursor-pointer group' : ''}
+                    ${cert.url ? 'cursor-pointer group focus-ring-inset' : ''}
                   `}
                 >
                   {/* Logo with fallback */}

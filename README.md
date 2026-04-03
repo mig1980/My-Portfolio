@@ -62,6 +62,16 @@ My-Portfolio/
 - ✅ Shared utilities to avoid code duplication
 - ✅ Theme defined once in CSS via `@theme` directive
 
+## Accessibility
+
+- ✅ **Focus indicators** on all interactive elements via `.focus-ring` / `.focus-ring-inset` utilities
+- ✅ **WCAG 2.1 AA contrast** — all small body text meets 4.5:1 ratio
+- ✅ **Reduced motion** — all transform/keyframe animations have `motion-reduce:` counterparts
+- ✅ **Section scroll animations** respect `prefers-reduced-motion` (content shown immediately)
+- ✅ **ChatWidget** loading animation hidden for reduced-motion users with text fallback
+- ✅ **SSR-safe hooks** — `useInView` and `useCountUp` guard against missing `IntersectionObserver`
+- ✅ ARIA attributes on dialog, expandable sections, and live regions
+
 ## Security
 
 - ✅ HSTS with preload (`Strict-Transport-Security: max-age=31536000`)

@@ -29,9 +29,9 @@ const Hero: React.FC = memo(() => {
       <div className="absolute bottom-0 left-0 w-[200px] h-[200px] md:w-[400px] md:h-[400px] lg:w-[600px] lg:h-[600px] bg-indigo-900/10 rounded-full blur-[25px] md:blur-[35px] lg:blur-[45px] translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-        <div className="order-2 md:order-1 space-y-8 animate-fade-in-up">
+        <div className="order-2 md:order-1 space-y-8 animate-fade-in-up motion-reduce:animate-none">
           <div className="inline-flex items-center px-3 py-1 rounded-full border border-primary-500/30 bg-primary-500/10 text-primary-300 text-sm font-medium">
-            <span className="w-2 h-2 rounded-full bg-primary-400 mr-2 animate-pulse"></span>
+            <span className="w-2 h-2 rounded-full bg-primary-400 mr-2 animate-pulse motion-reduce:animate-none"></span>
             Open to Strategic Conversations
           </div>
 
@@ -77,7 +77,7 @@ const Hero: React.FC = memo(() => {
                 height={384}
                 loading="eager"
                 fetchPriority="high"
-                className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700 motion-reduce:transition-none motion-reduce:group-hover:transform-none"
               />
             </picture>
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />

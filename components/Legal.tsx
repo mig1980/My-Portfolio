@@ -131,7 +131,7 @@ const Legal: React.FC = memo(() => {
                 {linkedInUrl ? (
                   <a
                     className="text-primary-400 hover:text-primary-300 underline 
-                               underline-offset-4 transition-colors"
+                               underline-offset-4 transition-colors focus-ring-inset rounded-sm"
                     href={linkedInUrl}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -153,7 +153,7 @@ const Legal: React.FC = memo(() => {
             href="/"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl
                        bg-slate-800/80 text-slate-300 hover:text-white 
-                       hover:bg-slate-700/80 transition-all duration-300
+                       hover:bg-slate-700/80 transition-all duration-300 focus-ring
                        border border-slate-700 hover:border-slate-600"
           >
             <ArrowLeft className="w-4 h-4" />

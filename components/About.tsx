@@ -126,7 +126,7 @@ const About: React.FC = memo(() => {
                     className={`
                       group relative p-5 rounded-xl border border-slate-800 bg-slate-900/50 
                       transition-all duration-300 ${borderColor} ${bgGradient}
-                      ${award.link ? 'cursor-pointer' : ''}
+                      ${award.link ? 'cursor-pointer focus-ring-inset' : ''}
                     `}
                   >
                     {award.link && (

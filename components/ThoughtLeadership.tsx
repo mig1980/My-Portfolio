@@ -40,7 +40,7 @@ const ThoughtLeadership: React.FC = memo(() => {
               href="https://quantuminvestor.net"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0"
+              className="flex-shrink-0 focus-ring-inset rounded-lg"
             >
               <img
                 src="/LogoQI.png"
@@ -56,7 +56,7 @@ const ThoughtLeadership: React.FC = memo(() => {
                 href="https://quantuminvestor.net"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lg font-bold text-white hover:text-primary-400 transition-colors"
+                className="text-lg font-bold text-white hover:text-primary-400 transition-colors focus-ring-inset rounded-sm"
               >
                 QuantumInvestor.net
               </a>
@@ -78,7 +78,7 @@ const ThoughtLeadership: React.FC = memo(() => {
               href="https://quantuminvestor.net"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-5 py-2.5 bg-primary-600 hover:bg-primary-500 text-white text-sm rounded-lg font-semibold transition-colors"
+              className="inline-flex items-center justify-center px-5 py-2.5 bg-primary-600 hover:bg-primary-500 text-white text-sm rounded-lg font-semibold transition-colors focus-ring"
             >
               Follow the experiment
             </a>
@@ -88,7 +88,7 @@ const ThoughtLeadership: React.FC = memo(() => {
                 href={quantumInvestor.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-sm rounded-lg font-medium transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-sm rounded-lg font-medium transition-colors focus-ring"
               >
                 Docs
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -107,7 +107,7 @@ const ThoughtLeadership: React.FC = memo(() => {
               href={portfolioRepoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0"
+              className="flex-shrink-0 focus-ring-inset rounded-lg"
             >
               <img
                 src={getLogoUrl('github.com', { size: 80 })}
@@ -123,7 +123,7 @@ const ThoughtLeadership: React.FC = memo(() => {
                 href={portfolioRepoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lg font-bold text-white hover:text-primary-400 transition-colors"
+                className="text-lg font-bold text-white hover:text-primary-400 transition-colors focus-ring-inset rounded-sm"
               >
                 Fork This Website
               </a>
@@ -143,7 +143,7 @@ const ThoughtLeadership: React.FC = memo(() => {
               href={portfolioRepoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-5 py-2.5 bg-primary-600 hover:bg-primary-500 text-white text-sm rounded-lg font-semibold transition-colors"
+              className="inline-flex items-center justify-center px-5 py-2.5 bg-primary-600 hover:bg-primary-500 text-white text-sm rounded-lg font-semibold transition-colors focus-ring"
             >
               Fork on GitHub
             </a>
@@ -151,7 +151,7 @@ const ThoughtLeadership: React.FC = memo(() => {
               href={`${portfolioRepoUrl}#readme`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-sm rounded-lg font-medium transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-sm rounded-lg font-medium transition-colors focus-ring"
             >
               Setup notes
               <ExternalLink className="w-3.5 h-3.5" />

@@ -74,7 +74,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
             type="button"
             onClick={onToggle}
             className={`
-              w-full text-left p-3 md:p-5 rounded-xl border transition-all duration-300
+              w-full text-left p-3 md:p-5 rounded-xl border transition-all duration-300 focus-ring
               ${
                 isExpanded
                   ? 'bg-slate-800/80 border-primary-500/30'
@@ -134,6 +134,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
               <ChevronDown
                 className={`
                   w-5 h-5 text-slate-500 transition-transform duration-300 flex-shrink-0 mt-1
+                  motion-reduce:transition-none
                   ${isExpanded ? 'rotate-180' : ''}
                 `}
                 aria-hidden="true"

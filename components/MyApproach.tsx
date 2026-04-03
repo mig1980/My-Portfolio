@@ -85,7 +85,7 @@ const MyApproach: React.FC = memo(() => {
 
               {/* Icon */}
               <div
-                className={`w-12 h-12 rounded-lg bg-gradient-to-br ${step.color} flex items-center justify-center mb-4 mt-2 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}
+                className={`w-12 h-12 rounded-lg bg-gradient-to-br ${step.color} flex items-center justify-center mb-4 mt-2 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300 motion-reduce:transition-none motion-reduce:group-hover:transform-none`}
               >
                 <step.icon className="w-6 h-6 text-white" />
               </div>

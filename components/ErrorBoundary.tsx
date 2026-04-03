@@ -84,7 +84,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                 onClick={this.handleReload}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 
                            bg-primary-600 hover:bg-primary-700 text-white rounded-xl 
-                           font-semibold transition-colors"
+                           font-semibold transition-colors focus-ring"
               >
                 <RefreshCw className="w-4 h-4" />
                 Refresh Page
@@ -93,7 +93,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                 onClick={this.handleGoHome}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 
                            bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 
-                           hover:text-white rounded-xl font-semibold transition-colors 
+                           hover:text-white rounded-xl font-semibold transition-colors focus-ring
                            border border-slate-700 hover:border-slate-600"
               >
                 <Home className="w-4 h-4" />

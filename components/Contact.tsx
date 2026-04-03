@@ -31,7 +31,7 @@ const Contact: React.FC = memo(() => {
                 href={link.url}
                 target={link.url.startsWith('mailto:') ? undefined : '_blank'}
                 rel={link.url.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-                className="p-4 bg-slate-900 rounded-full text-slate-300 hover:bg-primary-600 hover:text-white transition-all transform hover:-translate-y-1 focus-ring"
+                className="p-4 bg-slate-900 rounded-full text-slate-300 hover:bg-primary-600 hover:text-white transition-all transform hover:-translate-y-1 focus-ring motion-reduce:transition-none motion-reduce:hover:transform-none"
                 aria-label={link.label}
               >
                 {link.icon}

@@ -50,6 +50,22 @@ export function useCountUp({
     const element = ref.current;
     if (!element) return;
 
+    // Skip animation entirely in SSR, unsupported browsers, or reduced motion
+    if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') {
+      setCount(end);
+      setInView(true);
+      setHasAnimated(true);
+      return;
+    }
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      setCount(end);
+      setInView(true);
+      setHasAnimated(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -66,7 +82,7 @@ export function useCountUp({
     return () => {
       observer.disconnect();
     };
-  }, [hasAnimated]);
+  }, [end, hasAnimated]);
 
   // Animation effect
   const animate = useCallback(() => {

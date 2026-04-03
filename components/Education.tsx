@@ -83,7 +83,7 @@ const Education: React.FC = memo(() => {
                         )}
                       </h4>
                       <p className="text-slate-400">{edu.degree}</p>
-                      <span className="text-xs text-slate-500 uppercase tracking-wider mt-1 block">
+                      <span className="text-xs text-slate-400 uppercase tracking-wider mt-1 block">
                         {edu.type}
                       </span>
                     </div>
@@ -151,7 +151,7 @@ const Education: React.FC = memo(() => {
                         <ExternalLink className="w-3 h-3 text-slate-500 group-hover:text-primary-400 transition-colors" />
                       )}
                     </h4>
-                    <p className="text-xs text-slate-500">{cert.issuer}</p>
+                    <p className="text-xs text-slate-400">{cert.issuer}</p>
                   </div>
                 </CardWrapper>
               );

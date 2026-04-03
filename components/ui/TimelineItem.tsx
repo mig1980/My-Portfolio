@@ -49,7 +49,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
         {/* Timeline connector - year and dot */}
         <div className="flex flex-col items-center w-10 md:w-12 flex-shrink-0">
           {/* Year label */}
-          <div className="text-xs font-bold text-slate-500 mb-1 md:mb-2 text-center">
+          <div className="text-xs font-bold text-slate-400 mb-1 md:mb-2 text-center">
             {displayYear}
           </div>
 
@@ -124,7 +124,7 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
 
                 <h3 className="text-lg font-bold text-slate-100 mb-1">{job.title}</h3>
 
-                <div className="flex items-center gap-2 text-slate-500 text-sm">
+                <div className="flex items-center gap-2 text-slate-400 text-sm">
                   <Calendar className="w-3 h-3" aria-hidden="true" focusable="false" />
                   {job.period}
                 </div>

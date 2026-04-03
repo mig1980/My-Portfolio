@@ -14,7 +14,7 @@ A modern, performant portfolio website built with React 19, TypeScript, and Tail
 
 ## Run Locally
 
-**Prerequisites:** Node.js 20.x or higher
+**Prerequisites:** Node.js 20.x or higher (pinned via `.nvmrc`)
 
 ```bash
 # Install dependencies
@@ -54,10 +54,22 @@ My-Portfolio/
 ## Performance Optimizations
 
 - ✅ All components memoized with `React.memo()`
+- ✅ Scroll handler throttled via `requestAnimationFrame`
+- ✅ Explicit image dimensions on all `<img>` elements (CLS prevention)
 - ✅ Vite manual chunks for better caching (lucide-react separated)
+- ✅ Production source maps disabled
 - ✅ CSS utility classes for common patterns (.focus-ring)
 - ✅ Shared utilities to avoid code duplication
 - ✅ Theme defined once in CSS via `@theme` directive
+
+## Security
+
+- ✅ HSTS with preload (`Strict-Transport-Security: max-age=31536000`)
+- ✅ CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff
+- ✅ Permissions-Policy restricts camera, microphone, geolocation
+- ✅ CORS whitelist on chat API (production domains + localhost)
+- ✅ Input sanitization and rate limiting on server-side chat endpoint
+- ✅ 0 npm audit vulnerabilities
 
 ## Available Scripts
 
@@ -80,7 +92,7 @@ My-Portfolio/
 
 ## Deployment
 
-Deployed on Cloudflare Pages with security headers configured in `public/_headers`.
+Deployed on Cloudflare Pages with security headers configured in `public/_headers`. CI runs lint, type-check, test, and build on every PR via GitHub Actions (all jobs have explicit timeouts).
 
 ## SEO / Indexing
 

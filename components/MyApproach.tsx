@@ -109,7 +109,7 @@ const MyApproach: React.FC = memo(() => {
                 outcomes—how it benefits the customer. Truly great salespeople sell feelings—the
                 emotional impact of the purchase.
               </p>
-              <footer className="mt-4 text-sm text-slate-500">— Robert Herjavec</footer>
+              <footer className="mt-4 text-sm text-slate-400">— Robert Herjavec</footer>
             </blockquote>
           </div>
         </div>

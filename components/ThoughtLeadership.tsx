@@ -97,7 +97,7 @@ const ThoughtLeadership: React.FC = memo(() => {
           </div>
 
           {/* Disclaimer */}
-          <p className="text-xs text-slate-500 italic">Not financial advice.</p>
+          <p className="text-xs text-slate-400 italic">Not financial advice.</p>
         </div>
 
         {/* GitHub Fork Card */}

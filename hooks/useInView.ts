@@ -33,6 +33,12 @@ export function useInView(
     const element = ref.current;
     if (!element) return;
 
+    // Bail out gracefully in SSR or environments without required APIs
+    if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {

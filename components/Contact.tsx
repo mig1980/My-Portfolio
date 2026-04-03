@@ -40,20 +40,20 @@ const Contact: React.FC = memo(() => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-slate-900 text-slate-600 text-sm">
+        <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-slate-900 text-slate-400 text-sm">
           <p>© {new Date().getFullYear()} Michael Gavrilov. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <a
               href="https://logo.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-600 hover:text-slate-300 transition-colors focus-ring-inset rounded-sm"
+              className="text-slate-400 hover:text-slate-300 transition-colors focus-ring-inset rounded-sm"
             >
               Logos by Logo.dev
             </a>
             <a
               href="/legal"
-              className="text-slate-600 hover:text-slate-300 transition-colors focus-ring-inset rounded-sm"
+              className="text-slate-400 hover:text-slate-300 transition-colors focus-ring-inset rounded-sm"
             >
               Legal
             </a>

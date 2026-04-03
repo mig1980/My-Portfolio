@@ -147,6 +147,11 @@ describe('ChatWidget', () => {
       fireEvent.click(screen.getByLabelText('Send message'));
 
       expect(input.value).toBe('');
+
+      // Wait for the async fetch to resolve to avoid act() warnings
+      await waitFor(() => {
+        expect(screen.getByText('Response')).toBeInTheDocument();
+      });
     });
 
     it('does not send empty messages', () => {

@@ -212,7 +212,7 @@ const MessageBubble = memo<MessageBubbleProps>(
 
           {/* Timestamp */}
           <span
-            className={`text-xs text-slate-500 mt-1 ${isUser ? 'text-right' : 'text-left'}`}
+            className={`text-xs text-slate-400 mt-1 ${isUser ? 'text-right' : 'text-left'}`}
             aria-label={`Sent ${formattedTime}`}
           >
             {formattedTime}
@@ -274,7 +274,7 @@ LoadingIndicator.displayName = 'LoadingIndicator';
 const AiDisclaimer = memo(() => (
   <div
     className="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800/50 
-               border-t border-slate-700/50 text-xs text-slate-500"
+               border-t border-slate-700/50 text-xs text-slate-400"
     aria-label="Disclaimer"
   >
     <Sparkles className="w-3 h-3" aria-hidden="true" />
@@ -859,7 +859,7 @@ const ChatWidget: React.FC = memo(() => {
 
                 {/* Quick Questions */}
                 <div className="space-y-2">
-                  <p className="text-slate-500 text-xs uppercase tracking-wide">Quick questions</p>
+                  <p className="text-slate-400 text-xs uppercase tracking-wide">Quick questions</p>
                   <div className="flex flex-wrap gap-2 justify-center">
                     {QUICK_QUESTIONS.map((question) => (
                       <button

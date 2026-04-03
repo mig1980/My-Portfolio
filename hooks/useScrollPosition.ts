@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface UseScrollPositionOptions {
   threshold?: number;
@@ -12,9 +12,14 @@ interface UseScrollPositionOptions {
  */
 export function useScrollPosition({ threshold = 50 }: UseScrollPositionOptions = {}): boolean {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const rafId = useRef<number | null>(null);
 
   const handleScroll = useCallback((): void => {
-    setIsScrolled(window.scrollY > threshold);
+    if (rafId.current !== null) return;
+    rafId.current = requestAnimationFrame(() => {
+      setIsScrolled(window.scrollY > threshold);
+      rafId.current = null;
+    });
   }, [threshold]);
 
   useEffect(() => {
@@ -23,6 +28,10 @@ export function useScrollPosition({ threshold = 50 }: UseScrollPositionOptions =
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = null;
+      }
     };
   }, [handleScroll]);
 

@@ -45,6 +45,8 @@ const ThoughtLeadership: React.FC = memo(() => {
               <img
                 src="/LogoQI.png"
                 alt="QuantumInvestor logo"
+                width={56}
+                height={56}
                 loading="lazy"
                 className="w-14 h-14 rounded-lg object-contain hover:opacity-80 transition-opacity"
               />
@@ -110,6 +112,8 @@ const ThoughtLeadership: React.FC = memo(() => {
               <img
                 src={getLogoUrl('github.com', { size: 80 })}
                 alt="GitHub logo"
+                width={56}
+                height={56}
                 loading="lazy"
                 className="w-14 h-14 rounded-lg object-contain hover:opacity-80 transition-opacity invert contrast-200"
               />

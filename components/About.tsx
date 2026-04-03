@@ -141,6 +141,8 @@ const About: React.FC = memo(() => {
                         <img
                           src={award.badgeUrl}
                           alt={`${award.title} badge`}
+                          width={48}
+                          height={48}
                           loading="lazy"
                           className={`w-12 h-12 object-contain ${award.title !== 'Champion Award' ? 'scale-150' : ''}`}
                         />

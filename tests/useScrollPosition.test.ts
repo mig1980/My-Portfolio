@@ -9,25 +9,34 @@ import { useScrollPosition } from '../hooks/useScrollPosition';
 
 describe('useScrollPosition', () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     // Reset scroll position
     Object.defineProperty(window, 'scrollY', { value: 0, writable: true });
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
   it('returns false initially when scroll is at top', () => {
     const { result } = renderHook(() => useScrollPosition());
+    act(() => {
+      vi.runAllTimers();
+    });
     expect(result.current).toBe(false);
   });
 
   it('returns true when scrolled past default threshold', () => {
     const { result } = renderHook(() => useScrollPosition());
+    act(() => {
+      vi.runAllTimers();
+    });
 
     act(() => {
       Object.defineProperty(window, 'scrollY', { value: 100 });
       window.dispatchEvent(new Event('scroll'));
+      vi.runAllTimers();
     });
 
     expect(result.current).toBe(true);
@@ -35,10 +44,14 @@ describe('useScrollPosition', () => {
 
   it('respects custom threshold', () => {
     const { result } = renderHook(() => useScrollPosition({ threshold: 200 }));
+    act(() => {
+      vi.runAllTimers();
+    });
 
     act(() => {
       Object.defineProperty(window, 'scrollY', { value: 150 });
       window.dispatchEvent(new Event('scroll'));
+      vi.runAllTimers();
     });
 
     expect(result.current).toBe(false);
@@ -46,6 +59,7 @@ describe('useScrollPosition', () => {
     act(() => {
       Object.defineProperty(window, 'scrollY', { value: 250 });
       window.dispatchEvent(new Event('scroll'));
+      vi.runAllTimers();
     });
 
     expect(result.current).toBe(true);
@@ -53,10 +67,14 @@ describe('useScrollPosition', () => {
 
   it('returns false when scrolling back up', () => {
     const { result } = renderHook(() => useScrollPosition({ threshold: 50 }));
+    act(() => {
+      vi.runAllTimers();
+    });
 
     act(() => {
       Object.defineProperty(window, 'scrollY', { value: 100 });
       window.dispatchEvent(new Event('scroll'));
+      vi.runAllTimers();
     });
 
     expect(result.current).toBe(true);
@@ -64,6 +82,7 @@ describe('useScrollPosition', () => {
     act(() => {
       Object.defineProperty(window, 'scrollY', { value: 30 });
       window.dispatchEvent(new Event('scroll'));
+      vi.runAllTimers();
     });
 
     expect(result.current).toBe(false);
@@ -73,6 +92,9 @@ describe('useScrollPosition', () => {
     const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
     const { unmount } = renderHook(() => useScrollPosition());
+    act(() => {
+      vi.runAllTimers();
+    });
     unmount();
 
     expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function));

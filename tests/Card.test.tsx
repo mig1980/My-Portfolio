@@ -20,12 +20,12 @@ describe('Card', () => {
 
   it('applies hover effect by default', () => {
     const { container } = render(<Card>Content</Card>);
-    expect(container.firstChild).toHaveClass('hover:border-primary-500/50');
+    expect(container.firstChild).toHaveClass('hover:border-stone-400');
   });
 
   it('disables hover effect when hoverEffect is false', () => {
     const { container } = render(<Card hoverEffect={false}>Content</Card>);
-    expect(container.firstChild).not.toHaveClass('hover:border-primary-500/50');
+    expect(container.firstChild).not.toHaveClass('hover:border-stone-400');
   });
 
   it('has correct displayName', () => {

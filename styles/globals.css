@@ -68,6 +68,7 @@
   --color-primary-950: #172554;
 
   --color-paper: #f6f4ef;
+  --color-paper-deep: #ece8df;
   --color-ink: #1c1917;
 
   --font-family-sans: 'Inter', system-ui, sans-serif;
@@ -81,12 +82,12 @@
 @layer components {
   /* Focus ring with offset - for buttons and prominent elements */
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 focus-visible:ring-offset-paper;
   }
 
   /* Focus ring without offset - for inline/text elements */
   .focus-ring-inset {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600;
   }
 
   /* Animation delay utilities for loading dots */
@@ -141,21 +142,21 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #ece8df;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #c7c1b6;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #a8a29e;
 }
 
 /* Selection color */
 ::selection {
-  background-color: rgba(59, 130, 246, 0.3);
+  background-color: rgba(29, 78, 216, 0.18);
 }
 
 /* Smooth scrolling */

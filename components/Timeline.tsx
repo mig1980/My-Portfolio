@@ -5,6 +5,7 @@
 
 import React, { memo, useState, useCallback } from 'react';
 import Section from './ui/Section';
+import SectionHeading from './ui/SectionHeading';
 import TimelineItem from './ui/TimelineItem';
 import { EXPERIENCE } from '../constants';
 
@@ -37,32 +38,38 @@ const Timeline: React.FC = memo(() => {
 
   return (
     <Section id="experience" darker>
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Professional Journey</h2>
-          <p className="text-slate-300">
-            From hands-on engineering to enterprise dealmaking—click any role to explore the story.
-          </p>
-        </div>
-        {EXPERIENCE.map((job, index) => (
-          <TimelineItem
-            key={job.id}
-            job={job}
-            isExpanded={expandedItems.has(index)}
-            isCurrent={index === 0}
-            onToggle={() => toggleItem(index)}
-          />
-        ))}
-
-        {/* Timeline end marker */}
-        <div className="flex gap-3 md:gap-6">
-          <div className="flex flex-col items-center">
-            <div className="text-xs font-bold text-slate-400 mb-1 md:mb-2 w-10 md:w-12 text-center">
-              Start
-            </div>
-            <div className="w-3 h-3 rounded-full bg-slate-800 border-2 border-slate-700" />
+      <div className="grid lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-4">
+          <div className="lg:sticky lg:top-28">
+            <SectionHeading
+              number="04"
+              label="Experience"
+              title="Professional journey"
+              intro="From hands-on engineering to enterprise dealmaking. Open any role to read the story."
+            />
           </div>
-          <div className="text-sm text-slate-400 italic pt-1">Where it all began...</div>
+        </div>
+        <div className="lg:col-span-8">
+          {EXPERIENCE.map((job, index) => (
+            <TimelineItem
+              key={job.id}
+              job={job}
+              isExpanded={expandedItems.has(index)}
+              isCurrent={index === 0}
+              onToggle={() => toggleItem(index)}
+            />
+          ))}
+
+          {/* Timeline end marker */}
+          <div className="flex gap-3 md:gap-6">
+            <div className="flex flex-col items-center">
+              <div className="font-mono text-xs text-stone-600 mb-1 md:mb-2 w-10 md:w-12 text-center">
+                Start
+              </div>
+              <div className="w-3 h-3 rounded-full bg-paper-deep border-2 border-stone-400" />
+            </div>
+            <div className="text-sm text-stone-600 italic pt-1">Where it all began...</div>
+          </div>
         </div>
       </div>
     </Section>

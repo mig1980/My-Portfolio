@@ -38,16 +38,15 @@ const StatCounter: React.FC<StatCounterProps> = memo(
     const { count, ref } = useCountUp({ end: value, duration });
 
     return (
-      <div
-        ref={ref}
-        className="flex flex-col items-center p-6 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-primary-500/30 transition-colors"
-      >
-        <div className="text-4xl md:text-5xl font-bold text-white mb-2">
-          <span className="text-primary-400">{prefix}</span>
+      <div ref={ref} className="flex flex-col items-center px-6 py-8 md:py-4">
+        <div className="font-display text-6xl md:text-7xl leading-none text-paper mb-3 tabular-nums">
+          <span className="text-primary-300">{prefix}</span>
           <span>{count}</span>
-          <span className="text-primary-400">{suffix}</span>
+          <span className="text-primary-300">{suffix}</span>
         </div>
-        <div className="text-slate-400 text-sm md:text-base font-medium text-center">{label}</div>
+        <div className="font-mono text-xs uppercase tracking-[0.2em] text-stone-400 text-center">
+          {label}
+        </div>
       </div>
     );
   }

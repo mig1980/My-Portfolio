@@ -5,8 +5,9 @@
 
 import React, { memo } from 'react';
 import Section from './ui/Section';
+import SectionHeading from './ui/SectionHeading';
 import { PERSONAL_INFO, AWARDS, INTERESTS } from '../constants';
-import { Trophy, ArrowUpRight, Heart } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import type { AwardItem } from '../types';
 
 /**
@@ -14,100 +15,66 @@ import type { AwardItem } from '../types';
  * Defined outside component to avoid recreation on each render.
  */
 interface AwardStyleConfig {
-  accentColor: string;
-  borderColor: string;
-  bgGradient: string;
-  isShimmer: boolean;
+  /** Text color for the award level */
+  accentText: string;
+  /** Top border color for the card */
+  accentBar: string;
 }
 
 const AWARD_STYLES: Record<NonNullable<AwardItem['color']>, AwardStyleConfig> = {
-  platinum: {
-    accentColor: 'text-slate-300',
-    borderColor: 'hover:border-slate-300/50',
-    bgGradient:
-      'bg-gradient-to-br from-slate-800/50 to-slate-900 hover:from-slate-700/50 hover:to-slate-800',
-    isShimmer: true,
-  },
-  gold: {
-    accentColor: 'text-yellow-500',
-    borderColor: 'hover:border-yellow-500/50',
-    bgGradient:
-      'bg-gradient-to-br from-slate-900 to-yellow-900/10 hover:from-slate-800 hover:to-yellow-900/20',
-    isShimmer: false,
-  },
-  purple: {
-    accentColor: 'text-purple-400',
-    borderColor: 'hover:border-purple-500/50',
-    bgGradient:
-      'bg-gradient-to-br from-slate-900 to-purple-900/10 hover:from-slate-800 hover:to-purple-900/20',
-    isShimmer: false,
-  },
-  green: {
-    accentColor: 'text-emerald-400',
-    borderColor: 'hover:border-emerald-500/50',
-    bgGradient:
-      'bg-gradient-to-br from-slate-900 to-emerald-900/10 hover:from-slate-800 hover:to-emerald-900/20',
-    isShimmer: false,
-  },
-  blue: {
-    accentColor: 'text-primary-400',
-    borderColor: 'hover:border-primary-500/50',
-    bgGradient: 'hover:bg-slate-800',
-    isShimmer: false,
-  },
+  platinum: { accentText: 'text-stone-700', accentBar: 'border-t-stone-400' },
+  gold: { accentText: 'text-amber-800', accentBar: 'border-t-amber-500' },
+  purple: { accentText: 'text-purple-800', accentBar: 'border-t-purple-500' },
+  green: { accentText: 'text-emerald-800', accentBar: 'border-t-emerald-500' },
+  blue: { accentText: 'text-primary-700', accentBar: 'border-t-primary-600' },
 };
 
 /** Default style for awards without a specified color */
 const DEFAULT_AWARD_STYLE: AwardStyleConfig = AWARD_STYLES.blue;
 
+/** Shared eyebrow style for About subsections */
+const SUBHEADING_CLASS = 'font-mono text-xs uppercase tracking-[0.2em] text-stone-600 mb-6';
+
 /**
  * About section component displaying personal information.
  * Features:
- * - Personal summary
- * - Awards and recognition grid with visual tiers (platinum/gold/blue)
+ * - Personal summary with pull quote
+ * - Awards and recognition grid with color-coded tiers
  * - Personal interests showcase
  *
  * @returns The about section with bio, awards, and interests
  */
 const About: React.FC = memo(() => {
   return (
-    <Section id="about" darker>
+    <Section id="about">
       <div className="grid md:grid-cols-12 gap-12 items-start">
         <div className="md:col-span-4">
-          <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-            <span className="w-8 h-1 bg-primary-500 rounded-full"></span>
-            About Me
-          </h2>
-          <div className="text-slate-300 space-y-4">
-            <p className="text-slate-400 text-sm">Based in {PERSONAL_INFO.location}</p>
-            <p className="text-lg leading-relaxed">
-              Colleagues know me as someone who listens first, gives honest advice, and turns
-              complex challenges into actionable plans.
-            </p>
-          </div>
+          <SectionHeading number="01" label="About" title="About me" />
+          <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-stone-600">
+            Based in {PERSONAL_INFO.location}
+          </p>
+          <blockquote className="mt-8 border-l-2 border-primary-700 pl-5 font-display text-2xl italic leading-snug text-ink">
+            Colleagues know me as someone who listens first, gives honest advice, and turns complex
+            challenges into actionable plans.
+          </blockquote>
         </div>
 
         <div className="md:col-span-8">
-          <div className="relative bg-slate-800/30 rounded-2xl p-8 border border-slate-800">
-            <div className="space-y-6 text-lg text-slate-300 leading-relaxed">
-              {PERSONAL_INFO.summary.split('\n\n').map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
-            </div>
+          <div className="space-y-6 text-lg text-stone-700 leading-relaxed [&>p:first-child]:text-xl [&>p:first-child]:text-ink">
+            {PERSONAL_INFO.summary.split('\n\n').map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
           </div>
 
           {/* Awards & Recognition Subsection */}
-          <div className="mt-12">
-            <h3 className="text-sm uppercase tracking-widest text-slate-500 font-bold mb-6 flex items-center gap-2">
-              <Trophy className="w-4 h-4" />
-              Honors & Achievements
-            </h3>
+          <div className="mt-16">
+            <h3 className={SUBHEADING_CLASS}>Honors &amp; achievements</h3>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4">
               {AWARDS.map((award) => {
-                // Look up pre-computed styles or use default
-                const style = award.color ? AWARD_STYLES[award.color] : DEFAULT_AWARD_STYLE;
-                const { accentColor, borderColor, bgGradient, isShimmer } = style;
+                const { accentText, accentBar } = award.color
+                  ? AWARD_STYLES[award.color]
+                  : DEFAULT_AWARD_STYLE;
 
                 const CardWrapper = award.link ? 'a' : 'div';
                 const cardProps = award.link
@@ -123,21 +90,19 @@ const About: React.FC = memo(() => {
                   <CardWrapper
                     key={award.id}
                     {...cardProps}
-                    className={`
-                      group relative p-5 rounded-xl border border-slate-800 bg-slate-900/50 
-                      transition-all duration-300 ${borderColor} ${bgGradient}
-                      ${award.link ? 'cursor-pointer focus-ring-inset' : ''}
-                    `}
+                    className={`group relative p-5 rounded-lg border border-stone-200 border-t-2 ${accentBar} bg-white transition-colors duration-300 hover:border-stone-400 ${
+                      award.link ? 'cursor-pointer focus-ring-inset' : ''
+                    }`}
                   >
                     {award.link && (
-                      <div className="absolute top-4 right-4 opacity-60 group-hover:opacity-100 transition-opacity">
-                        <ArrowUpRight className={`w-4 h-4 ${accentColor}`} />
-                      </div>
+                      <ArrowUpRight
+                        className="absolute top-4 right-4 w-4 h-4 text-stone-500 group-hover:text-ink transition-colors"
+                        aria-hidden="true"
+                      />
                     )}
 
-                    {/* Badge image */}
                     {award.badgeUrl && (
-                      <div className="mb-3 p-1.5 bg-white/90 rounded-lg inline-block overflow-hidden">
+                      <div className="mb-3 p-1.5 bg-white rounded-md inline-block overflow-hidden border border-stone-200">
                         <img
                           src={award.badgeUrl}
                           alt={`${award.title} badge`}
@@ -149,22 +114,14 @@ const About: React.FC = memo(() => {
                       </div>
                     )}
 
-                    <h4 className="text-slate-100 font-bold text-lg mb-1 group-hover:text-white transition-colors">
-                      {award.title}
-                    </h4>
+                    <h4 className="text-ink font-semibold text-lg mb-1">{award.title}</h4>
 
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-3">
                       {award.issuer && `${award.issuer} • `}
-                      {isShimmer ? (
-                        <span className="bg-gradient-to-r from-slate-300 via-white to-slate-300 bg-clip-text text-transparent">
-                          {award.awardLevel}
-                        </span>
-                      ) : (
-                        <span className={accentColor}>{award.awardLevel}</span>
-                      )}
+                      <span className={accentText}>{award.awardLevel}</span>
                     </div>
 
-                    <p className="text-sm text-slate-400 leading-snug">{award.description}</p>
+                    <p className="text-sm text-stone-700 leading-snug">{award.description}</p>
                   </CardWrapper>
                 );
               })}
@@ -172,22 +129,16 @@ const About: React.FC = memo(() => {
           </div>
 
           {/* Life Pillars Subsection */}
-          <div className="mt-12">
-            <h3 className="text-sm uppercase tracking-widest text-slate-500 font-bold mb-6 flex items-center gap-2">
-              <Heart className="w-4 h-4" />
-              Life Pillars
-            </h3>
-            <div className="grid sm:grid-cols-2 gap-4">
+          <div className="mt-16">
+            <h3 className={SUBHEADING_CLASS}>Life pillars</h3>
+            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-8">
               {INTERESTS.map((interest) => (
-                <div
-                  key={interest.id}
-                  className="p-5 bg-slate-900/50 border border-slate-800 rounded-xl hover:border-slate-700 hover:bg-slate-800/50 transition-all"
-                >
+                <div key={interest.id} className="border-t border-stone-300 pt-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-primary-400">{interest.icon}</span>
-                    <h4 className="text-slate-100 font-semibold">{interest.label}</h4>
+                    <span className="text-primary-700">{interest.icon}</span>
+                    <h4 className="text-ink font-semibold">{interest.label}</h4>
                   </div>
-                  <p className="text-sm text-slate-400 leading-relaxed">{interest.description}</p>
+                  <p className="text-sm text-stone-700 leading-relaxed">{interest.description}</p>
                 </div>
               ))}
             </div>

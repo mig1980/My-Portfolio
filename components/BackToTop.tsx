@@ -34,7 +34,7 @@ const BackToTop: React.FC = memo(() => {
     <button
       onClick={scrollToTop}
       aria-label="Back to top"
-      className="fixed bottom-[30px] right-24 z-50 p-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-full shadow-lg transition-all transform hover:-translate-y-1 focus-ring motion-reduce:transition-none motion-reduce:hover:transform-none"
+      className="fixed bottom-[30px] right-24 z-50 p-3 bg-white hover:bg-stone-100 text-ink border border-stone-300 rounded-full shadow-lg transition-all transform hover:-translate-y-1 focus-ring motion-reduce:transition-none motion-reduce:hover:transform-none"
     >
       <ArrowUp className="w-5 h-5" />
     </button>

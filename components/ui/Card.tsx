@@ -18,8 +18,8 @@ interface CardProps {
 }
 
 /**
- * A reusable card component with glassmorphism styling.
- * Features a subtle border, backdrop blur, and optional hover effects.
+ * A reusable card component with a clean editorial style.
+ * Features a subtle border on a white surface and optional hover effects.
  *
  * @param props - Component props
  * @returns A styled card container
@@ -36,8 +36,8 @@ const Card: React.FC<CardProps> = memo(({ children, className = '', hoverEffect 
   return (
     <div
       className={`
-        relative p-6 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm
-        ${hoverEffect ? 'hover:border-primary-500/50 hover:bg-slate-800/80 transition-all duration-300 group' : ''}
+        relative p-6 rounded-lg border border-stone-200 bg-white
+        ${hoverEffect ? 'hover:border-stone-400 transition-colors duration-300 group' : ''}
         ${className}
       `}
     >

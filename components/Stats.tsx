@@ -18,12 +18,9 @@ import { STATS } from '../constants';
  */
 const Stats: React.FC = memo(() => {
   return (
-    <section className="relative py-16 md:py-20 bg-slate-950" aria-label="Key Statistics">
-      {/* Subtle gradient divider */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent" />
-
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <section className="relative py-16 md:py-20 bg-ink text-paper" aria-label="Key Statistics">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-700">
           {STATS.map((stat) => (
             <StatCounter
               key={stat.label}
@@ -36,9 +33,6 @@ const Stats: React.FC = memo(() => {
           ))}
         </div>
       </div>
-
-      {/* Subtle gradient divider */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent" />
     </section>
   );
 });

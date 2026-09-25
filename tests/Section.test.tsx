@@ -28,14 +28,14 @@ describe('Section', () => {
     expect(section).toHaveClass('custom-class');
   });
 
-  it('applies darker background when darker prop is true', () => {
+  it('applies alternate background when darker prop is true', () => {
     const { container } = render(
       <Section id="test" darker>
         Content
       </Section>
     );
     const section = container.querySelector('section');
-    expect(section).toHaveClass('bg-slate-900/50');
+    expect(section).toHaveClass('bg-paper-deep');
   });
 
   it('applies transparent background by default', () => {

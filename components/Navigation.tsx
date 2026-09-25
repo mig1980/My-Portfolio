@@ -31,10 +31,6 @@ const Navigation: React.FC = memo(() => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
-  // Unscrolled header sits on the light hero
-  const linkColor = isScrolled
-    ? 'text-slate-300 hover:text-white'
-    : 'text-stone-700 hover:text-ink focus-visible:ring-offset-paper';
 
   const toggleMobileMenu = useCallback((): void => {
     setIsMobileMenuOpen((prev) => !prev);
@@ -91,13 +87,13 @@ const Navigation: React.FC = memo(() => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'py-3 bg-slate-950/80 backdrop-blur-md border-b border-slate-800'
+          ? 'py-3 bg-paper/90 backdrop-blur-md border-b border-stone-200'
           : 'py-4 bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         <a
-          href="#"
+          href="#hero"
           aria-label="Go to homepage"
           className="p-1 -m-1 hover:opacity-80 transition-opacity focus-ring rounded-lg"
         >
@@ -114,7 +110,7 @@ const Navigation: React.FC = memo(() => {
             <a
               key={item.label}
               href={item.href}
-              className={`text-sm font-medium ${linkColor} hover:underline decoration-primary-500 decoration-2 underline-offset-8 transition-all focus-ring rounded-sm`}
+              className="text-sm font-medium text-stone-700 hover:text-ink hover:underline decoration-primary-700 decoration-2 underline-offset-8 transition-colors focus-ring rounded-sm"
             >
               {item.label}
             </a>
@@ -124,7 +120,7 @@ const Navigation: React.FC = memo(() => {
         {/* Mobile Toggle */}
         <button
           ref={toggleButtonRef}
-          className={`md:hidden ${linkColor} focus-ring rounded-md p-1`}
+          className="md:hidden text-stone-700 hover:text-ink focus-ring rounded-md p-1"
           onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMobileMenuOpen}
@@ -142,13 +138,13 @@ const Navigation: React.FC = memo(() => {
           role="dialog"
           aria-modal="true"
           aria-label="Navigation menu"
-          className="md:hidden absolute top-full left-0 right-0 bg-slate-900 border-b border-slate-800 p-6 flex flex-col gap-4 shadow-2xl animate-fade-in-up motion-reduce:animate-none"
+          className="md:hidden absolute top-full left-0 right-0 bg-paper border-b border-stone-200 p-6 flex flex-col gap-4 shadow-lg animate-fade-in-up motion-reduce:animate-none"
         >
           {navItems.map((item) => (
             <a
               key={item.label}
               href={item.href}
-              className="text-lg font-medium text-slate-300 hover:text-primary-400 focus-ring-inset rounded-md px-2 py-1 -mx-2"
+              className="text-lg font-medium text-stone-800 hover:text-primary-700 focus-ring-inset rounded-md px-2 py-1 -mx-2"
               onClick={closeMobileMenu}
             >
               {item.label}

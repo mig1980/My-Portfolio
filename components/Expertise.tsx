@@ -5,16 +5,16 @@
 
 import React, { memo } from 'react';
 import Section from './ui/Section';
+import SectionHeading from './ui/SectionHeading';
 import Card from './ui/Card';
 import { SKILLS } from '../constants';
-import { CheckCircle2 } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 /**
  * Expertise section component showcasing professional skills.
  * Features:
  * - Skills grouped by category with icons
- * - Two-column responsive grid layout
- * - Check marks for individual skills
+ * - Bento grid: the lead category spans two columns on large screens
  * - Memoized for performance optimization
  *
  * @returns The expertise section with skill categories
@@ -22,32 +22,35 @@ import { CheckCircle2 } from 'lucide-react';
 const Expertise: React.FC = memo(() => {
   return (
     <Section id="expertise">
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Core Competencies</h2>
-        <p className="text-slate-300">The toolkit behind two decades of closing complex deals.</p>
-      </div>
+      <SectionHeading
+        number="03"
+        label="Expertise"
+        title="Core competencies"
+        intro="The toolkit behind two decades of closing complex deals."
+        className="mb-14"
+      />
 
-      <div className="flex flex-wrap justify-center gap-6">
-        {SKILLS.map((group) => (
-          <Card
-            key={group.category}
-            className="h-full w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
-          >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 bg-primary-500/10 rounded-lg text-primary-400">{group.icon}</div>
-              <h3 className="text-xl font-bold text-slate-100">{group.category}</h3>
-            </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {SKILLS.map((group, index) => {
+          const isLead = index === 0;
+          return (
+            <Card key={group.category} className={isLead ? 'md:col-span-2' : ''}>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2.5 bg-primary-50 rounded-md text-primary-700">{group.icon}</div>
+                <h3 className="text-xl font-semibold text-ink">{group.category}</h3>
+              </div>
 
-            <div className="space-y-3">
-              {group.skills.map((skill) => (
-                <div key={skill} className="flex items-start gap-2 text-sm text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-primary-500 mt-0.5 shrink-0" />
-                  <span>{skill}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
-        ))}
+              <ul className={`gap-x-8 gap-y-3 ${isLead ? 'grid sm:grid-cols-2' : 'grid'}`}>
+                {group.skills.map((skill) => (
+                  <li key={skill} className="flex items-start gap-2 text-stone-700">
+                    <Check className="w-4 h-4 text-primary-700 mt-1 shrink-0" aria-hidden="true" />
+                    <span>{skill}</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          );
+        })}
       </div>
     </Section>
   );

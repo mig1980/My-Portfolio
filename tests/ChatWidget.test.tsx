@@ -4,9 +4,10 @@
  * @version 1.1.0
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import ChatWidget from '../components/ChatWidget';
+import { askChat } from '../utils/chatEvents';
 
 // Mock fetch globally
 const mockFetch = vi.fn() as Mock;
@@ -160,6 +161,22 @@ describe('ChatWidget', () => {
 
       const sendButton = screen.getByLabelText('Send message');
       expect(sendButton).toBeDisabled();
+    });
+
+    it('opens and sends a question asked from elsewhere on the page', async () => {
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'Hero answer' }));
+
+      render(<ChatWidget />);
+      act(() => {
+        askChat('Question from hero');
+      });
+
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Hero answer')).toBeInTheDocument();
+      });
+      const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(JSON.parse(String(init.body))).toMatchObject({ message: 'Question from hero' });
     });
   });
 

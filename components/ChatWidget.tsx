@@ -22,7 +22,9 @@ import { useChat } from '../hooks/useChat';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
-import type { ChatMessage } from '../types';
+import { useScrollPosition } from '../hooks/useScrollPosition';
+import { CHAT_ASK_EVENT } from '../utils/chatEvents';
+import type { ChatAskDetail, ChatMessage } from '../types';
 
 // ============================================================================
 // Constants
@@ -51,6 +53,8 @@ const GREETING_BUBBLE = {
   STORAGE_KEY: 'aboutme-greeting-dismissed',
   /** Greeting message text */
   MESSAGE: "👋 Hi! Ask me anything about Michael's experience",
+  /** Scroll depth (px) before the greeting may appear; the hero has its own ask box */
+  SCROLL_THRESHOLD_PX: 600,
 } as const;
 
 // ============================================================================
@@ -425,7 +429,7 @@ interface GreetingBubbleProps {
  */
 const GreetingBubble = memo<GreetingBubbleProps>(({ onDismiss, onClick }) => (
   <div
-    className="fixed bottom-24 left-6 z-40 max-w-[280px]
+    className="fixed bottom-24 right-6 z-40 max-w-[280px]
                motion-safe:animate-[fadeSlideIn_0.3s_ease-out]"
     role="status"
     aria-live="polite"
@@ -458,7 +462,7 @@ const GreetingBubble = memo<GreetingBubbleProps>(({ onDismiss, onClick }) => (
       </button>
       {/* Bubble tail pointing to chat button */}
       <div
-        className="absolute -bottom-2 left-6 w-4 h-4 bg-white transform rotate-45"
+        className="absolute -bottom-2 right-6 w-4 h-4 bg-white transform rotate-45"
         aria-hidden="true"
       />
     </div>
@@ -476,7 +480,7 @@ GreetingBubble.displayName = 'GreetingBubble';
  * Features a collapsible interface with message history and quick suggestions.
  *
  * @remarks
- * - Positioned bottom-left to avoid conflict with BackToTop button (bottom-right)
+ * - Positioned bottom-right; BackToTop sits to its left
  * - Supports keyboard navigation (Tab, Enter, Escape)
  * - Respects prefers-reduced-motion
  * - Full accessibility with ARIA labels and live regions
@@ -507,6 +511,10 @@ const ChatWidget: React.FC = memo(() => {
 
   // Online status
   const isOnline = useOnlineStatus();
+
+  const hasScrolledPastHero = useScrollPosition({
+    threshold: GREETING_BUBBLE.SCROLL_THRESHOLD_PX,
+  });
 
   // Lock body scroll when fullscreen on mobile
   useBodyScrollLock(isFullscreen);
@@ -558,8 +566,8 @@ const ChatWidget: React.FC = memo(() => {
 
   // Show greeting bubble after delay for first-time visitors
   useEffect(() => {
-    // Don't show if: already dismissed, chat is open, or already showing
-    if (wasGreetingDismissed() || isOpen) {
+    // Don't show if: already dismissed, chat is open, or visitor is still on the hero
+    if (wasGreetingDismissed() || isOpen || !hasScrolledPastHero) {
       return;
     }
 
@@ -591,7 +599,7 @@ const ChatWidget: React.FC = memo(() => {
       if (showTimer) clearTimeout(showTimer);
       if (hideTimer) clearTimeout(hideTimer);
     };
-  }, [isOpen, wasGreetingDismissed]);
+  }, [isOpen, hasScrolledPastHero, wasGreetingDismissed]);
 
   // Hide greeting when chat opens
   useEffect(() => {
@@ -712,6 +720,19 @@ const ChatWidget: React.FC = memo(() => {
     void retryLastMessage();
   }, [retryLastMessage, isOnline]);
 
+  // Questions asked from elsewhere on the page (e.g. the hero ask box)
+  useEffect(() => {
+    const handleAsk = (e: Event): void => {
+      const question = (e as CustomEvent<ChatAskDetail>).detail?.question?.trim();
+      if (!question) return;
+      setIsOpen(true);
+      if (isOnline) void sendMessage(question);
+    };
+
+    window.addEventListener(CHAT_ASK_EVENT, handleAsk);
+    return () => window.removeEventListener(CHAT_ASK_EVENT, handleAsk);
+  }, [sendMessage, isOnline]);
+
   const toggleChat = useCallback((): void => {
     // Check current state BEFORE updating
     // This avoids doing work inside setState callback which can cause jank
@@ -741,15 +762,15 @@ const ChatWidget: React.FC = memo(() => {
   return (
     <>
       {/* Greeting Bubble - shows after delay for first-time visitors */}
-      {showGreetingBubble && !isOpen && !isFullscreen && (
+      {showGreetingBubble && hasScrolledPastHero && !isOpen && !isFullscreen && (
         <GreetingBubble onDismiss={dismissGreeting} onClick={handleGreetingClick} />
       )}
 
-      {/* Floating Toggle Button - hidden when fullscreen on mobile */}
-      {!isFullscreen && (
+      {/* Floating Toggle Button - hidden on the mobile hero (it has its own ask box) and when fullscreen */}
+      {!isFullscreen && !(isMobile && !hasScrolledPastHero && !isOpen) && (
         <button
           onClick={toggleChat}
-          className="fixed bottom-6 left-6 z-50 w-14 h-14 bg-primary-600 hover:bg-primary-700 
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-primary-600 hover:bg-primary-700 
                      text-white rounded-full shadow-lg flex items-center justify-center 
                      transition-all duration-150 hover:scale-110 focus-ring
                      motion-reduce:transition-none motion-reduce:hover:transform-none"
@@ -774,7 +795,7 @@ const ChatWidget: React.FC = memo(() => {
                       ${
                         isFullscreen
                           ? 'inset-0 rounded-none border-0'
-                          : 'bottom-24 left-6 w-[380px] max-w-[calc(100vw-48px)] border border-slate-700 rounded-2xl shadow-2xl'
+                          : 'bottom-24 right-6 w-[380px] max-w-[calc(100vw-48px)] border border-slate-700 rounded-2xl shadow-2xl'
                       }`}
           style={{
             height: isFullscreen ? '100%' : 'min(520px, calc(100vh - 150px))',

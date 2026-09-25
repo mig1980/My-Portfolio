@@ -1,104 +1,177 @@
 /**
  * @fileoverview Hero section component - the landing/above-the-fold content.
- * @description Displays the main headline, personal introduction, and CTA buttons.
+ * @description Editorial-style introduction with headline, CTAs, and an "Ask my AI assistant" box.
  */
 
-import React, { memo } from 'react';
-import { ArrowRight } from 'lucide-react';
-import { PERSONAL_INFO } from '../constants';
-import { useScrollPosition } from '../hooks/useScrollPosition';
+import React, { memo, useCallback, useState } from 'react';
+import { ArrowRight, ArrowUp, Download, Sparkles } from 'lucide-react';
+import { PERSONAL_INFO, HERO_QUESTIONS } from '../constants';
+import { askChat } from '../utils/chatEvents';
+import { trackEvent } from '../utils/analytics';
+
+/** Maximum question length (aligned with chat backend) */
+const MAX_QUESTION_LENGTH = 500;
 
 /**
  * Hero section component for the portfolio landing area.
  * Features:
- * - Animated gradient background elements
- * - Personal photo with overlay
- * - Call-to-action buttons
- * - Scroll indicator animation (auto-hides after scroll)
+ * - Editorial light layout with serif headline and full-color portrait
+ * - Primary CTAs: start a conversation, download résumé
+ * - Inline question box that opens the AI chat widget
  *
  * @returns The hero section with intro content and visual elements
  */
 const Hero: React.FC = memo(() => {
-  // 100px threshold: hide scroll indicator after user starts scrolling
-  const hasScrolled = useScrollPosition({ threshold: 100 });
+  const [question, setQuestion] = useState<string>('');
+
+  const handleQuestionChange = useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
+    setQuestion(e.target.value);
+  }, []);
+
+  const handleAskSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>): void => {
+      e.preventDefault();
+      const trimmed = question.trim();
+      if (!trimmed) return;
+      askChat(trimmed);
+      trackEvent('hero_question_asked', { source: 'input' });
+      setQuestion('');
+    },
+    [question]
+  );
+
+  const handleSuggestionClick = useCallback((e: React.MouseEvent<HTMLButtonElement>): void => {
+    const suggested = e.currentTarget.dataset.question;
+    if (!suggested) return;
+    askChat(suggested);
+    trackEvent('hero_question_asked', { source: 'suggestion' });
+  }, []);
+
+  const handleResumeClick = useCallback((): void => {
+    trackEvent('resume_download', { location: 'hero' });
+  }, []);
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-      {/* Abstract Background Elements - reduced blur for Safari GPU performance */}
-      <div className="absolute top-0 right-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] lg:w-[800px] lg:h-[800px] bg-primary-900/20 rounded-full blur-[30px] md:blur-[40px] lg:blur-[50px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[200px] h-[200px] md:w-[400px] md:h-[400px] lg:w-[600px] lg:h-[600px] bg-indigo-900/10 rounded-full blur-[25px] md:blur-[35px] lg:blur-[45px] translate-y-1/3 -translate-x-1/4 pointer-events-none" />
-
-      <div className="relative max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-        <div className="order-2 md:order-1 space-y-8 animate-fade-in-up motion-reduce:animate-none">
-          <div className="inline-flex items-center px-3 py-1 rounded-full border border-primary-500/30 bg-primary-500/10 text-primary-300 text-sm font-medium">
-            <span className="w-2 h-2 rounded-full bg-primary-400 mr-2 animate-pulse motion-reduce:animate-none"></span>
-            Open to Strategic Conversations
+    <section id="hero" className="relative bg-paper text-ink pt-28 pb-20 md:pt-36 md:pb-28">
+      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="md:col-span-7 min-w-0 animate-fade-in-up motion-reduce:animate-none">
+          {/* Mobile-only avatar keeps the headline above the fold */}
+          <div className="flex items-center gap-4 mb-8 md:hidden">
+            <img
+              src="/michael-gavrilov-headshot.webp"
+              alt=""
+              width={56}
+              height={56}
+              className="w-14 h-14 rounded-full object-cover"
+            />
+            <div>
+              <div className="font-semibold">{PERSONAL_INFO.name}</div>
+              <div className="text-sm text-stone-600">{PERSONAL_INFO.title}</div>
+            </div>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
-            {PERSONAL_INFO.tagline} <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-indigo-400">
-              {PERSONAL_INFO.taglineHighlight}
-            </span>
-          </h1>
-
-          <p className="text-xl text-slate-300 max-w-lg leading-relaxed">
-            Strategic Account Director at Microsoft, leading AI transformation for Fortune 500
-            accounts—turning executive vision into multi-year partnerships, measurable adoption, and
-            governance-ready deployments.
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-stone-600 mb-6">
+            {PERSONAL_INFO.focus}
           </p>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-4">
+          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight">
+            {PERSONAL_INFO.tagline}
+            <br />
+            <em className="text-primary-700">{PERSONAL_INFO.taglineHighlight}</em>
+          </h1>
+
+          <p className="mt-8 text-lg md:text-xl text-stone-700 max-w-xl leading-relaxed">
+            I help Fortune 500 leaders turn AI ambition into multi-year partnerships and measurable
+            results.
+          </p>
+
+          <div className="mt-10 flex flex-col sm:flex-row gap-3">
             <a
               href="#contact"
-              className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white rounded-lg font-semibold transition-all shadow-lg shadow-primary-900/20 focus-ring"
+              className="inline-flex items-center justify-center px-7 py-3.5 bg-ink text-paper hover:bg-stone-800 rounded-full font-semibold transition-colors focus-ring focus-visible:ring-offset-paper"
             >
-              Start a Conversation
-              <ArrowRight className="ml-2 w-5 h-5" />
+              Start a conversation
+              <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
             </a>
             <a
-              href="#experience"
-              className="inline-flex items-center justify-center px-8 py-4 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white rounded-lg font-semibold transition-all focus-ring"
+              href={PERSONAL_INFO.resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleResumeClick}
+              className="inline-flex items-center justify-center px-7 py-3.5 border border-stone-400 hover:border-ink text-ink rounded-full font-semibold transition-colors focus-ring focus-visible:ring-offset-paper"
             >
-              View Experience
+              <Download className="mr-2 w-4 h-4" aria-hidden="true" />
+              Download résumé
             </a>
+          </div>
+
+          <div className="mt-12 max-w-xl">
+            <form
+              onSubmit={handleAskSubmit}
+              aria-label="Ask my AI assistant"
+              className="flex items-center gap-3 p-2 pl-5 bg-white border border-stone-300 focus-within:border-primary-700 rounded-full shadow-sm transition-colors"
+            >
+              <Sparkles className="w-4 h-4 text-primary-700 shrink-0" aria-hidden="true" />
+              <label htmlFor="hero-question" className="sr-only">
+                Ask my AI assistant a question
+              </label>
+              <input
+                id="hero-question"
+                type="text"
+                value={question}
+                onChange={handleQuestionChange}
+                maxLength={MAX_QUESTION_LENGTH}
+                placeholder="Ask my AI assistant about my work…"
+                className="flex-1 min-w-0 py-2 bg-transparent text-ink placeholder:text-stone-500 focus:outline-none"
+              />
+              <button
+                type="submit"
+                disabled={!question.trim()}
+                aria-label="Send question"
+                className="w-10 h-10 shrink-0 rounded-full bg-primary-700 hover:bg-primary-800 text-white flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-ring focus-visible:ring-offset-white"
+              >
+                <ArrowUp className="w-4 h-4" aria-hidden="true" />
+              </button>
+            </form>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {HERO_QUESTIONS.map((suggested) => (
+                <button
+                  key={suggested}
+                  type="button"
+                  data-question={suggested}
+                  onClick={handleSuggestionClick}
+                  className="px-3 py-1.5 text-sm text-stone-700 hover:text-ink bg-white/60 border border-stone-300 hover:border-ink rounded-full transition-colors focus-ring focus-visible:ring-offset-paper"
+                >
+                  {suggested}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="order-1 md:order-2 flex justify-center md:justify-end relative">
-          {/* Professional Headshot */}
-          <div className="relative w-72 h-72 md:w-96 md:h-96 rounded-2xl overflow-hidden border-2 border-slate-800 shadow-2xl bg-slate-900 group">
+        <figure className="hidden md:block md:col-span-5">
+          <div className="aspect-[4/5] overflow-hidden rounded-sm bg-stone-200">
             <picture>
               <source srcSet="/michael-gavrilov-headshot.webp" type="image/webp" />
               <img
                 src="/michael-gavrilov-headshot.jpg"
                 alt="Michael Gavrilov - Strategic Account Director at Microsoft specializing in Enterprise AI"
-                width={384}
-                height={384}
+                width={640}
+                height={800}
                 loading="eager"
                 fetchPriority="high"
-                className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700 motion-reduce:transition-none motion-reduce:group-hover:transform-none"
+                className="w-full h-full object-cover object-top"
               />
             </picture>
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
-            <div className="absolute bottom-6 left-6 right-6">
-              <div className="text-white font-bold text-lg">{PERSONAL_INFO.name}</div>
-              <div className="text-slate-400 text-sm">{PERSONAL_INFO.title}</div>
-            </div>
           </div>
-
-          {/* Decorative elements behind image */}
-          <div className="absolute -z-10 top-10 right-10 w-full h-full border border-slate-800 rounded-2xl hidden md:block" />
-        </div>
+          <figcaption className="mt-4 pt-3 border-t border-stone-300 text-sm">
+            <div className="font-semibold">{PERSONAL_INFO.name}</div>
+            <div className="text-stone-600">
+              {PERSONAL_INFO.title} · {PERSONAL_INFO.location}
+            </div>
+          </figcaption>
+        </figure>
       </div>
-
-      {/* Scroll Indicator - hides after scrolling */}
-      {!hasScrolled && (
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 animate-bounce motion-reduce:animate-none">
-          <span className="text-xs uppercase tracking-widest">Scroll</span>
-          <ArrowRight className="w-4 h-4 rotate-90" />
-        </div>
-      )}
     </section>
   );
 });

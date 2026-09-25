@@ -42,12 +42,23 @@ export const PERSONAL_INFO = {
   taglineHighlight: 'Transformational dealmaker.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
+  focus: 'AI Transformation · Healthcare & Life Sciences',
+  resumeUrl: '/CV/Michael-Gavrilov-Resume.pdf',
   summary: `Started as an engineer. Became a dealmaker. Never lost the builder's mindset.
 
 I've spent two decades translating between the language of technology and the language of business—helping Fortune 500 leaders see what's possible, then making it real.
 
 Whether architecting solutions or negotiating multi-year partnerships, I bring the same approach: listen deeply, cut through complexity, and deliver what I promised.`,
 };
+
+/**
+ * Suggested questions shown under the hero "Ask my AI assistant" box.
+ */
+export const HERO_QUESTIONS: readonly string[] = [
+  'What deals has he led?',
+  'How does he work with executives?',
+  'What is his AI focus?',
+];
 
 export const EXPERIENCE: JobRole[] = [
   {

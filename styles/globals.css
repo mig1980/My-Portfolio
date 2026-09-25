@@ -33,6 +33,23 @@
   src: url('/fonts/inter-bold.woff2') format('woff2');
 }
 
+/* Self-hosted Instrument Serif (SIL Open Font License) for editorial headlines */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif-italic.woff2') format('woff2');
+}
+
 /* Custom Theme Extensions */
 @theme {
   --color-slate-850: #151e2e;
@@ -50,7 +67,11 @@
   --color-primary-900: #1e3a8a;
   --color-primary-950: #172554;
 
+  --color-paper: #f6f4ef;
+  --color-ink: #1c1917;
+
   --font-family-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
 
   --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;

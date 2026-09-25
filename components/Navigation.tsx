@@ -31,6 +31,10 @@ const Navigation: React.FC = memo(() => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
+  // Unscrolled header sits on the light hero
+  const linkColor = isScrolled
+    ? 'text-slate-300 hover:text-white'
+    : 'text-stone-700 hover:text-ink focus-visible:ring-offset-paper';
 
   const toggleMobileMenu = useCallback((): void => {
     setIsMobileMenuOpen((prev) => !prev);
@@ -110,7 +114,7 @@ const Navigation: React.FC = memo(() => {
             <a
               key={item.label}
               href={item.href}
-              className="text-sm font-medium text-slate-300 hover:text-white hover:underline decoration-primary-500 decoration-2 underline-offset-8 transition-all focus-ring rounded-sm"
+              className={`text-sm font-medium ${linkColor} hover:underline decoration-primary-500 decoration-2 underline-offset-8 transition-all focus-ring rounded-sm`}
             >
               {item.label}
             </a>
@@ -120,7 +124,7 @@ const Navigation: React.FC = memo(() => {
         {/* Mobile Toggle */}
         <button
           ref={toggleButtonRef}
-          className="md:hidden text-slate-300 hover:text-white focus-ring rounded-md p-1"
+          className={`md:hidden ${linkColor} focus-ring rounded-md p-1`}
           onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMobileMenuOpen}

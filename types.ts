@@ -185,6 +185,14 @@ export interface ChatHistoryItem {
 }
 
 /**
+ * Payload of the window event that asks the ChatWidget to open and send a question.
+ */
+export interface ChatAskDetail {
+  /** Question to send to the assistant */
+  question: string;
+}
+
+/**
  * API request format for chat endpoint.
  * @internal Used by useChat hook
  */

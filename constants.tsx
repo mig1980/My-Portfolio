@@ -348,7 +348,7 @@ export const INTERESTS: InterestItem[] = [
 export const STATS: StatItem[] = [
   { value: 20, suffix: '+', label: 'Years Experience' },
   { value: 500, prefix: '$', suffix: 'M+', label: 'In Multi-Year Agreements' },
-  { value: 2, suffix: 'x', label: 'Microsoft Platinum Club' },
+  { value: 4, suffix: '×', label: 'Top-Performer Awards' },
 ];
 
 /**

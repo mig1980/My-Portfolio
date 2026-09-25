@@ -79,8 +79,14 @@ const MAX_MESSAGE_LENGTH = 500;
 /** Maximum conversation history items to include */
 const MAX_HISTORY_ITEMS = 10;
 
-/** API request timeout in milliseconds */
-const API_TIMEOUT_MS = 25000;
+/** Timeout for a single model attempt in milliseconds */
+const PER_MODEL_TIMEOUT_MS = 12000;
+
+/** Total time budget across all model attempts; must stay below the client timeout in hooks/useChat.ts */
+const TOTAL_BUDGET_MS = 25000;
+
+/** Skip remaining models when less than this much budget is left */
+const MIN_ATTEMPT_MS = 3000;
 
 /** Ordered model fallback chain (first = primary) */
 const MODEL_CHAIN: readonly string[] = [
@@ -404,12 +410,21 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     let lastErrorMessage: string | null = null;
     let sawRateLimit = false;
     let bestRetryAfterMs: number | null = null;
+    const deadline = Date.now() + TOTAL_BUDGET_MS;
 
     for (const modelName of MODEL_CHAIN) {
+      const remainingMs = deadline - Date.now();
+      if (remainingMs < MIN_ATTEMPT_MS) {
+        break;
+      }
+
       attemptedModels.push(modelName);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        Math.min(PER_MODEL_TIMEOUT_MS, remainingMs)
+      );
 
       let geminiResponse: globalThis.Response;
       try {
@@ -453,12 +468,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           return jsonResponse({ error: 'AI service authentication error' }, 503, origin);
         }
 
-        // Retry with next model on 5xx; otherwise stop
-        if (geminiResponse.status >= 500) {
-          continue;
-        }
-
-        return jsonResponse({ error: 'AI service temporarily unavailable' }, 502, origin);
+        // Other 4xx (e.g. 404 for a retired model) and 5xx are model-specific: try next model
+        continue;
       }
 
       let data: GeminiResponse;

@@ -62,7 +62,7 @@ interface StoredMessage {
 /** Default API endpoint */
 const DEFAULT_ENDPOINT = '/api/chat';
 
-/** Default request timeout (30 seconds) */
+/** Default request timeout (30 seconds); must exceed TOTAL_BUDGET_MS in functions/api/chat.ts */
 const DEFAULT_TIMEOUT = 30000;
 
 /** Default localStorage key */

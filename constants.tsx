@@ -72,7 +72,7 @@ export const EXPERIENCE: JobRole[] = [
       'Lead a cross-functional virtual team across Azure, Microsoft 365 (including Copilot), and Security to deliver targeted business outcomes.',
       'Navigate complex, multi-stakeholder negotiations with C-suite executives to unlock transformational AI adoption.',
       'Challenge legacy assumptions with data-driven, security-aware recommendations—accelerating adoption without increasing risk.',
-      'Architect novel deal structures involving product partnerships and multi-year revenue commitments totaling $250M+ TCV.',
+      'Architect novel deal structures involving product partnerships and multi-year revenue commitments totaling more than $500M.',
       'Build and sustain trusted executive relationships across global accounts, unlocking new opportunities.',
     ],
   },
@@ -145,7 +145,7 @@ export const SKILLS: SkillGroup[] = [
     category: 'Strategic Leadership',
     icon: <Briefcase className="w-5 h-5" />,
     skills: [
-      'Complex Deal Closure ($250M+ TCV)',
+      'Complex Multi-Year Agreements ($500M+)',
       'C-Suite Partnerships',
       'AI-First Enterprise Strategy',
       'Cross-functional Team Leadership',
@@ -347,7 +347,7 @@ export const INTERESTS: InterestItem[] = [
  */
 export const STATS: StatItem[] = [
   { value: 20, suffix: '+', label: 'Years Experience' },
-  { value: 250, prefix: '$', suffix: 'M+', label: 'TCV Closed' },
+  { value: 500, prefix: '$', suffix: 'M+', label: 'In Multi-Year Agreements' },
   { value: 2, suffix: 'x', label: 'Microsoft Platinum Club' },
 ];
 

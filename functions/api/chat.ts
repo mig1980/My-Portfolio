@@ -193,7 +193,7 @@ Operating model and portfolio breadth.
 He leads cross-functional virtual teams and works across Azure, Microsoft 365 (including Copilot), and Security to drive targeted business outcomes.
 
 Quantified outcomes.
-He has architected complex, multi-year agreements totaling more than $250M in total contract value (TCV). In prior enterprise roles, he generated an average of about $20M annually. Earlier in his Microsoft career, he led partner programs that drove a 150% increase in partner-influenced revenue. In an IT operations leadership role, he delivered process improvements and automation that increased operational efficiency by 25%.
+He has architected complex, multi-year agreements totaling more than $500M in total contract value. In prior enterprise roles, he generated an average of about $20M annually. Earlier in his Microsoft career, he led partner programs that drove a 150% increase in partner-influenced revenue. In an IT operations leadership role, he delivered process improvements and automation that increased operational efficiency by 25%.
 
 Awards and recognition.
 He is a 2-time Microsoft Platinum Club recipient and a 2-time Gold Club Award recipient. He received a Champion Award in FY23 Q4 and achieved 100% attainment in FY25.

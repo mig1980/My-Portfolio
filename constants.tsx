@@ -307,7 +307,7 @@ export const OUTSIDE_WORK: OutsideWorkGroup[] = [
   {
     id: 'moving',
     icon: <Dumbbell className="w-5 h-5" />,
-    items: ['Snowboarding', 'Boxing', 'Swimming', 'Golf', 'Horseback riding'],
+    items: ['Snowboarding', 'Boxing', 'Swimming', 'Horseback riding'],
   },
   {
     id: 'learning',

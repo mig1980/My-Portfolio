@@ -503,7 +503,7 @@ const ChatWidget: React.FC = memo(() => {
     retryLastMessage,
     clearHistory,
   } = useChat();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Mobile responsiveness
@@ -626,8 +626,8 @@ const ChatWidget: React.FC = memo(() => {
     const currentLength = messages.length;
     const lastMessage = messages[currentLength - 1];
 
-    // Start typing animation when a new assistant message arrives
-    if (currentLength > prevMessagesLengthRef.current && lastMessage?.role === 'assistant') {
+    // Animate only a single newly arrived reply, not history restored from storage
+    if (currentLength === prevMessagesLengthRef.current + 1 && lastMessage?.role === 'assistant') {
       setIsTypingAnimation(true);
     }
 
@@ -639,12 +639,12 @@ const ChatWidget: React.FC = memo(() => {
     setIsTypingAnimation(false);
   }, []);
 
-  // Auto-scroll to latest message
+  // Auto-scroll to latest message. Scroll only the log: scrollIntoView would also scroll the
+  // overflow-hidden dialog, sliding the header/input off-screen on mobile.
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
+    const log = logRef.current;
+    if (log) log.scrollTop = log.scrollHeight;
+  }, [messages, isOpen]);
 
   // Focus input when chat opens
   useEffect(() => {
@@ -859,9 +859,10 @@ const ChatWidget: React.FC = memo(() => {
             </button>
           </div>
 
-          {/* Messages Container */}
+          {/* Messages Container (relative: keeps sr-only reply copies inside this scroll area) */}
           <div
-            className="flex-1 overflow-y-auto p-4 space-y-4"
+            ref={logRef}
+            className="relative flex-1 overflow-y-auto p-4 space-y-4"
             role="log"
             aria-label="Chat messages"
             data-scroll-container
@@ -942,9 +943,6 @@ const ChatWidget: React.FC = memo(() => {
                 )}
               </div>
             )}
-
-            {/* Scroll anchor */}
-            <div ref={messagesEndRef} aria-hidden="true" />
           </div>
 
           {/* Offline Indicator */}

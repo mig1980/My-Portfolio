@@ -50,17 +50,14 @@ const About: React.FC = memo(() => {
       <div className="grid md:grid-cols-12 gap-12 items-start">
         <div className="md:col-span-4">
           <SectionHeading number="01" label="About" title="About me" />
-          <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-stone-600">
-            Based in {PERSONAL_INFO.location}
-          </p>
-          <blockquote className="mt-8 border-l-2 border-primary-700 pl-5 font-display text-2xl italic leading-snug text-ink">
+          <blockquote className="mt-8 border-l-2 border-primary-700 pl-4 text-stone-700 leading-relaxed">
             Colleagues know me as someone who listens first, gives honest advice, and turns complex
             challenges into actionable plans.
           </blockquote>
         </div>
 
         <div className="md:col-span-8">
-          <div className="space-y-6 text-lg text-stone-700 leading-relaxed [&>p:first-child]:text-xl [&>p:first-child]:text-ink">
+          <div className="space-y-6 text-lg text-stone-700 leading-relaxed">
             {PERSONAL_INFO.summary.split('\n\n').map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}

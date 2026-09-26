@@ -294,7 +294,7 @@ export const AWARDS: AwardItem[] = [
  * Life outside work.
  * Displayed in the About section.
  */
-export const OUTSIDE_WORK_MOTTO = 'Family first. Always learning. Usually moving.';
+export const OUTSIDE_WORK_MOTTO = 'Family first. Always learning. Constantly moving.';
 
 export const OUTSIDE_WORK: OutsideWorkGroup[] = [
   {

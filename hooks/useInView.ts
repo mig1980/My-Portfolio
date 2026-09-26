@@ -24,7 +24,8 @@ export function useInView(
   options: IntersectionObserverInit = {}
 ): [React.RefObject<HTMLElement | null>, boolean] {
   // Destructure options into primitives to avoid unstable object reference in deps
-  const { threshold = 0.1, rootMargin = '0px 0px -50px 0px', root = null } = options;
+  // threshold 0: tall sections (e.g. About on mobile) would otherwise stay blank until 10% is on screen
+  const { threshold = 0, rootMargin = '0px 0px -50px 0px', root = null } = options;
 
   const ref = useRef<HTMLElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);

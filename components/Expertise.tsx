@@ -1,52 +1,43 @@
 /**
- * @fileoverview Expertise section component displaying core competencies.
- * @description Shows skills organized by category in a grid layout.
+ * @fileoverview Expertise section component ("Where I operate").
+ * @description Editorial index: one ruled row per area, items in two columns.
  */
 
 import React, { memo } from 'react';
 import Section from './ui/Section';
-import Card from './ui/Card';
+import SectionHeading from './ui/SectionHeading';
 import { SKILLS } from '../constants';
-import { CheckCircle2 } from 'lucide-react';
 
 /**
- * Expertise section component showcasing professional skills.
+ * Expertise section component.
  * Features:
- * - Skills grouped by category with icons
- * - Two-column responsive grid layout
- * - Check marks for individual skills
- * - Memoized for performance optimization
+ * - One full-width row per area, separated by hairline rules
+ * - Area name in display serif, items in a two-column list
  *
- * @returns The expertise section with skill categories
+ * @returns The expertise section
  */
 const Expertise: React.FC = memo(() => {
   return (
     <Section id="expertise">
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Core Competencies</h2>
-        <p className="text-slate-300">The toolkit behind two decades of closing complex deals.</p>
-      </div>
+      <SectionHeading number="03" label="Expertise" title="Where I operate." className="mb-14" />
 
-      <div className="flex flex-wrap justify-center gap-6">
+      <div className="border-b border-stone-300">
         {SKILLS.map((group) => (
-          <Card
+          <div
             key={group.category}
-            className="h-full w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+            className="grid md:grid-cols-12 gap-5 md:gap-8 py-8 md:py-10 border-t border-stone-300"
           >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 bg-primary-500/10 rounded-lg text-primary-400">{group.icon}</div>
-              <h3 className="text-xl font-bold text-slate-100">{group.category}</h3>
-            </div>
-
-            <div className="space-y-3">
+            <h3 className="md:col-span-4 lg:col-span-3 font-display text-3xl md:text-4xl leading-none text-ink">
+              {group.category}
+            </h3>
+            <ul className="md:col-span-8 lg:col-span-9 grid sm:grid-cols-2 gap-x-10 gap-y-3 list-disc pl-5 marker:text-primary-700">
               {group.skills.map((skill) => (
-                <div key={skill} className="flex items-start gap-2 text-sm text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-primary-500 mt-0.5 shrink-0" />
-                  <span>{skill}</span>
-                </div>
+                <li key={skill} className="pl-1 text-lg text-stone-700 leading-snug">
+                  {skill}
+                </li>
               ))}
-            </div>
-          </Card>
+            </ul>
+          </div>
         ))}
       </div>
     </Section>

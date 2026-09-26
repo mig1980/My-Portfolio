@@ -8,6 +8,7 @@
 
 import React, { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
+  ArrowRight,
   MessageCircle,
   X,
   Send,
@@ -22,24 +23,18 @@ import { useChat } from '../hooks/useChat';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
-import type { ChatMessage } from '../types';
+import { useScrollPosition } from '../hooks/useScrollPosition';
+import { CHAT_ASK_EVENT } from '../utils/chatEvents';
+import { MAX_CHAT_MESSAGE_LENGTH as MAX_INPUT_LENGTH } from '../utils/chatLimits';
+import { CHAT_WELCOME_QUESTIONS } from '../constants';
+import type { ChatAskDetail, ChatMessage } from '../types';
 
 // ============================================================================
 // Constants
 // ============================================================================
 
-/** Maximum input length (aligned with backend) */
-const MAX_INPUT_LENGTH = 500;
-
 /** Typing animation speed (ms per character) - respects prefers-reduced-motion */
 const TYPING_SPEED_MS = 12;
-
-/** Suggested questions for new users */
-const QUICK_QUESTIONS: readonly string[] = [
-  "What is Michael's experience?",
-  'Key achievements?',
-  'Current role?',
-] as const;
 
 /** Greeting bubble configuration */
 const GREETING_BUBBLE = {
@@ -51,6 +46,8 @@ const GREETING_BUBBLE = {
   STORAGE_KEY: 'aboutme-greeting-dismissed',
   /** Greeting message text */
   MESSAGE: "👋 Hi! Ask me anything about Michael's experience",
+  /** Scroll depth (px) before the greeting may appear; the hero has its own ask box */
+  SCROLL_THRESHOLD_PX: 600,
 } as const;
 
 // ============================================================================
@@ -196,15 +193,23 @@ const MessageBubble = memo<MessageBubbleProps>(
           <div
             className={`px-3 py-2 rounded-2xl text-sm leading-relaxed ${
               isUser
-                ? 'bg-primary-600 text-white rounded-br-md'
-                : 'bg-slate-800 text-slate-200 rounded-bl-md'
+                ? 'bg-primary-700 text-white rounded-br-md'
+                : 'bg-stone-100 text-ink rounded-bl-md'
             }`}
           >
-            {isUser ? message.content : displayedText}
+            {isUser ? (
+              message.content
+            ) : (
+              <>
+                {/* Screen readers get the full reply once; the animated copy is visual only */}
+                <span className="sr-only">{message.content}</span>
+                <span aria-hidden="true">{displayedText}</span>
+              </>
+            )}
             {/* Typing cursor for animation effect */}
             {isTyping && (
               <span
-                className="inline-block w-0.5 h-4 bg-primary-400 ml-0.5 animate-pulse motion-reduce:animate-none"
+                className="inline-block w-0.5 h-4 bg-primary-700 ml-0.5 animate-pulse motion-reduce:animate-none"
                 aria-hidden="true"
               />
             )}
@@ -212,7 +217,7 @@ const MessageBubble = memo<MessageBubbleProps>(
 
           {/* Timestamp */}
           <span
-            className={`text-xs text-slate-400 mt-1 ${isUser ? 'text-right' : 'text-left'}`}
+            className={`text-xs text-stone-600 mt-1 ${isUser ? 'text-right' : 'text-left'}`}
             aria-label={`Sent ${formattedTime}`}
           >
             {formattedTime}
@@ -222,11 +227,11 @@ const MessageBubble = memo<MessageBubbleProps>(
         {/* User Avatar */}
         {isUser && (
           <div
-            className="w-7 h-7 rounded-full bg-slate-700 flex items-center 
+            className="w-7 h-7 rounded-full bg-stone-200 flex items-center 
                      justify-center flex-shrink-0 mt-0.5"
             aria-hidden="true"
           >
-            <User className="w-4 h-4 text-slate-300" />
+            <User className="w-4 h-4 text-stone-700" />
           </div>
         )}
       </div>
@@ -249,18 +254,18 @@ const LoadingIndicator = memo(() => (
     >
       <Bot className="w-4 h-4 text-white" />
     </div>
-    <div className="bg-slate-800 px-4 py-3 rounded-2xl rounded-bl-md">
+    <div className="bg-stone-100 px-4 py-3 rounded-2xl rounded-bl-md">
       <div
         className="flex gap-1.5 motion-reduce:hidden"
         role="status"
         aria-label="Loading response"
       >
-        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" />
-        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce animation-delay-150" />
-        <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce animation-delay-300" />
+        <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce" />
+        <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce animation-delay-150" />
+        <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce animation-delay-300" />
       </div>
       {/* Fallback for reduced motion */}
-      <span className="hidden motion-reduce:block text-slate-400 text-sm">Thinking...</span>
+      <span className="hidden motion-reduce:block text-stone-600 text-sm">Thinking...</span>
     </div>
   </div>
 ));
@@ -273,8 +278,8 @@ LoadingIndicator.displayName = 'LoadingIndicator';
  */
 const AiDisclaimer = memo(() => (
   <div
-    className="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800/50 
-               border-t border-slate-700/50 text-xs text-slate-400"
+    className="flex items-center justify-center gap-1.5 px-3 py-2 bg-stone-50 
+               border-t border-stone-200 text-xs text-stone-600"
     aria-label="Disclaimer"
   >
     <Sparkles className="w-3 h-3" aria-hidden="true" />
@@ -295,8 +300,8 @@ interface OfflineIndicatorProps {
  */
 const OfflineIndicator = memo<OfflineIndicatorProps>(({ isFullscreen = false }) => (
   <div
-    className={`flex items-center justify-center gap-2 px-3 py-2 bg-amber-900/30 
-               border-t border-amber-700/50 text-xs text-amber-400
+    className={`flex items-center justify-center gap-2 px-3 py-2 bg-amber-50 
+               border-t border-amber-200 text-xs text-amber-800
                ${isFullscreen ? 'py-3' : ''}`}
     role="status"
     aria-live="polite"
@@ -326,16 +331,16 @@ const RateLimitIndicator = memo<RateLimitIndicatorProps>(
 
     return (
       <div
-        className={`px-3 py-2 bg-amber-900/30 border-t border-amber-700/50 
+        className={`px-3 py-2 bg-amber-50 border-t border-amber-200 
                    ${isFullscreen ? 'py-3' : ''}`}
         role="status"
         aria-live="polite"
       >
-        <div className="flex items-center justify-between text-xs text-amber-400 mb-1.5">
+        <div className="flex items-center justify-between text-xs text-amber-800 mb-1.5">
           <span>Rate limit - please wait</span>
           <span className="font-mono">{secondsRemaining}s</span>
         </div>
-        <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
+        <div className="h-1 bg-stone-200 rounded-full overflow-hidden">
           <div
             className="h-full bg-amber-500 transition-all duration-1000 ease-linear"
             style={{ width: `${progress}%` }}
@@ -371,9 +376,9 @@ const FollowUpSuggestions = memo<FollowUpSuggestionsProps>(
             type="button"
             onClick={() => onSelect(suggestion)}
             disabled={disabled}
-            className="px-3 py-1.5 bg-primary-600/20 hover:bg-primary-600/30 
-                     text-primary-300 text-xs rounded-full transition-colors 
-                     focus-ring border border-primary-600/30
+            className="px-3 py-1.5 bg-primary-50 hover:bg-primary-100 
+                     text-primary-800 text-xs rounded-full transition-colors 
+                     focus-ring border border-primary-200
                      disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {suggestion}
@@ -401,7 +406,7 @@ const RetryButton = memo<RetryButtonProps>(({ onRetry, disabled = false }) => (
     onClick={onRetry}
     disabled={disabled}
     className="inline-flex items-center gap-1.5 px-3 py-1.5 mt-2
-               bg-slate-700 hover:bg-slate-600 text-slate-200 
+               bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 
                text-xs rounded-lg transition-colors focus-ring
                disabled:opacity-50 disabled:cursor-not-allowed"
     aria-label="Retry sending message"
@@ -425,7 +430,7 @@ interface GreetingBubbleProps {
  */
 const GreetingBubble = memo<GreetingBubbleProps>(({ onDismiss, onClick }) => (
   <div
-    className="fixed bottom-24 left-6 z-40 max-w-[280px]
+    className="fixed bottom-24 right-6 z-40 max-w-[280px]
                motion-safe:animate-[fadeSlideIn_0.3s_ease-out]"
     role="status"
     aria-live="polite"
@@ -435,7 +440,7 @@ const GreetingBubble = memo<GreetingBubbleProps>(({ onDismiss, onClick }) => (
       <button
         type="button"
         onClick={onClick}
-        className="w-full text-left bg-white text-slate-800 px-4 py-3 rounded-2xl 
+        className="w-full text-left bg-white text-ink border border-stone-200 px-4 py-3 rounded-2xl 
                    shadow-lg hover:shadow-xl transition-shadow cursor-pointer
                    focus-ring"
         aria-label="Open chat assistant"
@@ -449,7 +454,7 @@ const GreetingBubble = memo<GreetingBubbleProps>(({ onDismiss, onClick }) => (
           e.stopPropagation();
           onDismiss();
         }}
-        className="absolute -top-2 -right-2 w-6 h-6 bg-slate-700 hover:bg-slate-600
+        className="absolute -top-2 -right-2 w-6 h-6 bg-ink hover:bg-stone-700
                    text-white rounded-full flex items-center justify-center
                    shadow-md transition-colors focus-ring"
         aria-label="Dismiss greeting"
@@ -458,7 +463,7 @@ const GreetingBubble = memo<GreetingBubbleProps>(({ onDismiss, onClick }) => (
       </button>
       {/* Bubble tail pointing to chat button */}
       <div
-        className="absolute -bottom-2 left-6 w-4 h-4 bg-white transform rotate-45"
+        className="absolute -bottom-2 right-6 w-4 h-4 bg-white border-r border-b border-stone-200 transform rotate-45"
         aria-hidden="true"
       />
     </div>
@@ -476,7 +481,7 @@ GreetingBubble.displayName = 'GreetingBubble';
  * Features a collapsible interface with message history and quick suggestions.
  *
  * @remarks
- * - Positioned bottom-left to avoid conflict with BackToTop button (bottom-right)
+ * - Positioned bottom-right; BackToTop sits to its left
  * - Supports keyboard navigation (Tab, Enter, Escape)
  * - Respects prefers-reduced-motion
  * - Full accessibility with ARIA labels and live regions
@@ -507,6 +512,10 @@ const ChatWidget: React.FC = memo(() => {
 
   // Online status
   const isOnline = useOnlineStatus();
+
+  const hasScrolledPastHero = useScrollPosition({
+    threshold: GREETING_BUBBLE.SCROLL_THRESHOLD_PX,
+  });
 
   // Lock body scroll when fullscreen on mobile
   useBodyScrollLock(isFullscreen);
@@ -558,8 +567,8 @@ const ChatWidget: React.FC = memo(() => {
 
   // Show greeting bubble after delay for first-time visitors
   useEffect(() => {
-    // Don't show if: already dismissed, chat is open, or already showing
-    if (wasGreetingDismissed() || isOpen) {
+    // Don't show if: already dismissed, chat is open, or visitor is still on the hero
+    if (wasGreetingDismissed() || isOpen || !hasScrolledPastHero) {
       return;
     }
 
@@ -591,7 +600,7 @@ const ChatWidget: React.FC = memo(() => {
       if (showTimer) clearTimeout(showTimer);
       if (hideTimer) clearTimeout(hideTimer);
     };
-  }, [isOpen, wasGreetingDismissed]);
+  }, [isOpen, hasScrolledPastHero, wasGreetingDismissed]);
 
   // Hide greeting when chat opens
   useEffect(() => {
@@ -712,6 +721,24 @@ const ChatWidget: React.FC = memo(() => {
     void retryLastMessage();
   }, [retryLastMessage, isOnline]);
 
+  // Questions asked from elsewhere on the page (e.g. the hero ask box)
+  useEffect(() => {
+    const handleAsk = (e: Event): void => {
+      const question = (e as CustomEvent<ChatAskDetail>).detail?.question?.trim();
+      if (!question) return;
+      setIsOpen(true);
+      // Can't send right now: keep the question in the input instead of dropping it
+      if (!isOnline || isLoading || isRateLimited) {
+        setInput(question);
+        return;
+      }
+      void sendMessage(question);
+    };
+
+    window.addEventListener(CHAT_ASK_EVENT, handleAsk);
+    return () => window.removeEventListener(CHAT_ASK_EVENT, handleAsk);
+  }, [sendMessage, isOnline, isLoading, isRateLimited]);
+
   const toggleChat = useCallback((): void => {
     // Check current state BEFORE updating
     // This avoids doing work inside setState callback which can cause jank
@@ -741,15 +768,15 @@ const ChatWidget: React.FC = memo(() => {
   return (
     <>
       {/* Greeting Bubble - shows after delay for first-time visitors */}
-      {showGreetingBubble && !isOpen && !isFullscreen && (
+      {showGreetingBubble && hasScrolledPastHero && !isOpen && !isFullscreen && (
         <GreetingBubble onDismiss={dismissGreeting} onClick={handleGreetingClick} />
       )}
 
-      {/* Floating Toggle Button - hidden when fullscreen on mobile */}
-      {!isFullscreen && (
+      {/* Floating Toggle Button - hidden on the hero (it has its own ask box) unless chat is open, and when fullscreen */}
+      {!isFullscreen && (hasScrolledPastHero || isOpen) && (
         <button
           onClick={toggleChat}
-          className="fixed bottom-6 left-6 z-50 w-14 h-14 bg-primary-600 hover:bg-primary-700 
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-primary-700 hover:bg-primary-800 
                      text-white rounded-full shadow-lg flex items-center justify-center 
                      transition-all duration-150 hover:scale-110 focus-ring
                      motion-reduce:transition-none motion-reduce:hover:transform-none"
@@ -769,12 +796,12 @@ const ChatWidget: React.FC = memo(() => {
       {isOpen && (
         <div
           id="chat-dialog"
-          className={`fixed z-50 bg-slate-900 flex flex-col overflow-hidden
+          className={`fixed z-50 bg-white flex flex-col overflow-hidden
                       motion-safe:animate-[slideUp_0.2s_ease-out]
                       ${
                         isFullscreen
                           ? 'inset-0 rounded-none border-0'
-                          : 'bottom-24 left-6 w-[380px] max-w-[calc(100vw-48px)] border border-slate-700 rounded-2xl shadow-2xl'
+                          : 'bottom-24 right-6 w-[380px] max-w-[calc(100vw-48px)] border border-stone-200 rounded-2xl shadow-2xl'
                       }`}
           style={{
             height: isFullscreen ? '100%' : 'min(520px, calc(100vh - 150px))',
@@ -796,7 +823,7 @@ const ChatWidget: React.FC = memo(() => {
 
           {/* Header */}
           <div
-            className={`bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-3 
+            className={`bg-ink px-4 py-3 
                        flex items-center justify-between flex-shrink-0
                        ${isFullscreen ? 'py-4' : ''}`}
           >
@@ -817,12 +844,12 @@ const ChatWidget: React.FC = memo(() => {
               </div>
               <div>
                 <h2 className="text-white font-semibold text-sm">AI Assistant</h2>
-                <p className="text-primary-200 text-xs">Ask about Michael</p>
+                <p className="text-stone-300 text-xs">Ask about Michael</p>
               </div>
             </div>
             <button
               onClick={handleClearHistory}
-              className="p-2 text-primary-200 hover:text-white hover:bg-white/10 
+              className="p-2 text-stone-300 hover:text-white hover:bg-white/10 
                          rounded-lg transition-colors focus-ring
                          disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
               aria-label="Clear chat history"
@@ -842,44 +869,44 @@ const ChatWidget: React.FC = memo(() => {
           >
             {/* Welcome Message */}
             {messages.length === 0 && (
-              <div className="text-center py-6">
-                <div
-                  className="w-16 h-16 bg-primary-600/20 rounded-full flex items-center 
-                             justify-center mx-auto mb-4"
-                >
-                  <Bot className="w-8 h-8 text-primary-400" aria-hidden="true" />
+              <div>
+                <div className="text-center">
+                  <h3 className="text-ink font-semibold mb-1">
+                    Hi! I&apos;m Michael&apos;s AI assistant
+                  </h3>
+                  <p className="text-stone-600 text-sm mb-5">
+                    Ask me anything about Michael&apos;s professional background, experience, or
+                    skills.
+                  </p>
                 </div>
-                <h3 className="text-slate-200 font-medium mb-2">
-                  Hi! I&apos;m Michael&apos;s AI assistant
-                </h3>
-                <p className="text-slate-400 text-sm mb-4">
-                  Ask me anything about Michael&apos;s professional background, experience, or
-                  skills.
-                </p>
 
                 {/* Quick Questions */}
-                <div className="space-y-2">
-                  <p className="text-slate-400 text-xs uppercase tracking-wide">Quick questions</p>
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {QUICK_QUESTIONS.map((question) => (
-                      <button
-                        key={question}
-                        type="button"
-                        onClick={() => handleQuickQuestion(question)}
-                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 
-                                   text-xs rounded-full transition-colors focus-ring"
-                        disabled={isLoading || isRateLimited || !isOnline}
-                      >
-                        {question}
-                      </button>
-                    ))}
-                  </div>
+                <p className="text-stone-600 text-xs uppercase tracking-wide mb-2">Try asking</p>
+                <div className="flex flex-col gap-2">
+                  {CHAT_WELCOME_QUESTIONS.map((question) => (
+                    <button
+                      key={question}
+                      type="button"
+                      onClick={() => handleQuickQuestion(question)}
+                      className="group flex items-center justify-between gap-3 w-full px-4 py-3 text-left
+                                 bg-primary-50 hover:bg-primary-100 text-primary-800 border border-primary-200
+                                 hover:border-primary-400 text-sm font-medium rounded-xl transition-colors focus-ring
+                                 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isLoading || isRateLimited || !isOnline}
+                    >
+                      <span>{question}</span>
+                      <ArrowRight
+                        className="w-4 h-4 shrink-0 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* Message List */}
-            <div aria-live="polite" aria-atomic="false" aria-relevant="additions">
+            {/* Message List (the role="log" container already announces additions) */}
+            <div>
               {messages.map((message) => (
                 <MessageBubble
                   key={message.id}
@@ -905,7 +932,7 @@ const ChatWidget: React.FC = memo(() => {
             {/* Error Message with Retry */}
             {error && (
               <div
-                className="bg-red-900/30 border border-red-700 text-red-300 px-3 py-2 
+                className="bg-red-50 border border-red-200 text-red-800 px-3 py-2 
                            rounded-lg text-sm"
                 role="alert"
               >
@@ -937,7 +964,7 @@ const ChatWidget: React.FC = memo(() => {
           {/* Input Form */}
           <form
             onSubmit={handleSubmit}
-            className={`p-3 border-t border-slate-700 flex-shrink-0 ${isFullscreen ? 'p-4' : ''}`}
+            className={`p-3 border-t border-stone-200 flex-shrink-0 ${isFullscreen ? 'p-4' : ''}`}
           >
             <div className="flex gap-2">
               <label htmlFor="chat-input" className="sr-only">
@@ -959,10 +986,10 @@ const ChatWidget: React.FC = memo(() => {
                 }
                 maxLength={MAX_INPUT_LENGTH}
                 disabled={isLoading || isRateLimited || !isOnline}
-                className={`flex-1 bg-slate-800 text-slate-200 placeholder-slate-500 
-                           px-4 rounded-full text-base border border-slate-700
-                           focus:outline-none focus:border-primary-500 focus:ring-1 
-                           focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed
+                className={`flex-1 bg-stone-50 text-ink placeholder-stone-500 
+                           px-4 rounded-full text-base border border-stone-300
+                           focus:outline-none focus:border-primary-700 focus:ring-1 
+                           focus:ring-primary-700 disabled:opacity-50 disabled:cursor-not-allowed
                            py-2 ${isFullscreen ? 'py-3' : ''}`}
                 aria-label="Type your message"
                 aria-describedby="char-count"
@@ -970,7 +997,7 @@ const ChatWidget: React.FC = memo(() => {
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading || isRateLimited || !isOnline}
-                className={`bg-primary-600 hover:bg-primary-700 disabled:bg-slate-700 
+                className={`bg-primary-700 hover:bg-primary-800 disabled:bg-stone-300 
                            text-white rounded-full flex items-center justify-center 
                            transition-colors focus-ring disabled:cursor-not-allowed
                            ${isFullscreen ? 'w-12 h-12' : 'w-10 h-10'}`}
@@ -985,7 +1012,7 @@ const ChatWidget: React.FC = memo(() => {
             </p>
             {/* Visible character count when near limit */}
             {input.length > MAX_INPUT_LENGTH - 50 && (
-              <p className="text-xs text-slate-500 mt-1 text-right">
+              <p className="text-xs text-stone-600 mt-1 text-right">
                 {input.length}/{MAX_INPUT_LENGTH}
               </p>
             )}

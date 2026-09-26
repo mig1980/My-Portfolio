@@ -15,22 +15,11 @@ import type {
   ThoughtLeadershipItem,
   SocialLink,
   AwardItem,
-  InterestItem,
   StatItem,
+  CareerStage,
+  OutsideWorkGroup,
 } from './types';
-import {
-  Briefcase,
-  Brain,
-  Cloud,
-  TrendingUp,
-  Linkedin,
-  Mail,
-  BookOpen,
-  Dumbbell,
-  Lightbulb,
-  Users,
-  Handshake,
-} from 'lucide-react';
+import { Linkedin, Mail, Dumbbell, Lightbulb } from 'lucide-react';
 import { getLogoUrl } from './utils/logo';
 
 /**
@@ -39,15 +28,43 @@ import { getLogoUrl } from './utils/logo';
 export const PERSONAL_INFO = {
   name: 'Michael Gavrilov',
   tagline: 'Engineer at heart.',
-  taglineHighlight: 'Transformational dealmaker.',
+  taglineHighlight: 'Dealmaker by instinct.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
-  summary: `Started as an engineer. Became a dealmaker. Never lost the builder's mindset.
+  focus: 'Technology · AI · Strategy',
+  intro: 'I turn ambitious AI ideas into business reality.',
+  resumeUrl: '/CV/Michael-Gavrilov-Resume.pdf',
+  summary: `I started my career building and operating technology. I became an architect, strategist and eventually a dealmaker.
 
-I've spent two decades translating between the language of technology and the language of business—helping Fortune 500 leaders see what's possible, then making it real.
-
-Whether architecting solutions or negotiating multi-year partnerships, I bring the same approach: listen deeply, cut through complexity, and deliver what I promised.`,
+The mindset never really changed: understand the problem, challenge assumptions, design a solution and make it work.`,
+  summaryEmphasis: 'Today, the systems are just bigger.',
 };
+
+/**
+ * Suggested questions: the hero shows the first three, the chat welcome shows the rest
+ * (starting from the third, so the two lists overlap by one).
+ */
+export const SUGGESTED_QUESTIONS: readonly string[] = [
+  'How does Michael approach complex problems?',
+  "What's the biggest deal Michael has structured?",
+  'How did Michael go from engineer to dealmaker?',
+  "What's his philosophy on enterprise AI?",
+  'What does he believe about complex deals?',
+];
+
+export const HERO_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS.slice(0, 3);
+
+export const CHAT_WELCOME_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS.slice(2);
+
+/**
+ * Career progression, oldest first. Each role in EXPERIENCE maps to one stage.
+ */
+export const CAREER_STAGES: readonly CareerStage[] = [
+  { name: 'Engineer', summary: 'Building systems' },
+  { name: 'Architect', summary: 'Architecting solutions' },
+  { name: 'Strategist', summary: 'Shaping strategy' },
+  { name: 'Dealmaker', summary: 'Building businesses' },
+];
 
 export const EXPERIENCE: JobRole[] = [
   {
@@ -56,12 +73,13 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'Jan 2017 - Present',
+    stage: 'Dealmaker',
     description: [
-      'Lead AI transformation for a strategic pharmaceutical customer, aligning Microsoft’s advanced technologies with client priorities.',
+      'Lead the AI agenda for a key pharmaceutical customer, aligning Microsoft’s advanced technologies with client priorities.',
       'Lead a cross-functional virtual team across Azure, Microsoft 365 (including Copilot), and Security to deliver targeted business outcomes.',
-      'Navigate complex, multi-stakeholder negotiations with C-suite executives to unlock transformational AI adoption.',
+      'Navigate complex, multi-stakeholder negotiations with senior executives to unlock AI adoption.',
       'Challenge legacy assumptions with data-driven, security-aware recommendations—accelerating adoption without increasing risk.',
-      'Architect novel deal structures involving product partnerships and multi-year revenue commitments totaling $250M+ TCV.',
+      'Architect novel deal structures involving product partnerships and multi-year revenue commitments totaling more than $500M.',
       'Build and sustain trusted executive relationships across global accounts, unlocking new opportunities.',
     ],
   },
@@ -71,6 +89,7 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'Apr 2011 - Jan 2017',
+    stage: 'Dealmaker',
     description: [
       'Managed robust sales pipelines and guided high-performing teams across Sales, Engineering, and Delivery.',
       'Consistently exceeded revenue targets, generating an average of $20M annually across Pharma, Transportation, and Manufacturing sectors.',
@@ -83,6 +102,7 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'July 2008 - Mar 2011',
+    stage: 'Strategist',
     description: [
       'Advised senior executives on technology transformation strategies aligning with business goals.',
       'Drove adoption strategies, ensuring sustained momentum and value realization.',
@@ -95,10 +115,11 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'Oct 2006 - July 2008',
+    stage: 'Strategist',
     description: [
       'Structured platform partnerships and joint go-to-market strategies driving partner growth and revenue.',
       'Led programs resulting in a 150% increase in partner-influenced revenue.',
-      'Cultivated technical relationships with CTOs/CIOs to understand strategic challenges.',
+      'Cultivated technical relationships with CTOs/CIOs to understand their business challenges.',
     ],
   },
   {
@@ -107,6 +128,7 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Systematica Group',
     logo: getLogoUrl('systematic.ru'),
     period: 'July 2005 - Oct 2006',
+    stage: 'Architect',
     description: [
       'Led architectural design and technical strategy for complex IT solutions in pre-sales engagements.',
       'Collaborated with sales teams and enterprise clients to align technology with business objectives.',
@@ -118,6 +140,7 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Allied Testing',
     logo: getLogoUrl('alliedtesting.com'),
     period: 'Apr 2002 - July 2005',
+    stage: 'Engineer',
     description: [
       'Led a team of systems engineers to deliver process improvements and automation, increasing operational efficiency by 25%.',
       'Managed IT services and operations for virtual and physical environments.',
@@ -126,58 +149,44 @@ export const EXPERIENCE: JobRole[] = [
 ];
 
 /**
- * Professional skills grouped by category.
+ * Areas of work grouped by category.
  * Displayed in the Expertise section.
  */
 export const SKILLS: SkillGroup[] = [
   {
-    category: 'Strategic Leadership',
-    icon: <Briefcase className="w-5 h-5" />,
+    category: 'Technology',
     skills: [
-      'Complex Deal Closure ($250M+ TCV)',
-      'C-Suite Partnerships',
-      'AI-First Enterprise Strategy',
-      'Cross-functional Team Leadership',
-    ],
-  },
-  {
-    category: 'Artificial Intelligence',
-    icon: <Brain className="w-5 h-5" />,
-    skills: [
-      'Generative AI Strategy',
-      'Copilot Enablement',
+      'Enterprise & Agentic AI',
+      'Cloud & Platforms',
       'AI Value Realization',
-      'AI Business Integration',
+      'Technology Strategy',
     ],
   },
   {
-    category: 'Cloud & Tech',
-    icon: <Cloud className="w-5 h-5" />,
+    category: 'Go-to-Market',
     skills: [
-      'Azure Cloud Strategy',
-      'Solutions Architecture',
-      'Agentic AI',
-      'Data & Security Compliance',
+      'Strategic Accounts',
+      'Enterprise GTM',
+      'Competitive Strategy',
+      'Ecosystem Development',
     ],
   },
   {
-    category: 'Sales Mastery',
-    icon: <TrendingUp className="w-5 h-5" />,
+    category: 'Leadership',
     skills: [
+      'Executive Partnerships',
+      'Cross-functional Leadership',
+      'Organizational Alignment',
+      'Transformation at Scale',
+    ],
+  },
+  {
+    category: 'Deals',
+    skills: [
+      'Complex Deal Structuring',
       'Value Negotiation',
-      'Strategic Account Planning',
-      'Go-to-Market Strategy',
-      'Insight Selling',
-    ],
-  },
-  {
-    category: 'Partnership & Deals',
-    icon: <Handshake className="w-5 h-5" />,
-    skills: [
-      'Transformational Partnerships',
-      'Novel Deal Structures',
       'Platform Economics',
-      'B2B Ecosystem Development',
+      'Multi-Year Partnerships',
     ],
   },
 ];
@@ -197,14 +206,14 @@ export const EDUCATION: EducationItem[] = [
   {
     id: 'bmstu-ms-ise',
     degree: "Master's degree, Information Systems Engineering",
-    institution: 'Bauman Moscow State Technical University',
+    institution: 'Bauman State Technical University',
     type: 'Master',
     logo: getLogoUrl('bmstu.ru'),
   },
   {
     id: 'bmstu-bs-ce',
     degree: "Bachelor's degree, Computer Engineering",
-    institution: 'Bauman Moscow State Technical University',
+    institution: 'Bauman State Technical University',
     type: 'Bachelor',
     logo: getLogoUrl('bmstu.ru'),
   },
@@ -253,80 +262,52 @@ export const CERTIFICATIONS: Certification[] = [
  */
 export const AWARDS: AwardItem[] = [
   {
-    id: 'platinum-club',
-    title: 'Platinum Club',
+    id: 'platinum-gold-club',
+    title: 'Platinum & Gold Club',
     issuer: 'Microsoft',
-    awardLevel: '2x Recipient',
+    awardLevel: '2x Platinum · 3x Gold',
     description:
-      'Honored twice for exceptional performance, awarded to the top tier of achievers worldwide.',
+      'Platinum Club for top-tier performance worldwide; Gold Club for revenue growth and customer impact.',
     color: 'platinum',
-    badgeUrl: '/Awards/PlatinumClub.png',
-  },
-  {
-    id: 'gold-club',
-    title: 'Gold Club Award',
-    issuer: 'Microsoft',
-    awardLevel: '2x Recipient',
-    description:
-      'Awarded for outstanding contribution to revenue growth and strategic customer impact.',
-    color: 'gold',
-    badgeUrl: '/Awards/GoldClub.png',
-    link: '/Awards/Gold_Club_Award_Letter.pdf',
-  },
-  {
-    id: 'champion',
-    title: 'Champion Award',
-    issuer: 'Microsoft',
-    awardLevel: 'FY23 Q4',
-    description:
-      'Transformational Deals as One Microsoft—recognized for driving cloud-first approach on a strategic enterprise engagement.',
-    color: 'purple',
-    badgeUrl: '/Awards/Champion.png',
-    link: '/Awards/Champion_Award_Letter.pdf',
+    badges: [
+      // Platinum art is a wide 1200x627 canvas; Gold is square. Zooms equalize the badge size.
+      { src: '/Awards/PlatinumClub.png', alt: 'Platinum Club badge', zoom: 1.9 },
+      { src: '/Awards/GoldClub.png', alt: 'Gold Club badge', zoom: 1.3 },
+    ],
+    link: '/Awards/Gold_Club_Award_Letter_2026.pdf',
+    linkLabel: 'Platinum & Gold Club – view 2026 Gold Club award letter',
   },
   {
     id: 'attainment-100',
     title: '100% Attainment',
     issuer: 'Microsoft',
-    awardLevel: 'FY25',
+    awardLevel: '7-time winner · 2025 · 2026',
     description: 'Achieved 100% cumulative tenured weighted attainment on a sales quota plan.',
     color: 'green',
-    badgeUrl: '/Awards/100Attainment.png',
+    badges: [
+      { src: '/Awards/100Attainmentretired_7Time.png', alt: '100% Attainment 7-time winner badge' },
+      { src: '/Awards/100Attainment_2025.png', alt: '100% Attainment 2025 badge' },
+      { src: '/Awards/100Attainment__2026.png', alt: '100% Attainment 2026 badge' },
+    ],
   },
 ];
 
 /**
- * Personal interests and life pillars.
+ * Life outside work.
  * Displayed in the About section.
  */
-export const INTERESTS: InterestItem[] = [
+export const OUTSIDE_WORK_MOTTO = 'Family first. Always learning. Usually moving.';
+
+export const OUTSIDE_WORK: OutsideWorkGroup[] = [
   {
-    id: 'sports',
-    label: 'Sports & Performance',
+    id: 'moving',
     icon: <Dumbbell className="w-5 h-5" />,
-    description:
-      'I stay sharp through movement, discipline, and challenge. Snowboarding, swimming, boxing, golfing, and horseback riding are how I push my body, clear my mind, and practice performing under pressure.',
+    items: ['Snowboarding', 'Boxing', 'Swimming', 'Horseback riding'],
   },
   {
     id: 'learning',
-    label: 'Continuous Learning',
-    icon: <BookOpen className="w-5 h-5" />,
-    description:
-      "I treat learning as a permanent competitive advantage. From AI and cloud technology to investing and leadership, I'm always exploring what's next—and turning new insights into real-world decisions and outcomes.",
-  },
-  {
-    id: 'creativity',
-    label: 'Creativity & Impact',
     icon: <Lightbulb className="w-5 h-5" />,
-    description:
-      'I connect dots others miss. Whether writing about technology and investing, mentoring rising leaders, or solving problems no one asked me to solve—I turn complexity into clarity and ideas into outcomes.',
-  },
-  {
-    id: 'relationships',
-    label: 'Relationships & Foundation',
-    icon: <Users className="w-5 h-5" />,
-    description:
-      'I invest in the people who matter most. Family comes first. Beyond that, I read voraciously, stay curious, and keep a long-term perspective—the same approach I bring to partnerships that outlast any single deal.',
+    items: ['Reading', 'Investing', 'Mentoring'],
   },
 ];
 
@@ -336,8 +317,8 @@ export const INTERESTS: InterestItem[] = [
  */
 export const STATS: StatItem[] = [
   { value: 20, suffix: '+', label: 'Years Experience' },
-  { value: 250, prefix: '$', suffix: 'M+', label: 'TCV Closed' },
-  { value: 2, suffix: 'x', label: 'Microsoft Platinum Club' },
+  { value: 500, prefix: '$', suffix: 'M+', label: 'in multi-year agreements' },
+  { value: 5, suffix: '×', label: 'Top-Performer Awards' },
 ];
 
 /**

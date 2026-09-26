@@ -169,6 +169,18 @@ describe('useChat', () => {
 
       expect(result.current.suggestions).toEqual(['Follow up 1', 'Follow up 2']);
     });
+
+    it('ignores a second send fired before the first finishes', async () => {
+      mockFetch.mockResolvedValue(createMockResponse({ reply: 'Response' }));
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await Promise.all([result.current.sendMessage('A'), result.current.sendMessage('A')]);
+      });
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('error handling', () => {
@@ -319,6 +331,24 @@ describe('useChat', () => {
       expect(result.current.messages).toHaveLength(2);
     });
 
+    it('does not resend the failed message as history on retry', async () => {
+      mockFetch
+        .mockResolvedValueOnce(createMockResponse({ error: 'Error' }, { ok: false, status: 500 }))
+        .mockResolvedValueOnce(createMockResponse({ reply: 'Success' }));
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+      await act(async () => {
+        await result.current.retryLastMessage();
+      });
+
+      const [, init] = mockFetch.mock.calls[1] as [string, RequestInit];
+      expect(JSON.parse(String(init.body))).toMatchObject({ message: 'Hello', history: [] });
+    });
+
     it('does nothing if no failed message', async () => {
       const { result } = renderHook(() => useChat());
 
@@ -461,6 +491,79 @@ describe('useChat', () => {
       const { result } = renderHook(() => useChat());
 
       expect(result.current.messages).toEqual([]);
+    });
+
+    it('drops malformed saved messages and keeps valid ones', () => {
+      const savedData = {
+        messages: [
+          { id: '1', role: 'user', content: 'Valid', timestamp: new Date().toISOString() },
+          { id: '2', role: 'hacker', content: 'Bad role', timestamp: new Date().toISOString() },
+          { id: '3', role: 'assistant', content: 42, timestamp: new Date().toISOString() },
+          { id: '4', role: 'assistant', content: 'Bad date', timestamp: 'not-a-date' },
+        ],
+        savedAt: Date.now(),
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedData));
+
+      const { result } = renderHook(() => useChat());
+
+      expect(result.current.messages.map((m) => m.content)).toEqual(['Valid']);
+    });
+
+    it('discards saved data without a valid savedAt so it cannot live forever', () => {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          messages: [{ id: '1', role: 'user', content: 'Hi', timestamp: new Date().toISOString() }],
+        })
+      );
+
+      const { result } = renderHook(() => useChat());
+
+      expect(result.current.messages).toEqual([]);
+      expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+    });
+  });
+
+  describe('response validation', () => {
+    it('ignores suggestions that are not a list of strings', async () => {
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ reply: 'Response', suggestions: 'not-an-array' })
+      );
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+
+      expect(result.current.messages).toHaveLength(2);
+      expect(result.current.suggestions).toEqual([]);
+    });
+
+    it('shows an error instead of crashing when the reply is not text', async () => {
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: { text: 'nested' } }));
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+
+      expect(result.current.error).toBe('Empty response from AI service');
+      expect(result.current.messages).toHaveLength(1);
+    });
+
+    it('shows an error when the response is not a JSON object', async () => {
+      mockFetch.mockResolvedValueOnce(createMockResponse([1, 2, 3]));
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+
+      expect(result.current.error).toMatch(/Invalid response from server/);
     });
   });
 });

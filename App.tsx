@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import Stats from './components/Stats';
@@ -26,6 +26,18 @@ const Contact = lazy(() => import('./components/Contact'));
 
 // Lazy load ChatWidget - not needed for initial render
 const ChatWidget = lazy(() => import('./components/ChatWidget'));
+
+/**
+ * Scrolls to the URL #fragment once lazy sections exist; the browser's own
+ * attempt runs before they mount, so links like /#experience would land at the top.
+ */
+const ScrollToHash: React.FC = () => {
+  useEffect(() => {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (id) document.getElementById(id)?.scrollIntoView({ behavior: 'instant' });
+  }, []);
+  return null;
+};
 
 /**
  * Root application component.
@@ -75,9 +87,10 @@ const App: React.FC = () => {
         {/* Below-fold sections lazy loaded for faster initial paint */}
         <Suspense fallback={null}>
           <Timeline />
-          <Education />
           <ThoughtLeadership />
+          <Education />
           <Contact />
+          <ScrollToHash />
         </Suspense>
       </PageWrapper>
       <BackToTop />

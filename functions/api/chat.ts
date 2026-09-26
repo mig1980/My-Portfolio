@@ -7,6 +7,8 @@
 
 /// <reference types="@cloudflare/workers-types" />
 
+import { MAX_CHAT_MESSAGE_LENGTH as MAX_MESSAGE_LENGTH } from '../../utils/chatLimits';
+
 // ============================================================================
 // Type Definitions
 // ============================================================================
@@ -73,9 +75,6 @@ type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
 // Constants
 // ============================================================================
 
-/** Maximum allowed message length (aligned with frontend) */
-const MAX_MESSAGE_LENGTH = 500;
-
 /** Maximum conversation history items to include */
 const MAX_HISTORY_ITEMS = 10;
 
@@ -100,7 +99,7 @@ const MODEL_CHAIN: readonly string[] = [
 const ALLOWED_ORIGINS: readonly string[] = [
   'https://gavrilov.ai',
   'https://www.gavrilov.ai',
-  'https://aboutme-portfolio.pages.dev',
+  'https://my-portfolio-bu2.pages.dev',
 ] as const;
 
 // ============================================================================
@@ -189,17 +188,34 @@ He has 20+ years of experience in technology and enterprise sales and has been a
 Industries.
 Healthcare and Life Sciences, including pharma. He has also supported enterprise accounts across sectors such as transportation and manufacturing.
 
+Career path: engineer, architect, strategist, dealmaker.
+He started his career building and operating technology, then became an architect, a strategist and eventually a dealmaker. His mindset never changed: understand the problem, challenge assumptions, design a solution and make it work. Today, the systems are just bigger.
+IT Operations Manager and Team Lead at Allied Testing (Apr 2002 to July 2005): led a team of systems engineers and managed IT services and operations.
+IT Solutions Architect at Systematica Group (July 2005 to Oct 2006): led architectural design and technical strategy for complex IT solutions.
+Partner Technology Strategist at Microsoft (Oct 2006 to July 2008), then Account Technology Strategist (July 2008 to Mar 2011).
+Senior Account Executive, Enterprise Accounts at Microsoft (Apr 2011 to Jan 2017), then Strategic Account Director, Healthcare and Life Sciences (Jan 2017 to present).
+
+How he thinks.
+Go deep: understand the technology well enough to challenge assumptions. Zoom out: find the business problem hiding behind the technology conversation. Connect the room: create alignment across people with different priorities and incentives. Make it real: turn strategy into commitments, execution and measurable outcomes.
+His motto: go deep enough to understand the technology, go high enough to understand the business, and stay close enough to make it happen.
+On enterprise AI, he pairs technical depth with business focus, and challenges legacy assumptions with data-driven, security-aware recommendations so adoption can accelerate without increasing risk.
+
+What he has built.
+QuantumInvestor.net is his personal, public experiment testing whether AI can pick stocks better than expensive advisors, with weekly picks, documented performance and transparent results, no paywalls. It is not financial advice.
+He also designed, built and open-sourced this portfolio website (github.com/mig1980/My-Portfolio).
+Earlier in his career he built and ran IT systems and led engineering teams, and he holds degrees in Computer Engineering and Information Systems Engineering.
+
 Operating model and portfolio breadth.
 He leads cross-functional virtual teams and works across Azure, Microsoft 365 (including Copilot), and Security to drive targeted business outcomes.
 
 Quantified outcomes.
-He has architected complex, multi-year agreements totaling more than $250M in total contract value (TCV). In prior enterprise roles, he generated an average of about $20M annually. Earlier in his Microsoft career, he led partner programs that drove a 150% increase in partner-influenced revenue. In an IT operations leadership role, he delivered process improvements and automation that increased operational efficiency by 25%.
+He has architected complex, multi-year agreements totaling more than $500M in total contract value. In prior enterprise roles, he generated an average of about $20M annually. Earlier in his Microsoft career, he led partner programs that drove a 150% increase in partner-influenced revenue. In an IT operations leadership role, he delivered process improvements and automation that increased operational efficiency by 25%.
 
 Awards and recognition.
-He is a 2-time Microsoft Platinum Club recipient and a 2-time Gold Club Award recipient. He received a Champion Award in FY23 Q4 and achieved 100% attainment in FY25.
+He is a 2-time Microsoft Platinum Club recipient and a 3-time Gold Club Award recipient. He received a Champion Award in FY23 Q4. He is a 7-time winner of Microsoft's 100% Attainment award and achieved 100% attainment again in 2025 and 2026.
 
 Education.
-Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from Bauman Moscow State Technical University.
+Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from Bauman State Technical University.
 
 Certifications and executive education.
 Microsoft Certified: Azure Solutions Architect Expert. AWS Certified Cloud Practitioner. Selling to the C-Suite from Wharton Executive Education. Business Strategy and Financial Acumen from INSEAD Executive Education. Value Negotiation from INSEAD Executive Education.
@@ -211,7 +227,7 @@ Response rules.
 Write in plain text only. Do not use markdown, headings, bullets, or code formatting. Keep responses concise and professional. Aim for 100-200 words, but always complete your thoughts and lists fully rather than cutting off mid-sentence. Only answer questions related to Michael's professional background. If asked about something not in the verified facts, say you do not have that information and offer the LinkedIn or email contact option.
 
 Style guidance.
-Use strategic, outcome-oriented phrasing. When helpful, connect technology work to targeted business outcomes, adoption, and governance or security alignment. Avoid internal Microsoft leveling terms such as IC4 or IC6.`;
+Sound like a technical builder who became an executive dealmaker: concise, confident, plain language. Avoid corporate buzzwords and sales clichés. When helpful, connect technology work to business results, adoption, and security. Avoid internal Microsoft leveling terms such as IC4 or IC6.`;
 
 // ============================================================================
 // Follow-up Suggestion Generator
@@ -243,35 +259,35 @@ function generateFollowUpSuggestions(
 
   // Context-aware suggestions based on what was just discussed
   if (responseLower.includes('microsoft') || messageLower.includes('role')) {
-    if (!discussed.achievements) suggestions.push('What awards has he won?');
-    if (!discussed.skills) suggestions.push('What are his key skills?');
+    if (!discussed.achievements) suggestions.push('What awards has Michael won?');
+    if (!discussed.skills) suggestions.push('How does Michael approach complex problems?');
   }
 
   if (responseLower.includes('award') || responseLower.includes('platinum')) {
-    if (!discussed.experience) suggestions.push('Tell me about his career journey');
-    suggestions.push('What deals did he close?');
+    if (!discussed.experience) suggestions.push('How did Michael go from engineer to dealmaker?');
+    suggestions.push("What's the biggest deal Michael has structured?");
   }
 
   if (responseLower.includes('education') || responseLower.includes('degree')) {
-    if (!discussed.skills) suggestions.push('Is he technical?');
-    suggestions.push('What certifications does he have?');
+    if (!discussed.skills) suggestions.push('What has Michael built?');
+    suggestions.push('What certifications does Michael have?');
   }
 
   if (responseLower.includes('technical') || responseLower.includes('azure')) {
-    suggestions.push('What industries has he worked in?');
-    if (!discussed.education) suggestions.push('Where did he study?');
+    suggestions.push('What industries has Michael worked in?');
+    if (!discussed.education) suggestions.push('Where did Michael study?');
   }
 
   if (responseLower.includes('healthcare') || responseLower.includes('pharma')) {
-    suggestions.push('What AI solutions does he specialize in?');
-    suggestions.push('How long has he been at Microsoft?');
+    suggestions.push("What's Michael's philosophy on enterprise AI?");
+    suggestions.push('How long has Michael been at Microsoft?');
   }
 
   // Default suggestions if none matched
   if (suggestions.length === 0) {
-    if (!discussed.experience) suggestions.push("What's his experience?");
-    if (!discussed.achievements) suggestions.push('Key achievements?');
-    if (!discussed.contact) suggestions.push('How can I contact him?');
+    if (!discussed.experience) suggestions.push('How did Michael go from engineer to dealmaker?');
+    if (!discussed.achievements) suggestions.push('What awards has Michael won?');
+    if (!discussed.contact) suggestions.push('How can I contact Michael?');
   }
 
   // Return 2-3 unique suggestions, prioritizing less-discussed topics

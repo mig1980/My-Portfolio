@@ -21,9 +21,7 @@ interface PageWrapperProps {
  * @returns The wrapped page content
  */
 const PageWrapper: React.FC<PageWrapperProps> = memo(({ children }) => (
-  <main className="bg-slate-950 min-h-screen text-slate-200 selection:bg-primary-500/30">
-    {children}
-  </main>
+  <main className="bg-paper min-h-screen text-ink">{children}</main>
 ));
 
 PageWrapper.displayName = 'PageWrapper';

@@ -51,23 +51,25 @@ AboutMe/
 │   ├── ChatWidget.tsx      # AI chat widget (complex, 1000+ lines)
 │   ├── Navigation.tsx      # Responsive nav with scroll detection
 │   ├── [Section].tsx       # Page sections (Hero, About, Stats, etc.)
-│   └── ui/                 # Reusable primitives (Card, Section, etc.)
+│   └── ui/                 # Reusable primitives (Section, SectionHeading, etc.)
 ├── hooks/                  # Custom React hooks
 │   ├── useChat.ts          # Chat state management
 │   ├── useScrollPosition.ts
 │   ├── useIsMobile.ts
 │   ├── useOnlineStatus.ts
 │   ├── useBodyScrollLock.ts
-│   └── useCountUp.ts
+│   └── useInView.ts
 ├── utils/                  # Pure utility functions
 │   ├── analytics.ts        # GA4 tracking
+│   ├── chatEvents.ts       # askChat() bridge from the page to ChatWidget
+│   ├── chatLimits.ts       # Limits shared with functions/api/chat.ts (no DOM imports)
 │   ├── string.ts           # String helpers (getInitials)
 │   ├── dom.ts              # DOM helpers
 │   └── logo.ts             # Logo URL generation
 ├── functions/api/          # Cloudflare Pages Functions
 │   └── chat.ts             # Gemini API proxy with 4-model fallback
 ├── styles/globals.css      # Tailwind v4 + custom utilities
-├── tests/                  # Vitest tests (119 tests, 12 files)
+├── tests/                  # Vitest tests (141 tests, 14 files)
 └── public/
     ├── _headers            # Security headers (CSP, CORS)
     └── _redirects          # SPA routing
@@ -159,4 +161,4 @@ GitHub Actions runs on every PR:
 
 ---
 
-*Last updated: January 4, 2026*
+*Last updated: September 25, 2026*

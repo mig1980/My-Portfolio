@@ -57,47 +57,42 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-paper flex items-center justify-center p-6">
           <div className="text-center max-w-lg">
             {/* Error Icon */}
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-red-500/10 border border-red-500/30 mb-8">
-              <AlertTriangle className="w-10 h-10 text-red-400" />
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-lg bg-red-50 border border-red-200 mb-8">
+              <AlertTriangle className="w-10 h-10 text-red-700" aria-hidden="true" />
             </div>
 
             {/* Message */}
-            <h1 className="text-3xl font-bold text-white mb-4">Something Went Wrong</h1>
-            <p className="text-slate-400 mb-8 leading-relaxed">
+            <h1 className="font-display text-4xl text-ink mb-4">Something went wrong</h1>
+            <p className="text-stone-700 mb-8 leading-relaxed">
               An unexpected error occurred. Please try refreshing the page or return to the home
               page.
             </p>
 
             {/* Error Details (development only) */}
             {import.meta.env.DEV && this.state.error && (
-              <div className="mb-8 p-4 bg-slate-900/50 border border-slate-800 rounded-xl text-left overflow-auto max-h-32">
-                <code className="text-sm text-red-400 break-all">{this.state.error.message}</code>
+              <div className="mb-8 p-4 bg-white border border-stone-200 rounded-lg text-left overflow-auto max-h-32">
+                <code className="text-sm text-red-700 break-all">{this.state.error.message}</code>
               </div>
             )}
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={this.handleReload}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 
-                           bg-primary-600 hover:bg-primary-700 text-white rounded-xl 
-                           font-semibold transition-colors focus-ring"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-ink hover:bg-stone-800 text-paper rounded-full font-semibold transition-colors focus-ring"
               >
-                <RefreshCw className="w-4 h-4" />
-                Refresh Page
+                <RefreshCw className="w-4 h-4" aria-hidden="true" />
+                Refresh page
               </button>
               <button
                 onClick={this.handleGoHome}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 
-                           bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 
-                           hover:text-white rounded-xl font-semibold transition-colors focus-ring
-                           border border-slate-700 hover:border-slate-600"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-stone-400 hover:border-ink text-ink rounded-full font-semibold transition-colors focus-ring"
               >
-                <Home className="w-4 h-4" />
-                Go Home
+                <Home className="w-4 h-4" aria-hidden="true" />
+                Go home
               </button>
             </div>
           </div>

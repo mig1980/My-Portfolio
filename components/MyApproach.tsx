@@ -1,119 +1,91 @@
 /**
- * @fileoverview My Approach section showcasing methodology.
- * @description Displays strategic approach cards that differentiate the professional brand.
+ * @fileoverview "How I think" section.
+ * @description Four working principles plus a closing editorial statement.
  */
 
 import React, { memo } from 'react';
 import Section from './ui/Section';
-import { Search, Users, Rocket, TrendingUp, Quote } from 'lucide-react';
+import SectionHeading from './ui/SectionHeading';
+import { Layers, Telescope, Users, Hammer } from 'lucide-react';
 
 /**
- * Approach methodology step.
+ * Working principle.
  */
 interface ApproachStep {
   icon: React.ElementType;
   title: string;
   description: string;
-  color: string;
 }
 
 const APPROACH_STEPS: ApproachStep[] = [
   {
-    icon: Search,
-    title: 'Discovery',
-    description:
-      'Listen with empathy to understand the real business challenge, not just the stated problem.',
-    color: 'from-blue-500 to-blue-600',
+    icon: Layers,
+    title: 'Go deep',
+    description: 'Understand the technology well enough to challenge assumptions.',
+  },
+  {
+    icon: Telescope,
+    title: 'Zoom out',
+    description: 'Find the business problem hiding behind the technology conversation.',
   },
   {
     icon: Users,
-    title: 'Alignment',
-    description: 'Build trust and consensus across stakeholders with a shared vision for success.',
-    color: 'from-purple-500 to-purple-600',
+    title: 'Connect the room',
+    description: 'Create alignment across people with different priorities and incentives.',
   },
   {
-    icon: Rocket,
-    title: 'Execution',
-    description:
-      'Deliver on promises with speed and precision—reliability earns lasting partnerships.',
-    color: 'from-emerald-500 to-emerald-600',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Scale',
-    description: 'Grow relationships into long-term partnerships that outlast any single deal.',
-    color: 'from-amber-500 to-amber-600',
+    icon: Hammer,
+    title: 'Make it real',
+    description: 'Turn strategy into commitments, execution and measurable outcomes.',
   },
 ];
 
+/** Closing statement, one line per element */
+const STATEMENT_LINES: readonly string[] = [
+  'Go deep enough to understand the technology.',
+  'Go high enough to understand the business.',
+  'Stay close enough to make it happen.',
+];
+
 /**
- * My Approach section displaying methodology cards.
+ * "How I think" section.
  * Features:
- * - 4-step methodology visualization
- * - Connected timeline between steps
- * - Icon-driven cards with gradient accents
- * - Philosophy quote
+ * - 4 numbered principle columns
+ * - Large editorial statement
  * - Responsive grid layout
  *
- * @returns The approach methodology section
+ * @returns The principles section
  */
 const MyApproach: React.FC = memo(() => {
   return (
     <Section id="approach" darker>
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">How I Work</h2>
-          <p className="text-slate-400 max-w-2xl mx-auto">
-            Two decades of enterprise sales taught me that lasting partnerships are built on
-            understanding, alignment, and relentless execution.
-          </p>
-        </div>
+      <SectionHeading number="02" label="Principles" title="How I think." className="mb-14" />
 
-        {/* Step Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {APPROACH_STEPS.map((step, idx) => (
-            <div
-              key={step.title}
-              className="group relative p-6 bg-slate-900/60 border border-slate-800 rounded-xl hover:border-slate-700 hover:bg-slate-800/60 transition-all duration-300"
-            >
-              {/* Step number with gradient ring */}
-              <div
-                className={`absolute -top-4 left-6 w-8 h-8 rounded-full bg-slate-900 border-2 border-slate-700 flex items-center justify-center text-sm font-bold text-slate-400 group-hover:border-transparent group-hover:bg-gradient-to-br ${step.color} group-hover:text-white transition-all duration-300`}
-              >
-                {idx + 1}
-              </div>
-
-              {/* Icon */}
-              <div
-                className={`w-12 h-12 rounded-lg bg-gradient-to-br ${step.color} flex items-center justify-center mb-4 mt-2 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300 motion-reduce:transition-none motion-reduce:group-hover:transform-none`}
-              >
-                <step.icon className="w-6 h-6 text-white" />
-              </div>
-
-              {/* Content */}
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-primary-300 transition-colors">
-                {step.title}
-              </h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{step.description}</p>
+      <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
+        {APPROACH_STEPS.map((step, idx) => (
+          <li key={step.title} className="border-t-2 border-ink pt-5">
+            <div className="flex items-center justify-between mb-6">
+              <span className="font-display text-5xl leading-none text-stone-500 tabular-nums">
+                {String(idx + 1).padStart(2, '0')}
+              </span>
+              <step.icon className="w-6 h-6 text-primary-700" aria-hidden="true" />
             </div>
-          ))}
-        </div>
+            <h3 className="text-xl font-semibold text-ink mb-2">{step.title}</h3>
+            <p className="text-stone-700 leading-relaxed">{step.description}</p>
+          </li>
+        ))}
+      </ol>
 
-        {/* Philosophy Quote */}
-        <div className="mt-16 text-center">
-          <div className="inline-flex items-start gap-4 max-w-3xl mx-auto p-8 bg-slate-900/40 border border-slate-800/50 rounded-2xl">
-            <Quote className="w-8 h-8 text-primary-500 flex-shrink-0 mt-1" />
-            <blockquote className="text-left">
-              <p className="text-lg md:text-xl text-slate-300 italic leading-relaxed">
-                Good salespeople sell features—what the product does. Great salespeople sell
-                outcomes—how it benefits the customer. Truly great salespeople sell feelings—the
-                emotional impact of the purchase.
-              </p>
-              <footer className="mt-4 text-sm text-slate-400">— Robert Herjavec</footer>
-            </blockquote>
-          </div>
-        </div>
-      </div>
+      <p className="mt-20 max-w-4xl font-display text-3xl md:text-5xl leading-tight text-ink">
+        {STATEMENT_LINES.map((line, idx) => (
+          <span
+            key={line}
+            className={`block ${idx === STATEMENT_LINES.length - 1 ? 'text-primary-700' : ''}`}
+          >
+            {line}
+          </span>
+        ))}
+      </p>
     </Section>
   );
 });

@@ -16,7 +16,7 @@ interface SectionProps {
   className?: string;
   /** Content to render inside the section */
   children: ReactNode;
-  /** Whether to apply a darker background variant */
+  /** Whether to apply the alternate (deeper paper) background */
   darker?: boolean;
   /** Whether to animate on scroll (default: true) */
   animate?: boolean;
@@ -48,7 +48,7 @@ const Section: React.FC<SectionProps> = memo(
         ref={ref}
         id={id}
         className={`py-20 md:py-32 px-6 md:px-12 lg:px-24 transition-colors duration-500 
-                   ${darker ? 'bg-slate-900/50' : 'bg-transparent'} 
+                   ${darker ? 'bg-paper-deep' : 'bg-transparent'} 
                    ${animate ? 'transition-all duration-700 ease-out motion-reduce:transition-none' : ''}
                    ${animate && !isVisible ? 'opacity-0 translate-y-8 motion-reduce:opacity-100 motion-reduce:translate-y-0' : 'opacity-100 translate-y-0'}
                    ${className}`}

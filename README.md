@@ -1,14 +1,37 @@
 # My-Portfolio
 
-A modern, performant portfolio website built with React 19, TypeScript, and Tailwind CSS v4.
+Personal site for Michael Gavrilov (gavrilov.ai): a light, editorial single-page portfolio with an AI assistant that answers questions about his career. Built with React 19, TypeScript, and Tailwind CSS v4, deployed on Cloudflare Pages.
 
 **Repository:** https://github.com/mig1980/My-Portfolio
+
+## Features
+
+- **Sections:** Hero with "Ask my AI assistant" box → Stats → 01 About → 02 How I think → 03 Where I operate → 04 Experience (Engineer → Architect → Strategist → Dealmaker) → 05 Projects → 06 Education → 07 Contact
+- **AI assistant:** Gemini-backed chat (`functions/api/chat.ts`) with a 4-model fallback chain, suggested questions, follow-up suggestions, retry, offline and rate-limit states, and 24-hour history in `localStorage`
+- **Deep links:** `/#experience`, `/#projects`, etc. scroll to the section even though below-the-fold sections load lazily
+- **Design:** paper/ink palette with a blue accent; Instrument Serif for headlines, Inter for text (self-hosted in `public/fonts/`)
+
+## Editing Content
+
+| What | Where |
+|------|-------|
+| Name, headline, intro, About text | `constants.tsx` → `PERSONAL_INFO` |
+| Stats bar | `constants.tsx` → `STATS` |
+| Experience, stages, education, certifications | `constants.tsx` → `EXPERIENCE`, `CAREER_STAGES`, `EDUCATION`, `CERTIFICATIONS` |
+| "Where I operate" areas | `constants.tsx` → `SKILLS` |
+| Awards (badges in `public/Awards/`) | `constants.tsx` → `AWARDS` |
+| Suggested chat questions | `constants.tsx` → `SUGGESTED_QUESTIONS` (hero shows the first 3) |
+| "How I think" principles and statement | `components/MyApproach.tsx` |
+| Facts the AI assistant may use | `functions/api/chat.ts` → `SYSTEM_CONTEXT` |
+| Page title, description, social cards | `index.html` |
+
+> The AI assistant does **not** read `constants.tsx`. When a fact changes on the page, update `SYSTEM_CONTEXT` too.
 
 ## Tech Stack
 
 - **React 19** - UI framework with functional components and hooks
 - **TypeScript** - Strict mode enabled for type safety
-- **Tailwind CSS v4** - Build-time compilation via @tailwindcss/postcss
+- **Tailwind CSS v4** - Theme defined in `styles/globals.css` via `@theme` (no `tailwind.config.js`)
 - **Vite 6** - Fast build tool with optimized chunking
 - **Vitest** - Unit testing framework
 
@@ -31,6 +54,9 @@ npm run test
 
 # Run tests (CI)
 npm run test:run
+
+# Run tests with coverage
+npm run test:coverage
 ```
 
 ## Project Structure
@@ -38,12 +64,12 @@ npm run test:run
 ```
 My-Portfolio/
 ├── components/          # React components
-│   ├── ui/             # Reusable primitives (Card, Section, PageWrapper, etc.)
+│   ├── ui/             # Reusable primitives (Section, SectionHeading, PageWrapper, etc.)
 │   └── [Feature].tsx   # Feature components
 ├── public/              # Static assets, _headers/_redirects, sitemap/robots
-├── hooks/              # Custom hooks (useScrollPosition, useCountUp)
+├── hooks/              # Custom hooks (useChat, useInView, useScrollPosition, etc.)
 ├── tests/              # Vitest tests
-├── utils/              # Shared utilities (string, dom, logo)
+├── utils/              # Shared utilities (analytics, chat events/limits, string, dom, logo)
 ├── styles/             # Global styles + CSS utilities
 ├── functions/          # Cloudflare Pages Functions (server-side)
 ├── scripts/            # Maintenance scripts
@@ -54,6 +80,7 @@ My-Portfolio/
 ## Performance Optimizations
 
 - ✅ All components memoized with `React.memo()`
+- ✅ Below-the-fold sections and the chat widget are lazy-loaded
 - ✅ Scroll handler throttled via `requestAnimationFrame`
 - ✅ Explicit image dimensions on all `<img>` elements (CLS prevention)
 - ✅ Vite manual chunks for better caching (lucide-react separated)
@@ -69,7 +96,9 @@ My-Portfolio/
 - ✅ **Reduced motion** — all transform/keyframe animations have `motion-reduce:` counterparts
 - ✅ **Section scroll animations** respect `prefers-reduced-motion` (content shown immediately)
 - ✅ **ChatWidget** loading animation hidden for reduced-motion users with text fallback
-- ✅ **SSR-safe hooks** — `useInView` and `useCountUp` guard against missing `IntersectionObserver`
+- ✅ **Chat replies** read once, in full, by screen readers (typing animation is visual only)
+- ✅ **Anchored sections** stay clear of the fixed header (`scroll-padding-top`)
+- ✅ **SSR-safe hooks** — `useInView` guards against missing `IntersectionObserver`
 - ✅ ARIA attributes on dialog, expandable sections, and live regions
 
 ## Security
@@ -78,8 +107,8 @@ My-Portfolio/
 - ✅ CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff
 - ✅ Permissions-Policy restricts camera, microphone, geolocation
 - ✅ CORS whitelist on chat API (production domains + localhost)
-- ✅ Input sanitization and rate limiting on server-side chat endpoint
-- ✅ 0 npm audit vulnerabilities
+- ✅ Input sanitization and message/history length limits on the server-side chat endpoint
+- ✅ 0 known vulnerabilities in production dependencies (`npm audit --omit=dev`)
 
 ## Available Scripts
 

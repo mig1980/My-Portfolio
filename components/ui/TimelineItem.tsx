@@ -44,25 +44,25 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
     return (
       <div className="relative flex gap-3 md:gap-6 group">
         {/* Vertical line - positioned on row, stretches with row height */}
-        <div className="absolute left-5 md:left-6 top-7 md:top-8 bottom-1 md:bottom-4 w-0.5 -translate-x-1/2 bg-gradient-to-b from-slate-700 to-slate-800/50 transition-all duration-300" />
+        <div className="absolute left-5 md:left-6 top-7 md:top-8 bottom-1 md:bottom-4 w-px -translate-x-1/2 bg-stone-300" />
 
         {/* Timeline connector - year and dot */}
         <div className="flex flex-col items-center w-10 md:w-12 flex-shrink-0">
           {/* Year label */}
-          <div className="text-xs font-bold text-slate-400 mb-1 md:mb-2 text-center">
+          <div className="font-mono text-xs text-stone-600 mb-1 md:mb-2 text-center">
             {displayYear}
           </div>
 
           {/* Timeline dot */}
           <div
             className={`
-              w-3 h-3 md:w-4 md:h-4 rounded-full border-2 md:border-4 z-10 transition-all duration-300
+              w-3 h-3 md:w-4 md:h-4 rounded-full border-2 md:border-4 z-10 transition-colors duration-300
               ${
                 isCurrent
-                  ? 'bg-primary-500 border-primary-500/30 shadow-lg shadow-primary-500/20'
+                  ? 'bg-primary-700 border-primary-200'
                   : isExpanded
-                    ? 'bg-slate-600 border-slate-700'
-                    : 'bg-slate-800 border-slate-700 group-hover:bg-slate-600'
+                    ? 'bg-stone-600 border-stone-300'
+                    : 'bg-paper-deep border-stone-400 group-hover:bg-stone-400'
               }
             `}
           />
@@ -74,11 +74,11 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
             type="button"
             onClick={onToggle}
             className={`
-              w-full text-left p-3 md:p-5 rounded-xl border transition-all duration-300 focus-ring
+              w-full text-left p-3 md:p-5 rounded-lg border transition-colors duration-300 focus-ring
               ${
                 isExpanded
-                  ? 'bg-slate-800/80 border-primary-500/30'
-                  : 'bg-slate-900/40 border-slate-800 hover:bg-slate-800/60 hover:border-slate-700'
+                  ? 'bg-white border-stone-300 shadow-sm'
+                  : 'bg-white/60 border-stone-200 hover:bg-white hover:border-stone-300'
               }
             `}
             aria-expanded={isExpanded}
@@ -96,15 +96,15 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
                         width={32}
                         height={32}
                         loading="lazy"
-                        className="w-8 h-8 rounded object-contain bg-white p-0.5"
+                        className="w-8 h-8 rounded object-contain bg-white p-0.5 border border-stone-200"
                         onError={handleImageError}
                       />
                     ) : null}
                     {/* Fallback placeholder - shown when no logo or logo fails */}
                     <div
                       className={`
-                        w-8 h-8 rounded bg-gradient-to-br from-slate-700 to-slate-800 
-                        flex items-center justify-center text-xs font-bold text-slate-300
+                        w-8 h-8 rounded bg-stone-200
+                        flex items-center justify-center text-xs font-bold text-stone-700
                         ${job.logo ? 'hidden absolute inset-0' : ''}
                       `}
                     >
@@ -113,27 +113,33 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
                   </div>
 
                   <div>
-                    <span className="text-primary-400 font-semibold text-sm">{job.company}</span>
+                    <span className="text-primary-700 font-semibold text-sm">{job.company}</span>
                     {isCurrent && (
-                      <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-primary-500/20 text-primary-300 rounded-full">
+                      <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-primary-50 text-primary-800 border border-primary-200 rounded-full">
                         Current
                       </span>
                     )}
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-100 mb-1">{job.title}</h3>
+                <h3 className="text-lg font-semibold text-ink mb-1">{job.title}</h3>
 
-                <div className="flex items-center gap-2 text-slate-400 text-sm">
+                <div className="flex items-center gap-2 text-stone-600 text-sm">
                   <Calendar className="w-3 h-3" aria-hidden="true" focusable="false" />
-                  {job.period}
+                  <span>
+                    {job.period}
+                    <span className="mx-2" aria-hidden="true">
+                      ·
+                    </span>
+                    <span className="font-medium text-stone-800">{job.stage}</span>
+                  </span>
                 </div>
               </div>
 
               {/* Expand indicator */}
               <ChevronDown
                 className={`
-                  w-5 h-5 text-slate-500 transition-transform duration-300 flex-shrink-0 mt-1
+                  w-5 h-5 text-stone-500 transition-transform duration-300 flex-shrink-0 mt-1
                   motion-reduce:transition-none
                   ${isExpanded ? 'rotate-180' : ''}
                 `}
@@ -145,13 +151,9 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
             {/* Expandable description */}
             {isExpanded && (
               <div className="mt-4">
-                <ul className="space-y-2 border-t border-slate-700/50 pt-4">
+                <ul className="space-y-2 border-t border-stone-200 pt-4 list-disc pl-5 marker:text-primary-700">
                   {job.description.map((desc, i) => (
-                    <li
-                      key={i}
-                      className="text-slate-400 text-sm leading-relaxed flex items-start gap-2"
-                    >
-                      <span className="block w-1.5 h-1.5 bg-primary-500/60 rounded-full mt-1.5 shrink-0" />
+                    <li key={i} className="pl-1 text-stone-700 text-sm leading-relaxed">
                       {desc}
                     </li>
                   ))}

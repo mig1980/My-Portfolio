@@ -18,20 +18,28 @@ export interface JobRole {
   company: string;
   logo?: string;
   period: string;
+  /** Career stage this role belongs to (matches a CAREER_STAGES name) */
+  stage: string;
   description: string[];
 }
 
 /**
- * Represents a category of skills with associated icon.
- * Used in the Expertise section to display competency areas.
+ * One step in the career progression (e.g. Engineer → Architect).
+ */
+export interface CareerStage {
+  name: string;
+  summary: string;
+}
+
+/**
+ * Represents a category of skills.
+ * Used in the Expertise section to display areas of work.
  */
 export interface SkillGroup {
-  /** Category name (e.g., "Technical Skills", "Leadership") */
+  /** Category name (e.g., "Technology") */
   category: string;
   /** Array of individual skill names */
   skills: string[];
-  /** React icon component for visual representation */
-  icon: React.ReactNode;
 }
 
 /**
@@ -119,23 +127,23 @@ export interface AwardItem {
   color?: 'platinum' | 'gold' | 'blue' | 'green' | 'purple';
   /** Optional link to award details */
   link?: string;
-  /** Optional path to badge image (e.g., '/awards/PlatinumClub.png') */
-  badgeUrl?: string;
+  /** Accessible name for the link when it covers only part of the card */
+  linkLabel?: string;
+  /** Optional badge images; several when one card groups related awards. `zoom` scales past built-in whitespace. */
+  badges?: { src: string; alt: string; zoom?: number }[];
 }
 
 /**
- * Represents a personal interest or hobby.
+ * A group of activities outside work.
  * Used in the About section to add personality.
  */
-export interface InterestItem {
-  /** Unique identifier for the interest (for React key) */
+export interface OutsideWorkGroup {
+  /** Unique identifier (for React key) */
   id: string;
-  /** Name of the interest/pillar */
-  label: string;
-  /** React icon component representing the interest */
+  /** React icon component representing the group */
   icon: React.ReactNode;
-  /** Description explaining this interest/pillar */
-  description: string;
+  /** Activities in this group */
+  items: string[];
 }
 
 /**
@@ -182,6 +190,14 @@ export interface ChatHistoryItem {
   role: 'user' | 'model';
   /** Message content */
   content: string;
+}
+
+/**
+ * Payload of the window event that asks the ChatWidget to open and send a question.
+ */
+export interface ChatAskDetail {
+  /** Question to send to the assistant */
+  question: string;
 }
 
 /**

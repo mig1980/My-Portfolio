@@ -82,10 +82,10 @@ The best way to suggest changes is to open an issue with:
 ```
 My-Portfolio/
 ├── components/          # React components
-│   ├── ui/             # Reusable UI primitives (Card, Section, PageWrapper, etc.)
+│   ├── ui/             # Reusable UI primitives (Section, SectionHeading, PageWrapper, etc.)
 │   └── [Feature].tsx   # Feature components (About, Hero, Timeline, etc.)
-├── hooks/              # Custom React hooks (useScrollPosition, useCountUp)
-├── utils/              # Shared utilities (string.ts, dom.ts, logo.ts)
+├── hooks/              # Custom React hooks (useChat, useInView, useScrollPosition, etc.)
+├── utils/              # Shared utilities (analytics, chatEvents, chatLimits, string, dom, logo)
 ├── styles/             # Global styles (Tailwind + custom utilities)
 ├── types.ts            # Shared TypeScript types
 ├── constants.tsx       # Application data/content
@@ -102,7 +102,9 @@ When adding new functionality, check existing utilities first:
 | `handleImageError` | `utils/dom.ts` | Image fallback handling |
 | `getLogoUrl` | `utils/logo.ts` | Generate logo URLs |
 | `useScrollPosition` | `hooks/useScrollPosition.ts` | Track scroll state |
-| `useCountUp` | `hooks/useCountUp.ts` | Animated number counting |
+| `useInView` | `hooks/useInView.ts` | Reveal content when scrolled into view |
+| `askChat` | `utils/chatEvents.ts` | Open the chat widget with a question |
+| `MAX_CHAT_MESSAGE_LENGTH` | `utils/chatLimits.ts` | Message limit shared by the page and the chat API |
 
 ### CSS Utility Classes
 

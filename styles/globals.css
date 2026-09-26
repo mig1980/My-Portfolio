@@ -33,6 +33,23 @@
   src: url('/fonts/inter-bold.woff2') format('woff2');
 }
 
+/* Self-hosted Instrument Serif (SIL Open Font License) for editorial headlines */
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif-italic.woff2') format('woff2');
+}
+
 /* Custom Theme Extensions */
 @theme {
   --color-slate-850: #151e2e;
@@ -50,7 +67,12 @@
   --color-primary-900: #1e3a8a;
   --color-primary-950: #172554;
 
-  --font-family-sans: 'Inter', system-ui, sans-serif;
+  --color-paper: #f6f4ef;
+  --color-paper-deep: #ece8df;
+  --color-ink: #1c1917;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
 
   --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -60,12 +82,12 @@
 @layer components {
   /* Focus ring with offset - for buttons and prominent elements */
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 focus-visible:ring-offset-paper;
   }
 
   /* Focus ring without offset - for inline/text elements */
   .focus-ring-inset {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600;
   }
 
   /* Animation delay utilities for loading dots */
@@ -120,26 +142,27 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #ece8df;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #c7c1b6;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #a8a29e;
 }
 
 /* Selection color */
 ::selection {
-  background-color: rgba(59, 130, 246, 0.3);
+  background-color: rgba(29, 78, 216, 0.18);
 }
 
-/* Smooth scrolling */
+/* Smooth scrolling; padding keeps anchored sections clear of the fixed header */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 /* Respect reduced motion preferences */

@@ -4,9 +4,16 @@
  * @version 1.1.0
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import ChatWidget from '../components/ChatWidget';
+import { askChat } from '../utils/chatEvents';
+import { CHAT_WELCOME_QUESTIONS } from '../constants';
+
+const scrollState = vi.hoisted(() => ({ pastHero: true }));
+vi.mock('../hooks/useScrollPosition', () => ({
+  useScrollPosition: (): boolean => scrollState.pastHero,
+}));
 
 // Mock fetch globally
 const mockFetch = vi.fn() as Mock;
@@ -36,6 +43,7 @@ describe('ChatWidget', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFetch.mockReset();
+    scrollState.pastHero = true;
     // Clear localStorage before each test to ensure clean state
     localStorage.removeItem(STORAGE_KEY);
   });
@@ -55,6 +63,12 @@ describe('ChatWidget', () => {
     it('does not show chat window initially', () => {
       render(<ChatWidget />);
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('hides the toggle button while the visitor is on the hero', () => {
+      scrollState.pastHero = false;
+      render(<ChatWidget />);
+      expect(screen.queryByLabelText('Open AI assistant')).not.toBeInTheDocument();
     });
   });
 
@@ -94,22 +108,23 @@ describe('ChatWidget', () => {
     it('displays quick question buttons', () => {
       render(<ChatWidget />);
       fireEvent.click(screen.getByLabelText('Open AI assistant'));
-      expect(screen.getByText("What is Michael's experience?")).toBeInTheDocument();
-      expect(screen.getByText('Key achievements?')).toBeInTheDocument();
-      expect(screen.getByText('Current role?')).toBeInTheDocument();
+      for (const question of CHAT_WELCOME_QUESTIONS) {
+        expect(screen.getByText(question)).toBeInTheDocument();
+      }
     });
 
     it('sends message when quick question is clicked', async () => {
+      const [firstQuestion = ''] = CHAT_WELCOME_QUESTIONS;
       mockFetch.mockResolvedValueOnce(
         createMockResponse({ reply: 'Michael has 20+ years of experience.' })
       );
 
       render(<ChatWidget />);
       fireEvent.click(screen.getByLabelText('Open AI assistant'));
-      fireEvent.click(screen.getByText("What is Michael's experience?"));
+      fireEvent.click(screen.getByText(firstQuestion));
 
       await waitFor(() => {
-        expect(screen.getByText("What is Michael's experience?")).toBeInTheDocument();
+        expect(screen.getByText(firstQuestion)).toBeInTheDocument();
       });
 
       expect(mockFetch).toHaveBeenCalledWith('/api/chat', expect.any(Object));
@@ -132,7 +147,7 @@ describe('ChatWidget', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Test response')).toBeInTheDocument();
+        expect(screen.getAllByText('Test response').length).toBeGreaterThan(0);
       });
     });
 
@@ -150,7 +165,7 @@ describe('ChatWidget', () => {
 
       // Wait for the async fetch to resolve to avoid act() warnings
       await waitFor(() => {
-        expect(screen.getByText('Response')).toBeInTheDocument();
+        expect(screen.getAllByText('Response').length).toBeGreaterThan(0);
       });
     });
 
@@ -160,6 +175,44 @@ describe('ChatWidget', () => {
 
       const sendButton = screen.getByLabelText('Send message');
       expect(sendButton).toBeDisabled();
+    });
+
+    it('opens and sends a question asked from elsewhere on the page', async () => {
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'Hero answer' }));
+
+      render(<ChatWidget />);
+      act(() => {
+        askChat('Question from hero');
+      });
+
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getAllByText('Hero answer').length).toBeGreaterThan(0);
+      });
+      const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(JSON.parse(String(init.body))).toMatchObject({ message: 'Question from hero' });
+    });
+
+    it('keeps a question asked from elsewhere in the input while a reply is loading', async () => {
+      let resolveFetch: (value: unknown) => void = () => {};
+      mockFetch.mockImplementationOnce(() => new Promise((resolve) => (resolveFetch = resolve)));
+
+      render(<ChatWidget />);
+      act(() => {
+        askChat('First question');
+      });
+      await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(1));
+
+      act(() => {
+        askChat('Second question');
+      });
+
+      expect(screen.getByLabelText('Type your message')).toHaveValue('Second question');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        resolveFetch(createMockResponse({ reply: 'Done' }));
+      });
     });
   });
 
@@ -194,7 +247,7 @@ describe('ChatWidget', () => {
       fireEvent.click(screen.getByLabelText('Send message'));
 
       await waitFor(() => {
-        expect(screen.getByText('Response')).toBeInTheDocument();
+        expect(screen.getAllByText('Response').length).toBeGreaterThan(0);
       });
 
       fireEvent.click(screen.getByLabelText('Clear chat history'));

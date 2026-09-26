@@ -7,6 +7,8 @@
 
 /// <reference types="@cloudflare/workers-types" />
 
+import { MAX_CHAT_MESSAGE_LENGTH as MAX_MESSAGE_LENGTH } from '../../utils/chatLimits';
+
 // ============================================================================
 // Type Definitions
 // ============================================================================
@@ -72,9 +74,6 @@ type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
 // ============================================================================
 // Constants
 // ============================================================================
-
-/** Maximum allowed message length (aligned with frontend) */
-const MAX_MESSAGE_LENGTH = 500;
 
 /** Maximum conversation history items to include */
 const MAX_HISTORY_ITEMS = 10;
@@ -260,35 +259,35 @@ function generateFollowUpSuggestions(
 
   // Context-aware suggestions based on what was just discussed
   if (responseLower.includes('microsoft') || messageLower.includes('role')) {
-    if (!discussed.achievements) suggestions.push('What awards has he won?');
-    if (!discussed.skills) suggestions.push('What are his key skills?');
+    if (!discussed.achievements) suggestions.push('What awards has Michael won?');
+    if (!discussed.skills) suggestions.push('How does Michael approach complex problems?');
   }
 
   if (responseLower.includes('award') || responseLower.includes('platinum')) {
-    if (!discussed.experience) suggestions.push('Tell me about his career journey');
-    suggestions.push('What deals did he close?');
+    if (!discussed.experience) suggestions.push('How did Michael go from engineer to dealmaker?');
+    suggestions.push("What's the biggest deal Michael has structured?");
   }
 
   if (responseLower.includes('education') || responseLower.includes('degree')) {
-    if (!discussed.skills) suggestions.push('Is he technical?');
-    suggestions.push('What certifications does he have?');
+    if (!discussed.skills) suggestions.push('What has Michael built?');
+    suggestions.push('What certifications does Michael have?');
   }
 
   if (responseLower.includes('technical') || responseLower.includes('azure')) {
-    suggestions.push('What industries has he worked in?');
-    if (!discussed.education) suggestions.push('Where did he study?');
+    suggestions.push('What industries has Michael worked in?');
+    if (!discussed.education) suggestions.push('Where did Michael study?');
   }
 
   if (responseLower.includes('healthcare') || responseLower.includes('pharma')) {
-    suggestions.push('What AI solutions does he specialize in?');
-    suggestions.push('How long has he been at Microsoft?');
+    suggestions.push("What's Michael's philosophy on enterprise AI?");
+    suggestions.push('How long has Michael been at Microsoft?');
   }
 
   // Default suggestions if none matched
   if (suggestions.length === 0) {
-    if (!discussed.experience) suggestions.push("What's his experience?");
-    if (!discussed.achievements) suggestions.push('Key achievements?');
-    if (!discussed.contact) suggestions.push('How can I contact him?');
+    if (!discussed.experience) suggestions.push('How did Michael go from engineer to dealmaker?');
+    if (!discussed.achievements) suggestions.push('What awards has Michael won?');
+    if (!discussed.contact) suggestions.push('How can I contact Michael?');
   }
 
   // Return 2-3 unique suggestions, prioritizing less-discussed topics

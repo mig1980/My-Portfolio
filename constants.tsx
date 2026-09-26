@@ -275,7 +275,7 @@ export const AWARDS: AwardItem[] = [
       { src: '/Awards/GoldClub.png', alt: 'Gold Club badge', zoom: 1.3 },
     ],
     link: '/Awards/Gold_Club_Award_Letter_2026.pdf',
-    linkLabel: 'View 2026 Gold Club award letter',
+    linkLabel: 'Platinum & Gold Club – view 2026 Gold Club award letter',
   },
   {
     id: 'attainment-100',

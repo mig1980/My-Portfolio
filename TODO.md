@@ -8,7 +8,7 @@ Priority: **P0** = quick win / bug, **P1** = high impact, **P2** = medium, **P3*
 - [x] **P0** Chat greeting bubble covers the "Start a Conversation" button on desktop, and the chat button overlaps the hero headline on mobile. Move the chat button to bottom-right, put Back to Top above it, and delay the greeting until the visitor scrolls past the hero (`components/ChatWidget.tsx`, `components/BackToTop.tsx`) (redesign branch)
 - [x] **P0** Show the hero headshot at full opacity; keep the gradient only behind the name caption (`components/Hero.tsx`) (redesign branch)
 - [x] **P0** Add a "Download résumé" button in the hero or nav and in Contact (`public/CV/Michael-Gavrilov-Resume.pdf` is never linked on the page) (redesign branch)
-- [ ] **P1** Replace the Robert Herjavec "sell feelings" quote with your own principle or a testimonial (`components/MyApproach.tsx`)
+- [x] **P1** Replace the Robert Herjavec "sell feelings" quote with your own principle or a testimonial (`components/MyApproach.tsx`) (replaced with the "Go deep / Go high / Stay close" statement)
 - [x] **P1** Replace the "Open to Strategic Conversations" badge with a clear ask, e.g. "Talking with leaders about AI in Life Sciences" (`components/Hero.tsx`) (redesign branch)
 
 ## Phase 2: Conversion
@@ -16,7 +16,7 @@ Priority: **P0** = quick win / bug, **P1** = high impact, **P2** = medium, **P3*
 - [ ] **P1** Redesign Contact as a full call-to-action block: headline, "Book a call" button (Microsoft Bookings or Calendly), email and LinkedIn with text labels, and the résumé download (`components/Contact.tsx`) (redesign branch done except the booking link, which needs your URL)
 - [ ] **P2** Optional contact form behind a Cloudflare Turnstile spam check
 - [x] **P2** Track button clicks, résumé downloads, and outbound clicks (LinkedIn, QuantumInvestor) in GA4 (`utils/analytics.ts`) (redesign branch: résumé, contact, hero questions)
-- [ ] **P2** Rewrite chat quick questions for specific audiences, e.g. "How does he approach AI adoption in pharma?", "How can I work with him?" (`components/ChatWidget.tsx`)
+- [x] **P2** Rewrite chat quick questions for specific audiences, e.g. "How does he approach AI adoption in pharma?", "How can I work with him?" (`constants.tsx` `SUGGESTED_QUESTIONS`)
 - [ ] **P2** Highlight the current section in the nav while scrolling; point the logo link at `#hero` instead of `#` (`components/Navigation.tsx`) (logo link done on redesign branch)
 
 ## Phase 3: Credibility and content
@@ -24,10 +24,10 @@ Priority: **P0** = quick win / bug, **P1** = high impact, **P2** = medium, **P3*
 - [ ] **P1** Add 2–3 anonymized deal stories (challenge → approach → outcome, with a metric)
 - [ ] **P1** Add 2–3 short testimonials from LinkedIn recommendations
 - [ ] **P1** Check the award letter PDFs in `public/Awards/` and the deal figures against Microsoft's policy on sharing internal material; consider showing badges only
-- [ ] **P1** Turn "Thought Leadership" into a real point-of-view section (AI in life sciences articles, talks). Frame QuantumInvestor as a hands-on AI project. Make the nav label, heading, and section ID match (`components/ThoughtLeadership.tsx`, `components/Navigation.tsx`)
+- [ ] **P1** Turn "Thought Leadership" into a real point-of-view section (AI in life sciences articles, talks). Frame QuantumInvestor as a hands-on AI project. (Nav label, section label, and `#projects` ID now match.)
 - [ ] **P2** Explain "Platinum Club" in plain language; pick stats that don't repeat the awards (`constants.tsx` `STATS`, `AWARDS`) (TCV replaced with "In Multi-Year Agreements", $500M+, on redesign branch)
 - [ ] **P2** Split the 2017–present role into chapters or highlights; lead each bullet with a result and cut filler ("robust", "novel") (`constants.tsx` `EXPERIENCE`)
-- [ ] **P3** Shorten Life Pillars to one line each or a "Beyond work" strip (`constants.tsx` `INTERESTS`)
+- [x] **P3** Shorten Life Pillars to one line each or a "Beyond work" strip (now the "Outside work" strip, `constants.tsx` `OUTSIDE_WORK`)
 - [x] **P3** Tighten the hero text to one plain sentence about the outcome (`components/Hero.tsx`) (redesign branch)
 
 ## Phase 4: Design system (all done on the redesign branch)
@@ -52,7 +52,7 @@ Priority: **P0** = quick win / bug, **P1** = high impact, **P2** = medium, **P3*
 - [ ] **P1** Add server-side rate limiting for `/api/chat` (Cloudflare rate-limiting rule or Turnstile)
 - [ ] **P2** Send the Gemini API key in the `x-goog-api-key` header instead of the `?key=` query string (`functions/api/chat.ts`)
 - [ ] **P3** Stop trusting client-supplied `model` turns in chat history
-- [ ] **P3** Remove the unused preconnect to `generativelanguage.googleapis.com` (`index.html`)
+- [x] ~~Remove the unused preconnect to `generativelanguage.googleapis.com` (`index.html`)~~
 - [ ] **P3** Remove `'unsafe-inline'` from CSP `script-src` after checking the Cloudflare analytics script (`public/_headers`)
 - [ ] **P3** Remove the duplicate `generateId()` in `hooks/useChat.ts` and `utils/analytics.ts`
-- [ ] **P3** Update test counts in `.github/copilot-instructions.md` (now 137 tests / 15 files on the redesign branch)
+- [x] ~~Update test counts in `.github/copilot-instructions.md`~~ (141 tests / 14 files)

@@ -25,15 +25,13 @@ import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 import { CHAT_ASK_EVENT } from '../utils/chatEvents';
+import { MAX_CHAT_MESSAGE_LENGTH as MAX_INPUT_LENGTH } from '../utils/chatLimits';
 import { CHAT_WELCOME_QUESTIONS } from '../constants';
 import type { ChatAskDetail, ChatMessage } from '../types';
 
 // ============================================================================
 // Constants
 // ============================================================================
-
-/** Maximum input length (aligned with backend) */
-const MAX_INPUT_LENGTH = 500;
 
 /** Typing animation speed (ms per character) - respects prefers-reduced-motion */
 const TYPING_SPEED_MS = 12;

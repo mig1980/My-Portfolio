@@ -38,12 +38,12 @@ npm run test:run
 ```
 My-Portfolio/
 ├── components/          # React components
-│   ├── ui/             # Reusable primitives (Card, Section, PageWrapper, etc.)
+│   ├── ui/             # Reusable primitives (Section, SectionHeading, PageWrapper, etc.)
 │   └── [Feature].tsx   # Feature components
 ├── public/              # Static assets, _headers/_redirects, sitemap/robots
-├── hooks/              # Custom hooks (useScrollPosition, useCountUp)
+├── hooks/              # Custom hooks (useChat, useInView, useScrollPosition, etc.)
 ├── tests/              # Vitest tests
-├── utils/              # Shared utilities (string, dom, logo)
+├── utils/              # Shared utilities (analytics, chat events/limits, string, dom, logo)
 ├── styles/             # Global styles + CSS utilities
 ├── functions/          # Cloudflare Pages Functions (server-side)
 ├── scripts/            # Maintenance scripts
@@ -69,7 +69,7 @@ My-Portfolio/
 - ✅ **Reduced motion** — all transform/keyframe animations have `motion-reduce:` counterparts
 - ✅ **Section scroll animations** respect `prefers-reduced-motion` (content shown immediately)
 - ✅ **ChatWidget** loading animation hidden for reduced-motion users with text fallback
-- ✅ **SSR-safe hooks** — `useInView` and `useCountUp` guard against missing `IntersectionObserver`
+- ✅ **SSR-safe hooks** — `useInView` guards against missing `IntersectionObserver`
 - ✅ ARIA attributes on dialog, expandable sections, and live regions
 
 ## Security
@@ -78,8 +78,8 @@ My-Portfolio/
 - ✅ CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff
 - ✅ Permissions-Policy restricts camera, microphone, geolocation
 - ✅ CORS whitelist on chat API (production domains + localhost)
-- ✅ Input sanitization and rate limiting on server-side chat endpoint
-- ✅ 0 npm audit vulnerabilities
+- ✅ Input sanitization and message/history length limits on the server-side chat endpoint
+- ✅ 0 known vulnerabilities in production dependencies (`npm audit --omit=dev`)
 
 ## Available Scripts
 

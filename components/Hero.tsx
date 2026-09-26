@@ -8,9 +8,7 @@ import { ArrowRight, ArrowUp, Download, Sparkles } from 'lucide-react';
 import { PERSONAL_INFO, HERO_QUESTIONS } from '../constants';
 import { askChat } from '../utils/chatEvents';
 import { trackEvent } from '../utils/analytics';
-
-/** Maximum question length (aligned with chat backend) */
-const MAX_QUESTION_LENGTH = 500;
+import { MAX_CHAT_MESSAGE_LENGTH } from '../utils/chatLimits';
 
 /**
  * Hero section component for the portfolio landing area.
@@ -119,7 +117,7 @@ const Hero: React.FC = memo(() => {
                 type="text"
                 value={question}
                 onChange={handleQuestionChange}
-                maxLength={MAX_QUESTION_LENGTH}
+                maxLength={MAX_CHAT_MESSAGE_LENGTH}
                 placeholder="Ask my AI assistant about my work…"
                 className="flex-1 min-w-0 py-2 bg-transparent text-ink placeholder:text-stone-500 focus:outline-none"
               />

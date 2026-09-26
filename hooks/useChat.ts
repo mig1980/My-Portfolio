@@ -82,6 +82,23 @@ const STORAGE_EXPIRATION_MS = 24 * 60 * 60 * 1000;
 // ============================================================================
 
 /**
+ * Checks a value read from localStorage is a well-formed stored message.
+ * @param value - Untrusted parsed value
+ * @returns True if safe to render
+ */
+function isStoredMessage(value: unknown): value is StoredMessage {
+  if (typeof value !== 'object' || value === null) return false;
+  const m = value as Record<string, unknown>;
+  return (
+    typeof m.id === 'string' &&
+    (m.role === 'user' || m.role === 'assistant') &&
+    typeof m.content === 'string' &&
+    typeof m.timestamp === 'string' &&
+    !Number.isNaN(Date.parse(m.timestamp))
+  );
+}
+
+/**
  * Safely parses JSON from localStorage.
  * @param key - localStorage key
  * @returns Parsed messages or null if invalid/expired
@@ -95,19 +112,25 @@ function loadFromStorage(key: string): ChatMessage[] | null {
     const stored = localStorage.getItem(key);
     if (!stored) return null;
 
-    const parsed = JSON.parse(stored) as {
-      messages: StoredMessage[];
-      savedAt: number;
-    };
+    const parsed: unknown = JSON.parse(stored);
+    const record =
+      typeof parsed === 'object' && parsed !== null
+        ? (parsed as { messages?: unknown; savedAt?: unknown })
+        : null;
 
-    // Check if expired (24 hours)
-    if (Date.now() - parsed.savedAt > STORAGE_EXPIRATION_MS) {
+    // Missing/invalid fields or older than 24 hours: discard
+    if (
+      !record ||
+      typeof record.savedAt !== 'number' ||
+      !Array.isArray(record.messages) ||
+      Date.now() - record.savedAt > STORAGE_EXPIRATION_MS
+    ) {
       localStorage.removeItem(key);
       return null;
     }
 
-    // Convert stored messages back to ChatMessage format
-    return parsed.messages.map((msg) => ({
+    // Convert stored messages back to ChatMessage format, dropping malformed entries
+    return record.messages.filter(isStoredMessage).map((msg) => ({
       ...msg,
       timestamp: new Date(msg.timestamp),
     }));
@@ -324,7 +347,11 @@ export function useChat({
                 : `Server error (${response.status}). Please try again.`
             );
           }
-          data = JSON.parse(responseText) as ChatApiResponse;
+          const parsed: unknown = JSON.parse(responseText);
+          if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+            throw new Error(`Invalid response from server (${response.status}). Please try again.`);
+          }
+          data = parsed as ChatApiResponse;
         } catch (parseError) {
           // Re-throw if it's already our custom error
           if (parseError instanceof Error && !parseError.message.includes('JSON')) {
@@ -349,8 +376,13 @@ export function useChat({
           setFailedMessage(trimmedContent);
 
           let countdownSeconds = Math.ceil(RATE_LIMIT_COOLDOWN_MS / 1000);
-          if ('retryAfterMs' in data && data.retryAfterMs) {
-            countdownSeconds = Math.max(1, Math.ceil(data.retryAfterMs / 1000));
+          const retryAfterMs = 'retryAfterMs' in data ? data.retryAfterMs : undefined;
+          if (
+            typeof retryAfterMs === 'number' &&
+            Number.isFinite(retryAfterMs) &&
+            retryAfterMs > 0
+          ) {
+            countdownSeconds = Math.max(1, Math.ceil(retryAfterMs / 1000));
           }
 
           setRateLimitSecondsRemaining(countdownSeconds);
@@ -384,19 +416,22 @@ export function useChat({
           return;
         }
 
+        const serverError = typeof data.error === 'string' && data.error ? data.error : null;
+
         if (!response.ok) {
           trackEvent('chat_message_failed', {
             chat_session_id: chatSessionId,
             http_status: response.status,
           });
-          throw new Error(data.error ?? `Request failed: ${response.status}`);
+          throw new Error(serverError ?? `Request failed: ${response.status}`);
         }
 
-        if ('error' in data && data.error) {
-          throw new Error(data.error);
+        if (serverError) {
+          throw new Error(serverError);
         }
 
-        if (!('reply' in data) || !data.reply) {
+        const reply = 'reply' in data ? data.reply : undefined;
+        if (typeof reply !== 'string' || reply.trim() === '') {
           trackEvent('chat_message_failed', {
             chat_session_id: chatSessionId,
             error_type: 'empty_reply',
@@ -409,22 +444,24 @@ export function useChat({
         trackEvent('chat_response_received', {
           chat_session_id: chatSessionId,
           response_time_ms: responseTimeMs,
-          reply_length: data.reply.length,
+          reply_length: reply.length,
         });
 
         // Add assistant response
         const assistantMessage: ChatMessage = {
           id: generateId(),
           role: 'assistant',
-          content: data.reply,
+          content: reply,
           timestamp: new Date(),
         };
 
         setMessages((prev) => [...prev, assistantMessage]);
 
-        // Update follow-up suggestions
-        if (data.suggestions && data.suggestions.length > 0) {
-          setSuggestions(data.suggestions);
+        // Update follow-up suggestions (ignore anything that isn't a list of strings)
+        const suggestions: unknown = 'suggestions' in data ? data.suggestions : undefined;
+        if (Array.isArray(suggestions)) {
+          const valid = suggestions.filter((s): s is string => typeof s === 'string');
+          if (valid.length > 0) setSuggestions(valid);
         }
       } catch (err) {
         // Handle specific error types

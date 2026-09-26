@@ -305,7 +305,7 @@ export const OUTSIDE_WORK: OutsideWorkGroup[] = [
   {
     id: 'learning',
     icon: <Lightbulb className="w-5 h-5" />,
-    items: ['Technology', 'Investing', 'Writing', 'Building'],
+    items: ['Technology', 'Investing', 'Mentoring'],
   },
 ];
 

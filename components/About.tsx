@@ -6,7 +6,7 @@
 import React, { memo } from 'react';
 import Section from './ui/Section';
 import SectionHeading from './ui/SectionHeading';
-import { PERSONAL_INFO, AWARDS, INTERESTS } from '../constants';
+import { PERSONAL_INFO, AWARDS, OUTSIDE_WORK, OUTSIDE_WORK_MOTTO } from '../constants';
 import { ArrowUpRight } from 'lucide-react';
 import type { AwardItem } from '../types';
 
@@ -38,11 +38,11 @@ const SUBHEADING_CLASS = 'font-mono text-xs uppercase tracking-[0.2em] text-ston
 /**
  * About section component displaying personal information.
  * Features:
- * - Personal summary with pull quote
+ * - Personal summary with emphasized closing line
  * - Awards and recognition grid with color-coded tiers
- * - Personal interests showcase
+ * - Outside work
  *
- * @returns The about section with bio, awards, and interests
+ * @returns The about section with bio, awards, and life outside work
  */
 const About: React.FC = memo(() => {
   return (
@@ -65,6 +65,9 @@ const About: React.FC = memo(() => {
               <p key={index}>{paragraph}</p>
             ))}
           </div>
+          <p className="mt-8 font-display text-3xl md:text-4xl leading-tight text-primary-700">
+            {PERSONAL_INFO.summaryEmphasis}
+          </p>
 
           {/* Awards & Recognition Subsection */}
           <div className="mt-16">
@@ -128,17 +131,20 @@ const About: React.FC = memo(() => {
             </div>
           </div>
 
-          {/* Life Pillars Subsection */}
+          {/* Outside Work Subsection */}
           <div className="mt-16">
-            <h3 className={SUBHEADING_CLASS}>Life pillars</h3>
-            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-8">
-              {INTERESTS.map((interest) => (
-                <div key={interest.id} className="border-t border-stone-300 pt-5">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-primary-700">{interest.icon}</span>
-                    <h4 className="text-ink font-semibold">{interest.label}</h4>
-                  </div>
-                  <p className="text-sm text-stone-700 leading-relaxed">{interest.description}</p>
+            <h3 className={SUBHEADING_CLASS}>Outside work</h3>
+            <p className="font-display text-2xl md:text-3xl leading-snug text-ink mb-8">
+              {OUTSIDE_WORK_MOTTO}
+            </p>
+            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-6">
+              {OUTSIDE_WORK.map((group) => (
+                <div
+                  key={group.id}
+                  className="flex items-start gap-3 border-t border-stone-300 pt-5"
+                >
+                  <span className="text-primary-700 mt-0.5">{group.icon}</span>
+                  <p className="text-stone-700 leading-relaxed">{group.items.join(' · ')}</p>
                 </div>
               ))}
             </div>

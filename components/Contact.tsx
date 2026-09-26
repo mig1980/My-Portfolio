@@ -47,8 +47,8 @@ const Contact: React.FC = memo(() => {
             <SectionHeading
               number="07"
               label="Contact"
-              title="Let's connect."
-              intro="Got an idea worth exploring? I'm always up for a good conversation about AI, enterprise strategy, or the future of work."
+              title="Let's build something worth talking about."
+              intro="Always up for a good conversation about AI, technology, or the future of work."
               onDark
             />
           </div>

@@ -25,6 +25,7 @@ import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 import { CHAT_ASK_EVENT } from '../utils/chatEvents';
+import { SUGGESTED_QUESTIONS } from '../constants';
 import type { ChatAskDetail, ChatMessage } from '../types';
 
 // ============================================================================
@@ -36,13 +37,6 @@ const MAX_INPUT_LENGTH = 500;
 
 /** Typing animation speed (ms per character) - respects prefers-reduced-motion */
 const TYPING_SPEED_MS = 12;
-
-/** Suggested questions for new users */
-const QUICK_QUESTIONS: readonly string[] = [
-  "What is Michael's experience?",
-  'Key achievements?',
-  'Current role?',
-] as const;
 
 /** Greeting bubble configuration */
 const GREETING_BUBBLE = {
@@ -884,7 +878,7 @@ const ChatWidget: React.FC = memo(() => {
                 {/* Quick Questions */}
                 <p className="text-stone-600 text-xs uppercase tracking-wide mb-2">Try asking</p>
                 <div className="flex flex-col gap-2">
-                  {QUICK_QUESTIONS.map((question) => (
+                  {SUGGESTED_QUESTIONS.map((question) => (
                     <button
                       key={question}
                       type="button"

@@ -44,7 +44,7 @@ const ThoughtLeadership: React.FC = memo(() => {
 
   return (
     <Section id="thoughts" darker>
-      <SectionHeading number="06" label="Projects" title="What I'm building" className="mb-14" />
+      <SectionHeading number="06" label="Side projects" title="Still building." className="mb-14" />
 
       <div className="grid md:grid-cols-2 gap-4">
         {/* QuantumInvestor Card */}
@@ -80,10 +80,10 @@ const ThoughtLeadership: React.FC = memo(() => {
             </div>
           </div>
 
-          <p className="text-stone-700 mb-6 leading-relaxed">
-            Can AI pick stocks better than expensive advisors? I&apos;m finding out publicly. Weekly
-            picks, documented performance, transparent results. No paywalls, no hype.
-          </p>
+          <div className="mb-6 space-y-3 text-stone-700 leading-relaxed">
+            <p>Can AI pick stocks better than expensive advisors? I&apos;m finding out publicly.</p>
+            <p>Weekly picks. Documented performance. Transparent results. No paywalls. No hype.</p>
+          </div>
 
           <div className="mt-auto flex flex-wrap items-center gap-3">
             <a
@@ -144,8 +144,7 @@ const ThoughtLeadership: React.FC = memo(() => {
           </div>
 
           <p className="text-stone-700 mb-6 leading-relaxed">
-            Want a similar site? Clone it, swap in your content, and ship. Modern React + TypeScript
-            + Tailwind stack with tests in place.
+            This website is part of the experiment too. Designed, built and open-sourced.
           </p>
 
           <div className="mt-auto flex flex-wrap gap-3">

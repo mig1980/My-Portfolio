@@ -15,17 +15,15 @@ import type {
   ThoughtLeadershipItem,
   SocialLink,
   AwardItem,
-  InterestItem,
   StatItem,
+  CareerStage,
+  OutsideWorkGroup,
 } from './types';
 import {
-  Briefcase,
-  Brain,
-  Cloud,
+  Cpu,
   TrendingUp,
   Linkedin,
   Mail,
-  BookOpen,
   Dumbbell,
   Lightbulb,
   Users,
@@ -39,25 +37,36 @@ import { getLogoUrl } from './utils/logo';
 export const PERSONAL_INFO = {
   name: 'Michael Gavrilov',
   tagline: 'Engineer at heart.',
-  taglineHighlight: 'Transformational dealmaker.',
+  taglineHighlight: 'Dealmaker by instinct.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
-  focus: 'AI Transformation · Healthcare & Life Sciences',
+  focus: 'Technology · AI · Strategy',
+  intro: 'I help global enterprises turn ambitious technology into business reality.',
   resumeUrl: '/CV/Michael-Gavrilov-Resume.pdf',
-  summary: `Started as an engineer. Became a dealmaker. Never lost the builder's mindset.
+  summary: `I started my career building and operating technology. I became an architect, strategist and eventually a dealmaker.
 
-I've spent two decades translating between the language of technology and the language of business—helping Fortune 500 leaders see what's possible, then making it real.
-
-Whether architecting solutions or negotiating multi-year partnerships, I bring the same approach: listen deeply, cut through complexity, and deliver what I promised.`,
+The mindset never really changed: understand the problem, challenge assumptions, design a solution and make it work.`,
+  summaryEmphasis: 'Today, the systems are just bigger.',
 };
 
 /**
- * Suggested questions shown under the hero "Ask my AI assistant" box.
+ * Suggested questions shown under the hero ask box and in the chat widget.
  */
-export const HERO_QUESTIONS: readonly string[] = [
-  'What deals has he led?',
-  'How does he work with executives?',
-  'What is his AI focus?',
+export const SUGGESTED_QUESTIONS: readonly string[] = [
+  'How did Michael go from engineer to dealmaker?',
+  "What's his philosophy on enterprise AI?",
+  'What has Michael actually built?',
+  'What does he believe about complex deals?',
+];
+
+/**
+ * Career progression, oldest first. Each role in EXPERIENCE maps to one stage.
+ */
+export const CAREER_STAGES: readonly CareerStage[] = [
+  { name: 'Engineer', summary: 'Building systems' },
+  { name: 'Architect', summary: 'Architecting solutions' },
+  { name: 'Strategist', summary: 'Shaping strategy' },
+  { name: 'Dealmaker', summary: 'Building businesses' },
 ];
 
 export const EXPERIENCE: JobRole[] = [
@@ -67,10 +76,11 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'Jan 2017 - Present',
+    stage: 'Dealmaker',
     description: [
-      'Lead AI transformation for a strategic pharmaceutical customer, aligning Microsoft’s advanced technologies with client priorities.',
+      'Lead the AI agenda for a key pharmaceutical customer, aligning Microsoft’s advanced technologies with client priorities.',
       'Lead a cross-functional virtual team across Azure, Microsoft 365 (including Copilot), and Security to deliver targeted business outcomes.',
-      'Navigate complex, multi-stakeholder negotiations with C-suite executives to unlock transformational AI adoption.',
+      'Navigate complex, multi-stakeholder negotiations with senior executives to unlock AI adoption.',
       'Challenge legacy assumptions with data-driven, security-aware recommendations—accelerating adoption without increasing risk.',
       'Architect novel deal structures involving product partnerships and multi-year revenue commitments totaling more than $500M.',
       'Build and sustain trusted executive relationships across global accounts, unlocking new opportunities.',
@@ -82,6 +92,7 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'Apr 2011 - Jan 2017',
+    stage: 'Dealmaker',
     description: [
       'Managed robust sales pipelines and guided high-performing teams across Sales, Engineering, and Delivery.',
       'Consistently exceeded revenue targets, generating an average of $20M annually across Pharma, Transportation, and Manufacturing sectors.',
@@ -94,6 +105,7 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'July 2008 - Mar 2011',
+    stage: 'Strategist',
     description: [
       'Advised senior executives on technology transformation strategies aligning with business goals.',
       'Drove adoption strategies, ensuring sustained momentum and value realization.',
@@ -106,10 +118,11 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'Oct 2006 - July 2008',
+    stage: 'Strategist',
     description: [
       'Structured platform partnerships and joint go-to-market strategies driving partner growth and revenue.',
       'Led programs resulting in a 150% increase in partner-influenced revenue.',
-      'Cultivated technical relationships with CTOs/CIOs to understand strategic challenges.',
+      'Cultivated technical relationships with CTOs/CIOs to understand their business challenges.',
     ],
   },
   {
@@ -118,6 +131,7 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Systematica Group',
     logo: getLogoUrl('systematic.ru'),
     period: 'July 2005 - Oct 2006',
+    stage: 'Architect',
     description: [
       'Led architectural design and technical strategy for complex IT solutions in pre-sales engagements.',
       'Collaborated with sales teams and enterprise clients to align technology with business objectives.',
@@ -129,6 +143,7 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Allied Testing',
     logo: getLogoUrl('alliedtesting.com'),
     period: 'Apr 2002 - July 2005',
+    stage: 'Engineer',
     description: [
       'Led a team of systems engineers to deliver process improvements and automation, increasing operational efficiency by 25%.',
       'Managed IT services and operations for virtual and physical environments.',
@@ -137,59 +152,29 @@ export const EXPERIENCE: JobRole[] = [
 ];
 
 /**
- * Professional skills grouped by category.
+ * Areas of work grouped by category.
  * Displayed in the Expertise section.
  */
 export const SKILLS: SkillGroup[] = [
   {
-    category: 'Strategic Leadership',
-    icon: <Briefcase className="w-5 h-5" />,
-    skills: [
-      'Complex Multi-Year Agreements ($500M+)',
-      'C-Suite Partnerships',
-      'AI-First Enterprise Strategy',
-      'Cross-functional Team Leadership',
-    ],
+    category: 'Technology',
+    icon: <Cpu className="w-5 h-5" />,
+    skills: ['AI', 'Cloud', 'Platforms', 'Security'],
   },
   {
-    category: 'Artificial Intelligence',
-    icon: <Brain className="w-5 h-5" />,
-    skills: [
-      'Generative AI Strategy',
-      'Copilot Enablement',
-      'AI Value Realization',
-      'AI Business Integration',
-    ],
-  },
-  {
-    category: 'Cloud & Tech',
-    icon: <Cloud className="w-5 h-5" />,
-    skills: [
-      'Azure Cloud Strategy',
-      'Solutions Architecture',
-      'Agentic AI',
-      'Data & Security Compliance',
-    ],
-  },
-  {
-    category: 'Sales Mastery',
+    category: 'Business',
     icon: <TrendingUp className="w-5 h-5" />,
-    skills: [
-      'Value Negotiation',
-      'Strategic Account Planning',
-      'Go-to-Market Strategy',
-      'Insight Selling',
-    ],
+    skills: ['Strategy', 'Transformation', 'Economics', 'Growth'],
   },
   {
-    category: 'Partnership & Deals',
+    category: 'Leadership',
+    icon: <Users className="w-5 h-5" />,
+    skills: ['Executives', 'Organizations', 'Ecosystems', 'Alignment'],
+  },
+  {
+    category: 'Deals',
     icon: <Handshake className="w-5 h-5" />,
-    skills: [
-      'Transformational Partnerships',
-      'Novel Deal Structures',
-      'Platform Economics',
-      'B2B Ecosystem Development',
-    ],
+    skills: ['Partnerships', 'Negotiation', 'Value', 'Scale'],
   },
 ];
 
@@ -307,37 +292,21 @@ export const AWARDS: AwardItem[] = [
 ];
 
 /**
- * Personal interests and life pillars.
+ * Life outside work.
  * Displayed in the About section.
  */
-export const INTERESTS: InterestItem[] = [
+export const OUTSIDE_WORK_MOTTO = 'Family first. Always learning. Usually moving.';
+
+export const OUTSIDE_WORK: OutsideWorkGroup[] = [
   {
-    id: 'sports',
-    label: 'Sports & Performance',
+    id: 'moving',
     icon: <Dumbbell className="w-5 h-5" />,
-    description:
-      'I stay sharp through movement, discipline, and challenge. Snowboarding, swimming, boxing, golfing, and horseback riding are how I push my body, clear my mind, and practice performing under pressure.',
+    items: ['Snowboarding', 'Boxing', 'Swimming', 'Golf', 'Horseback riding'],
   },
   {
     id: 'learning',
-    label: 'Continuous Learning',
-    icon: <BookOpen className="w-5 h-5" />,
-    description:
-      "I treat learning as a permanent competitive advantage. From AI and cloud technology to investing and leadership, I'm always exploring what's next—and turning new insights into real-world decisions and outcomes.",
-  },
-  {
-    id: 'creativity',
-    label: 'Creativity & Impact',
     icon: <Lightbulb className="w-5 h-5" />,
-    description:
-      'I connect dots others miss. Whether writing about technology and investing, mentoring rising leaders, or solving problems no one asked me to solve—I turn complexity into clarity and ideas into outcomes.',
-  },
-  {
-    id: 'relationships',
-    label: 'Relationships & Foundation',
-    icon: <Users className="w-5 h-5" />,
-    description:
-      'I invest in the people who matter most. Family comes first. Beyond that, I read voraciously, stay curious, and keep a long-term perspective—the same approach I bring to partnerships that outlast any single deal.',
+    items: ['Technology', 'Investing', 'Writing', 'Building'],
   },
 ];
 

@@ -127,6 +127,8 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
                 <div className="flex items-center gap-2 text-stone-600 text-sm">
                   <Calendar className="w-3 h-3" aria-hidden="true" focusable="false" />
                   {job.period}
+                  <span aria-hidden="true">·</span>
+                  <span className="font-mono text-xs uppercase tracking-[0.15em]">{job.stage}</span>
                 </div>
               </div>
 

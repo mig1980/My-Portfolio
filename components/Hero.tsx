@@ -5,7 +5,7 @@
 
 import React, { memo, useCallback, useState } from 'react';
 import { ArrowRight, ArrowUp, Download, Sparkles } from 'lucide-react';
-import { PERSONAL_INFO, HERO_QUESTIONS } from '../constants';
+import { PERSONAL_INFO, SUGGESTED_QUESTIONS } from '../constants';
 import { askChat } from '../utils/chatEvents';
 import { trackEvent } from '../utils/analytics';
 
@@ -81,8 +81,7 @@ const Hero: React.FC = memo(() => {
           </h1>
 
           <p className="mt-8 text-lg md:text-xl text-stone-700 max-w-xl leading-relaxed">
-            I help Fortune 500 leaders turn AI ambition into multi-year partnerships and measurable
-            results.
+            {PERSONAL_INFO.intro}
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-3">
@@ -137,7 +136,7 @@ const Hero: React.FC = memo(() => {
               <span className="font-mono text-xs uppercase tracking-[0.2em] text-stone-600 mr-1">
                 Try asking
               </span>
-              {HERO_QUESTIONS.map((suggested) => (
+              {SUGGESTED_QUESTIONS.map((suggested) => (
                 <button
                   key={suggested}
                   type="button"

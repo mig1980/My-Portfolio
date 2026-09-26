@@ -8,6 +8,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import ChatWidget from '../components/ChatWidget';
 import { askChat } from '../utils/chatEvents';
+import { SUGGESTED_QUESTIONS } from '../constants';
 
 // Mock fetch globally
 const mockFetch = vi.fn() as Mock;
@@ -95,22 +96,23 @@ describe('ChatWidget', () => {
     it('displays quick question buttons', () => {
       render(<ChatWidget />);
       fireEvent.click(screen.getByLabelText('Open AI assistant'));
-      expect(screen.getByText("What is Michael's experience?")).toBeInTheDocument();
-      expect(screen.getByText('Key achievements?')).toBeInTheDocument();
-      expect(screen.getByText('Current role?')).toBeInTheDocument();
+      for (const question of SUGGESTED_QUESTIONS) {
+        expect(screen.getByText(question)).toBeInTheDocument();
+      }
     });
 
     it('sends message when quick question is clicked', async () => {
+      const [firstQuestion = ''] = SUGGESTED_QUESTIONS;
       mockFetch.mockResolvedValueOnce(
         createMockResponse({ reply: 'Michael has 20+ years of experience.' })
       );
 
       render(<ChatWidget />);
       fireEvent.click(screen.getByLabelText('Open AI assistant'));
-      fireEvent.click(screen.getByText("What is Michael's experience?"));
+      fireEvent.click(screen.getByText(firstQuestion));
 
       await waitFor(() => {
-        expect(screen.getByText("What is Michael's experience?")).toBeInTheDocument();
+        expect(screen.getByText(firstQuestion)).toBeInTheDocument();
       });
 
       expect(mockFetch).toHaveBeenCalledWith('/api/chat', expect.any(Object));

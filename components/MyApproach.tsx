@@ -1,15 +1,15 @@
 /**
- * @fileoverview My Approach section showcasing methodology.
- * @description Displays strategic approach cards that differentiate the professional brand.
+ * @fileoverview "How I think" section.
+ * @description Four working principles plus a closing editorial statement.
  */
 
 import React, { memo } from 'react';
 import Section from './ui/Section';
 import SectionHeading from './ui/SectionHeading';
-import { Search, Users, Rocket, TrendingUp } from 'lucide-react';
+import { Layers, Telescope, Users, Hammer } from 'lucide-react';
 
 /**
- * Approach methodology step.
+ * Working principle.
  */
 interface ApproachStep {
   icon: React.ElementType;
@@ -19,48 +19,47 @@ interface ApproachStep {
 
 const APPROACH_STEPS: ApproachStep[] = [
   {
-    icon: Search,
-    title: 'Discovery',
-    description:
-      'Listen with empathy to understand the real business challenge, not just the stated problem.',
+    icon: Layers,
+    title: 'Go deep',
+    description: 'Understand the technology well enough to challenge assumptions.',
+  },
+  {
+    icon: Telescope,
+    title: 'Zoom out',
+    description: 'Find the business problem hiding behind the technology conversation.',
   },
   {
     icon: Users,
-    title: 'Alignment',
-    description: 'Build trust and consensus across stakeholders with a shared vision for success.',
+    title: 'Connect the room',
+    description: 'Create alignment across people with different priorities and incentives.',
   },
   {
-    icon: Rocket,
-    title: 'Execution',
-    description:
-      'Deliver on promises with speed and precision—reliability earns lasting partnerships.',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Scale',
-    description: 'Grow relationships into long-term partnerships that outlast any single deal.',
+    icon: Hammer,
+    title: 'Make it real',
+    description: 'Turn strategy into commitments, execution and measurable outcomes.',
   },
 ];
 
+/** Closing statement, one line per element */
+const STATEMENT_LINES: readonly string[] = [
+  'Go deep enough to understand the technology.',
+  'Go high enough to understand the business.',
+  'Stay close enough to make it happen.',
+];
+
 /**
- * My Approach section displaying methodology cards.
+ * "How I think" section.
  * Features:
- * - 4-step numbered methodology columns
- * - Philosophy pull quote
+ * - 4 numbered principle columns
+ * - Large editorial statement
  * - Responsive grid layout
  *
- * @returns The approach methodology section
+ * @returns The principles section
  */
 const MyApproach: React.FC = memo(() => {
   return (
     <Section id="approach" darker>
-      <SectionHeading
-        number="02"
-        label="Approach"
-        title="How I work"
-        intro="Two decades of enterprise sales taught me that lasting partnerships are built on understanding, alignment, and relentless execution."
-        className="mb-14"
-      />
+      <SectionHeading number="02" label="Principles" title="How I think." className="mb-14" />
 
       <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
         {APPROACH_STEPS.map((step, idx) => (
@@ -77,17 +76,16 @@ const MyApproach: React.FC = memo(() => {
         ))}
       </ol>
 
-      {/* Philosophy Quote */}
-      <figure className="mt-20 max-w-4xl">
-        <blockquote className="font-display text-3xl md:text-4xl italic leading-snug text-ink">
-          &ldquo;Good salespeople sell features—what the product does. Great salespeople sell
-          outcomes—how it benefits the customer. Truly great salespeople sell feelings—the emotional
-          impact of the purchase.&rdquo;
-        </blockquote>
-        <figcaption className="mt-5 font-mono text-xs uppercase tracking-[0.2em] text-stone-600">
-          — Robert Herjavec
-        </figcaption>
-      </figure>
+      <p className="mt-20 max-w-4xl font-display text-3xl md:text-5xl leading-tight text-ink">
+        {STATEMENT_LINES.map((line, idx) => (
+          <span
+            key={line}
+            className={`block ${idx === STATEMENT_LINES.length - 1 ? 'italic text-primary-700' : ''}`}
+          >
+            {line}
+          </span>
+        ))}
+      </p>
     </Section>
   );
 });

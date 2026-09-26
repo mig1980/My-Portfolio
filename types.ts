@@ -18,7 +18,17 @@ export interface JobRole {
   company: string;
   logo?: string;
   period: string;
+  /** Career stage this role belongs to (matches a CAREER_STAGES name) */
+  stage: string;
   description: string[];
+}
+
+/**
+ * One step in the career progression (e.g. Engineer → Architect).
+ */
+export interface CareerStage {
+  name: string;
+  summary: string;
 }
 
 /**
@@ -124,18 +134,16 @@ export interface AwardItem {
 }
 
 /**
- * Represents a personal interest or hobby.
+ * A group of activities outside work.
  * Used in the About section to add personality.
  */
-export interface InterestItem {
-  /** Unique identifier for the interest (for React key) */
+export interface OutsideWorkGroup {
+  /** Unique identifier (for React key) */
   id: string;
-  /** Name of the interest/pillar */
-  label: string;
-  /** React icon component representing the interest */
+  /** React icon component representing the group */
   icon: React.ReactNode;
-  /** Description explaining this interest/pillar */
-  description: string;
+  /** Activities in this group */
+  items: string[];
 }
 
 /**

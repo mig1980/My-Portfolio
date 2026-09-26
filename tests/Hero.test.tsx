@@ -7,7 +7,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import Hero from '../components/Hero';
 import { CHAT_ASK_EVENT } from '../utils/chatEvents';
-import { HERO_QUESTIONS, PERSONAL_INFO } from '../constants';
+import { SUGGESTED_QUESTIONS, PERSONAL_INFO } from '../constants';
 import type { ChatAskDetail } from '../types';
 
 function listenForAsk(): { questions: string[]; stop: () => void } {
@@ -63,7 +63,7 @@ describe('Hero', () => {
 
   it('sends a suggested question to the chat', () => {
     const { questions, stop } = listenForAsk();
-    const [firstQuestion = ''] = HERO_QUESTIONS;
+    const [firstQuestion = ''] = SUGGESTED_QUESTIONS;
     render(<Hero />);
 
     fireEvent.click(screen.getByRole('button', { name: firstQuestion }));

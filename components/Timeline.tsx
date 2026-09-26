@@ -7,7 +7,7 @@ import React, { memo, useState, useCallback } from 'react';
 import Section from './ui/Section';
 import SectionHeading from './ui/SectionHeading';
 import TimelineItem from './ui/TimelineItem';
-import { EXPERIENCE } from '../constants';
+import { EXPERIENCE, CAREER_STAGES } from '../constants';
 
 /**
  * Interactive Timeline section component.
@@ -47,6 +47,20 @@ const Timeline: React.FC = memo(() => {
               title="Professional journey"
               intro="From hands-on engineering to enterprise dealmaking. Open any role to read the story."
             />
+            <ol className="mt-10 max-w-md" aria-label="Career progression">
+              {CAREER_STAGES.map((stage, idx) => (
+                <li
+                  key={stage.name}
+                  className="flex items-baseline gap-4 py-3 border-t border-stone-300"
+                >
+                  <span className="font-mono text-xs text-primary-700 tabular-nums">
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                  <span className="font-display text-2xl leading-none text-ink">{stage.name}</span>
+                  <span className="ml-auto text-sm text-stone-600 text-right">{stage.summary}</span>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
         <div className="lg:col-span-8">

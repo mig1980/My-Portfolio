@@ -43,8 +43,8 @@ const ThoughtLeadership: React.FC = memo(() => {
   const portfolioRepoUrl = 'https://github.com/mig1980/My-Portfolio';
 
   return (
-    <Section id="thoughts">
-      <SectionHeading number="05" label="Side projects" title="Still building." className="mb-14" />
+    <Section id="projects">
+      <SectionHeading number="05" label="Projects" title="Still building." className="mb-14" />
 
       <div className="grid md:grid-cols-2 gap-4">
         {/* QuantumInvestor Card */}

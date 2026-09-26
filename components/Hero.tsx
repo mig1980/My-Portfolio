@@ -71,9 +71,9 @@ const Hero: React.FC = memo(() => {
           </div>
 
           <h1 className="font-display text-[clamp(2.375rem,11.5vw,3rem)] sm:text-6xl md:text-7xl lg:text-8xl leading-[0.92] sm:leading-[0.95] tracking-tight text-balance">
-            {PERSONAL_INFO.tagline}
-            <br />
-            <span className="text-primary-700">{PERSONAL_INFO.taglineHighlight}</span>
+            {/* Separate blocks so each line balances on its own (no lone "instinct.") */}
+            <span className="block">{PERSONAL_INFO.tagline}</span>
+            <span className="block text-primary-700">{PERSONAL_INFO.taglineHighlight}</span>
           </h1>
 
           <p className="mt-8 text-lg md:text-xl text-stone-700 max-w-xl leading-relaxed">

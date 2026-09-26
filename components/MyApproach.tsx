@@ -80,7 +80,7 @@ const MyApproach: React.FC = memo(() => {
         {STATEMENT_LINES.map((line, idx) => (
           <span
             key={line}
-            className={`block ${idx === STATEMENT_LINES.length - 1 ? 'italic text-primary-700' : ''}`}
+            className={`block ${idx === STATEMENT_LINES.length - 1 ? 'text-primary-700' : ''}`}
           >
             {line}
           </span>

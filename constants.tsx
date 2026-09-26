@@ -270,18 +270,25 @@ export const AWARDS: AwardItem[] = [
       'Platinum Club for top-tier performance worldwide; Gold Club for revenue growth and customer impact.',
     color: 'platinum',
     badges: [
-      { src: '/Awards/PlatinumClub.png', alt: 'Platinum Club badge' },
-      { src: '/Awards/GoldClub.png', alt: 'Gold Club badge' },
+      // Platinum art is a wide 1200x627 canvas; Gold is square. Zooms equalize the badge size.
+      { src: '/Awards/PlatinumClub.png', alt: 'Platinum Club badge', zoom: 1.9 },
+      { src: '/Awards/GoldClub.png', alt: 'Gold Club badge', zoom: 1.3 },
     ],
+    link: '/Awards/Gold_Club_Award_Letter_2026.pdf',
+    linkLabel: 'View 2026 Gold Club award letter',
   },
   {
     id: 'attainment-100',
     title: '100% Attainment',
     issuer: 'Microsoft',
-    awardLevel: 'FY25',
+    awardLevel: '7-time winner · 2025 · 2026',
     description: 'Achieved 100% cumulative tenured weighted attainment on a sales quota plan.',
     color: 'green',
-    badges: [{ src: '/Awards/100Attainment.png', alt: '100% Attainment badge' }],
+    badges: [
+      { src: '/Awards/100Attainmentretired_7Time.png', alt: '100% Attainment 7-time winner badge' },
+      { src: '/Awards/100Attainment_2025.png', alt: '100% Attainment 2025 badge' },
+      { src: '/Awards/100Attainment__2026.png', alt: '100% Attainment 2026 badge' },
+    ],
   },
 ];
 

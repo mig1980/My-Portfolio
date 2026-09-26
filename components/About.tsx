@@ -78,7 +78,7 @@ const About: React.FC = memo(() => {
                       href: award.link,
                       target: '_blank',
                       rel: 'noopener noreferrer',
-                      'aria-label': `View ${award.title} certificate`,
+                      'aria-label': award.linkLabel ?? `View ${award.title} certificate`,
                     }
                   : {};
 
@@ -110,7 +110,8 @@ const About: React.FC = memo(() => {
                               width={48}
                               height={48}
                               loading="lazy"
-                              className="w-12 h-12 object-contain scale-150"
+                              className="w-12 h-12 object-contain"
+                              style={badge.zoom ? { transform: `scale(${badge.zoom})` } : undefined}
                             />
                           </div>
                         ))}

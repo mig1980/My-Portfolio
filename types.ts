@@ -127,8 +127,10 @@ export interface AwardItem {
   color?: 'platinum' | 'gold' | 'blue' | 'green' | 'purple';
   /** Optional link to award details */
   link?: string;
-  /** Optional badge images; several when one card groups related awards */
-  badges?: { src: string; alt: string }[];
+  /** Accessible name for the link when it covers only part of the card */
+  linkLabel?: string;
+  /** Optional badge images; several when one card groups related awards. `zoom` scales past built-in whitespace. */
+  badges?: { src: string; alt: string; zoom?: number }[];
 }
 
 /**

@@ -213,7 +213,7 @@ Quantified outcomes.
 He has architected complex, multi-year agreements totaling more than $500M in total contract value. In prior enterprise roles, he generated an average of about $20M annually. Earlier in his Microsoft career, he led partner programs that drove a 150% increase in partner-influenced revenue. In an IT operations leadership role, he delivered process improvements and automation that increased operational efficiency by 25%.
 
 Awards and recognition.
-He is a 2-time Microsoft Platinum Club recipient and a 3-time Gold Club Award recipient. He received a Champion Award in FY23 Q4 and achieved 100% attainment in FY25.
+He is a 2-time Microsoft Platinum Club recipient and a 3-time Gold Club Award recipient. He received a Champion Award in FY23 Q4. He is a 7-time winner of Microsoft's 100% Attainment award and achieved 100% attainment again in 2025 and 2026.
 
 Education.
 Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from Bauman State Technical University.

@@ -147,13 +147,9 @@ const TimelineItem: React.FC<TimelineItemProps> = memo(
             {/* Expandable description */}
             {isExpanded && (
               <div className="mt-4">
-                <ul className="space-y-2 border-t border-stone-200 pt-4">
+                <ul className="space-y-2 border-t border-stone-200 pt-4 list-disc pl-5 marker:text-primary-700">
                   {job.description.map((desc, i) => (
-                    <li
-                      key={i}
-                      className="text-stone-700 text-sm leading-relaxed flex items-start gap-2"
-                    >
-                      <span className="block w-1.5 h-1.5 bg-primary-700 rounded-full mt-1.5 shrink-0" />
+                    <li key={i} className="pl-1 text-stone-700 text-sm leading-relaxed">
                       {desc}
                     </li>
                   ))}

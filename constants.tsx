@@ -311,7 +311,7 @@ export const OUTSIDE_WORK: OutsideWorkGroup[] = [
 export const STATS: StatItem[] = [
   { value: 20, suffix: '+', label: 'Years Experience' },
   { value: 500, prefix: '$', suffix: 'M+', label: 'in multi-year agreements' },
-  { value: 4, suffix: '×', label: 'Top-Performer Awards' },
+  { value: 5, suffix: '×', label: 'Top-Performer Awards' },
 ];
 
 /**

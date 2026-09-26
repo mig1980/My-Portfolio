@@ -7,6 +7,21 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { getOrCreateChatSessionId, trackEvent, initAnalytics } from '../utils/analytics';
 
 const SESSION_STORAGE_KEY = 'aboutme-chat-session';
+const GA_SCRIPT_SRC = 'https://www.googletagmanager.com/gtag/js';
+
+/** jsdom never fetches injected scripts, so tests settle them by hand. */
+function settleInjectedGaScript(event: 'load' | 'error'): void {
+  const script = document.querySelector(`script[src^="${GA_SCRIPT_SRC}"]`);
+  script?.dispatchEvent(new Event(event));
+}
+
+function loadInjectedGaScript(): void {
+  settleInjectedGaScript('load');
+}
+
+function failInjectedGaScript(): void {
+  settleInjectedGaScript('error');
+}
 
 describe('analytics', () => {
   beforeEach(() => {
@@ -15,10 +30,12 @@ describe('analytics', () => {
     // Reset gtag
     delete window.gtag;
     delete window.dataLayer;
+    document.querySelectorAll(`script[src^="${GA_SCRIPT_SRC}"]`).forEach((s) => s.remove());
   });
 
   afterEach(() => {
     localStorage.removeItem(SESSION_STORAGE_KEY);
+    vi.unstubAllEnvs();
   });
 
   describe('getOrCreateChatSessionId', () => {
@@ -92,19 +109,41 @@ describe('analytics', () => {
     });
 
     it('calls gtag when available in production', () => {
-      // Mock production environment
-      vi.stubGlobal('import.meta.env', { ...import.meta.env, PROD: true });
-
+      vi.stubEnv('PROD', true);
       const mockGtag = vi.fn();
       window.gtag = mockGtag;
 
       trackEvent('test_event', { param1: 'value1' });
 
-      // In production with gtag available, it should be called
-      // Note: Since we're in test (not PROD), this won't actually call
-      // This test documents the expected behavior
+      expect(mockGtag).toHaveBeenCalledWith('event', 'test_event', { param1: 'value1' });
+    });
 
-      vi.unstubAllGlobals();
+    it('sends an empty params object when none are provided', () => {
+      vi.stubEnv('PROD', true);
+      const mockGtag = vi.fn();
+      window.gtag = mockGtag;
+
+      trackEvent('test_event');
+
+      expect(mockGtag).toHaveBeenCalledWith('event', 'test_event', {});
+    });
+
+    it('does not send events outside production', () => {
+      const mockGtag = vi.fn();
+      window.gtag = mockGtag;
+
+      trackEvent('test_event');
+
+      expect(mockGtag).not.toHaveBeenCalled();
+    });
+
+    it('does not throw when gtag itself throws', () => {
+      vi.stubEnv('PROD', true);
+      window.gtag = vi.fn(() => {
+        throw new Error('blocked');
+      });
+
+      expect(() => trackEvent('test_event')).not.toThrow();
     });
 
     it('does not throw with undefined params', () => {
@@ -113,6 +152,13 @@ describe('analytics', () => {
   });
 
   describe('initAnalytics', () => {
+    /** Fresh module instance, because init state is cached per module. */
+    async function freshInit(): Promise<() => Promise<void>> {
+      vi.resetModules();
+      const mod = await import('../utils/analytics');
+      return mod.initAnalytics;
+    }
+
     it('does not initialize in non-production environment', async () => {
       // In test environment, PROD is false
       await initAnalytics();
@@ -123,6 +169,61 @@ describe('analytics', () => {
 
     it('handles missing measurement ID gracefully', async () => {
       await expect(initAnalytics()).resolves.not.toThrow();
+    });
+
+    it('ignores a measurement ID that is not a GA4 ID', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      vi.stubEnv('PROD', true);
+      vi.stubEnv('VITE_ANALYTICS_ID', 'UA-12345-1');
+
+      await (
+        await freshInit()
+      )();
+
+      expect(warn).toHaveBeenCalled();
+      expect(window.gtag).toBeUndefined();
+      warn.mockRestore();
+    });
+
+    it('queues config before gtag.js has loaded', async () => {
+      vi.stubEnv('PROD', true);
+      vi.stubEnv('VITE_ANALYTICS_ID', 'G-TEST123456');
+
+      const pending = (await freshInit())();
+
+      // The script request is still in flight, but the queue must already accept events.
+      expect(typeof window.gtag).toBe('function');
+      expect(window.dataLayer?.length).toBeGreaterThan(0);
+
+      loadInjectedGaScript();
+      await expect(pending).resolves.toBeUndefined();
+    });
+
+    it('does not send a second config when called again', async () => {
+      vi.stubEnv('PROD', true);
+      vi.stubEnv('VITE_ANALYTICS_ID', 'G-TEST123456');
+
+      const init = await freshInit();
+      const pending = init();
+      const queuedAfterFirstCall = window.dataLayer?.length ?? 0;
+
+      const second = init();
+
+      expect(window.dataLayer?.length).toBe(queuedAfterFirstCall);
+      expect(document.querySelectorAll(`script[src^="${GA_SCRIPT_SRC}"]`)).toHaveLength(1);
+
+      loadInjectedGaScript();
+      await Promise.all([pending, second]);
+    });
+
+    it('resolves even when gtag.js is blocked', async () => {
+      vi.stubEnv('PROD', true);
+      vi.stubEnv('VITE_ANALYTICS_ID', 'G-TEST123456');
+
+      const pending = (await freshInit())();
+      failInjectedGaScript();
+
+      await expect(pending).resolves.toBeUndefined();
     });
   });
 });

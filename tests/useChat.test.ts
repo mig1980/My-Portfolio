@@ -6,6 +6,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import { useChat } from '../hooks/useChat';
+import { trackEvent } from '../utils/analytics';
 
 // Mock fetch globally
 const mockFetch = vi.fn() as Mock;
@@ -16,6 +17,13 @@ vi.mock('../utils/analytics', () => ({
   getOrCreateChatSessionId: () => 'test-session-id',
   trackEvent: vi.fn(),
 }));
+
+const mockTrackEvent = trackEvent as Mock;
+
+/** Every failed send must report exactly one chat_message_failed event. */
+function failureEvents(): unknown[][] {
+  return mockTrackEvent.mock.calls.filter((call) => call[0] === 'chat_message_failed');
+}
 
 const STORAGE_KEY = 'aboutme-chat-history';
 
@@ -226,6 +234,105 @@ describe('useChat', () => {
       });
 
       expect(result.current.error).toBe('Request timed out. Please try again.');
+    });
+  });
+
+  describe('failure analytics', () => {
+    it('reports an HTTP failure once, with its status', async () => {
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({ error: 'Server error' }, { ok: false, status: 500 })
+      );
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+
+      expect(failureEvents()).toEqual([
+        [
+          'chat_message_failed',
+          {
+            chat_session_id: 'test-session-id',
+            error_type: 'http_error',
+            http_status: 500,
+          },
+        ],
+      ]);
+    });
+
+    it('reports an empty reply once', async () => {
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: '   ' }));
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+
+      expect(failureEvents()).toEqual([
+        [
+          'chat_message_failed',
+          {
+            chat_session_id: 'test-session-id',
+            error_type: 'empty_reply',
+            http_status: 200,
+          },
+        ],
+      ]);
+    });
+
+    it('reports a timeout once, without a status', async () => {
+      mockFetch.mockImplementationOnce(() => {
+        const error = new Error('Timeout');
+        error.name = 'AbortError';
+        return Promise.reject(error);
+      });
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+
+      expect(failureEvents()).toEqual([
+        [
+          'chat_message_failed',
+          {
+            chat_session_id: 'test-session-id',
+            error_type: 'timeout',
+            http_status: undefined,
+          },
+        ],
+      ]);
+    });
+
+    it('does not report a failure when a rate limit is hit', async () => {
+      mockFetch.mockResolvedValueOnce(createMockResponse({ error: 'Too many' }, { status: 429 }));
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+
+      expect(failureEvents()).toHaveLength(0);
+      expect(mockTrackEvent).toHaveBeenCalledWith(
+        'chat_message_rate_limited',
+        expect.objectContaining({ chat_session_id: 'test-session-id' })
+      );
+    });
+
+    it('does not report a failure on success', async () => {
+      mockFetch.mockResolvedValueOnce(createMockResponse({ reply: 'All good' }));
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+
+      expect(failureEvents()).toHaveLength(0);
     });
   });
 

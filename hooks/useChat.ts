@@ -322,6 +322,11 @@ export function useChat({
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+      // Failure details are collected here so the catch block stays the only emitter
+      // of chat_message_failed; otherwise one failure would be counted twice.
+      let failureType: string | undefined;
+      let failureStatus: number | undefined;
+
       try {
         const response = await fetch(endpoint, {
           method: 'POST',
@@ -334,6 +339,7 @@ export function useChat({
         });
 
         clearTimeout(timeoutId);
+        failureStatus = response.status;
 
         // Safely parse JSON response (handles HTML error pages gracefully)
         let data: ChatApiResponse;
@@ -341,6 +347,7 @@ export function useChat({
           const responseText = await response.text();
           // Check if response looks like HTML (error page) instead of JSON
           if (responseText.trimStart().startsWith('<')) {
+            failureType = 'invalid_response';
             throw new Error(
               response.status >= 500
                 ? 'The AI service is temporarily unavailable. Please try again in a moment.'
@@ -349,6 +356,7 @@ export function useChat({
           }
           const parsed: unknown = JSON.parse(responseText);
           if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+            failureType = 'invalid_response';
             throw new Error(`Invalid response from server (${response.status}). Please try again.`);
           }
           data = parsed as ChatApiResponse;
@@ -358,6 +366,7 @@ export function useChat({
             throw parseError;
           }
           // JSON parse failed - server returned invalid response
+          failureType = 'invalid_response';
           throw new Error(
             response.status >= 500
               ? 'The AI service is temporarily unavailable. Please try again in a moment.'
@@ -419,23 +428,18 @@ export function useChat({
         const serverError = typeof data.error === 'string' && data.error ? data.error : null;
 
         if (!response.ok) {
-          trackEvent('chat_message_failed', {
-            chat_session_id: chatSessionId,
-            http_status: response.status,
-          });
+          failureType = 'http_error';
           throw new Error(serverError ?? `Request failed: ${response.status}`);
         }
 
         if (serverError) {
+          failureType = 'server_error';
           throw new Error(serverError);
         }
 
         const reply = 'reply' in data ? data.reply : undefined;
         if (typeof reply !== 'string' || reply.trim() === '') {
-          trackEvent('chat_message_failed', {
-            chat_session_id: chatSessionId,
-            error_type: 'empty_reply',
-          });
+          failureType = 'empty_reply';
           throw new Error('Empty response from AI service');
         }
 
@@ -474,16 +478,17 @@ export function useChat({
             errorType = 'timeout';
           } else {
             errorMessage = err.message;
-            errorType = 'error';
+            errorType = failureType ?? 'error';
           }
         } else {
           errorMessage = 'An unexpected error occurred';
-          errorType = 'unknown';
+          errorType = failureType ?? 'unknown';
         }
 
         trackEvent('chat_message_failed', {
           chat_session_id: chatSessionId,
           error_type: errorType,
+          http_status: failureStatus,
         });
 
         setError(errorMessage);

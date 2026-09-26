@@ -83,19 +83,24 @@ function initGtag(measurementId: string): void {
   // Standard gtag stub - must push arguments as-is, not as array
   // This is the exact pattern Google requires
 
-  const gtag = function (..._args: unknown[]) {
-    // eslint-disable-next-line prefer-rest-params
-    window.dataLayer?.push(arguments);
-  };
-  window.gtag = gtag;
+  if (typeof window.gtag !== 'function') {
+    const gtag = function (..._args: unknown[]) {
+      // eslint-disable-next-line prefer-rest-params
+      window.dataLayer?.push(arguments);
+    };
+    window.gtag = gtag;
+  }
 
-  gtag('js', new Date());
-  gtag('config', measurementId, {
+  window.gtag?.('js', new Date());
+  window.gtag?.('config', measurementId, {
     anonymize_ip: true,
     // Helps GA attribute properly when behind reverse proxies.
     transport_type: 'beacon',
   });
 }
+
+/** Set once init has started, so repeat calls never send a second `config` (duplicate page view). */
+let initPromise: Promise<void> | null = null;
 
 /**
  * Initializes Google Analytics (GA4) if configured.
@@ -123,12 +128,19 @@ export async function initAnalytics(): Promise<void> {
     return;
   }
 
-  try {
-    await loadScript(`${GA_SCRIPT_SRC}?id=${encodeURIComponent(measurementId)}`);
-    initGtag(measurementId);
-  } catch {
-    // Tracking protection commonly blocks gtag.js; analytics must remain optional.
+  if (initPromise) {
+    return initPromise;
   }
+
+  // Queue `js`/`config` before the script request so interactions during the
+  // download are buffered in dataLayer instead of being dropped.
+  initGtag(measurementId);
+
+  initPromise = loadScript(`${GA_SCRIPT_SRC}?id=${encodeURIComponent(measurementId)}`).catch(() => {
+    // Tracking protection commonly blocks gtag.js; analytics must remain optional.
+  });
+
+  return initPromise;
 }
 
 /**

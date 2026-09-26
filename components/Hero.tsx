@@ -12,6 +12,9 @@ import { trackEvent } from '../utils/analytics';
 /** Maximum question length (aligned with chat backend) */
 const MAX_QUESTION_LENGTH = 500;
 
+/** Suggestions shown under the ask box; the chat widget shows the full list */
+const HERO_QUESTIONS = SUGGESTED_QUESTIONS.slice(0, 2);
+
 /**
  * Hero section component for the portfolio landing area.
  * Features:
@@ -85,7 +88,7 @@ const Hero: React.FC = memo(() => {
               href="#contact"
               className="inline-flex items-center justify-center px-7 py-3.5 bg-ink text-paper hover:bg-stone-800 rounded-full font-semibold transition-colors focus-ring focus-visible:ring-offset-paper"
             >
-              Start a conversation
+              Get in touch
               <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
             </a>
             <a
@@ -132,7 +135,7 @@ const Hero: React.FC = memo(() => {
               <span className="font-mono text-xs uppercase tracking-[0.2em] text-stone-600 mr-1">
                 Try asking
               </span>
-              {SUGGESTED_QUESTIONS.map((suggested) => (
+              {HERO_QUESTIONS.map((suggested) => (
                 <button
                   key={suggested}
                   type="button"

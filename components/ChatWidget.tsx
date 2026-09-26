@@ -761,8 +761,8 @@ const ChatWidget: React.FC = memo(() => {
         <GreetingBubble onDismiss={dismissGreeting} onClick={handleGreetingClick} />
       )}
 
-      {/* Floating Toggle Button - hidden on the mobile hero (it has its own ask box) and when fullscreen */}
-      {!isFullscreen && !(isMobile && !hasScrolledPastHero && !isOpen) && (
+      {/* Floating Toggle Button - hidden on the hero (it has its own ask box) unless chat is open, and when fullscreen */}
+      {!isFullscreen && (hasScrolledPastHero || isOpen) && (
         <button
           onClick={toggleChat}
           className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-primary-700 hover:bg-primary-800 

@@ -10,6 +10,11 @@ import ChatWidget from '../components/ChatWidget';
 import { askChat } from '../utils/chatEvents';
 import { SUGGESTED_QUESTIONS } from '../constants';
 
+const scrollState = vi.hoisted(() => ({ pastHero: true }));
+vi.mock('../hooks/useScrollPosition', () => ({
+  useScrollPosition: (): boolean => scrollState.pastHero,
+}));
+
 // Mock fetch globally
 const mockFetch = vi.fn() as Mock;
 global.fetch = mockFetch;
@@ -38,6 +43,7 @@ describe('ChatWidget', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockFetch.mockReset();
+    scrollState.pastHero = true;
     // Clear localStorage before each test to ensure clean state
     localStorage.removeItem(STORAGE_KEY);
   });
@@ -57,6 +63,12 @@ describe('ChatWidget', () => {
     it('does not show chat window initially', () => {
       render(<ChatWidget />);
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('hides the toggle button while the visitor is on the hero', () => {
+      scrollState.pastHero = false;
+      render(<ChatWidget />);
+      expect(screen.queryByLabelText('Open AI assistant')).not.toBeInTheDocument();
     });
   });
 

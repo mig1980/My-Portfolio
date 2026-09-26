@@ -40,12 +40,12 @@ The mindset never really changed: understand the problem, challenge assumptions,
 };
 
 /**
- * Suggested questions shown under the hero ask box and in the chat widget.
+ * Suggested questions for the chat widget; the hero shows the first two.
  */
 export const SUGGESTED_QUESTIONS: readonly string[] = [
   'How did Michael go from engineer to dealmaker?',
-  "What's his philosophy on enterprise AI?",
   'What has Michael actually built?',
+  "What's his philosophy on enterprise AI?",
   'What does he believe about complex deals?',
 ];
 

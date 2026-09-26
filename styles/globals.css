@@ -159,9 +159,10 @@
   background-color: rgba(29, 78, 216, 0.18);
 }
 
-/* Smooth scrolling */
+/* Smooth scrolling; padding keeps anchored sections clear of the fixed header */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 /* Respect reduced motion preferences */

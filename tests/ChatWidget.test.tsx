@@ -147,7 +147,7 @@ describe('ChatWidget', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Test response')).toBeInTheDocument();
+        expect(screen.getAllByText('Test response').length).toBeGreaterThan(0);
       });
     });
 
@@ -165,7 +165,7 @@ describe('ChatWidget', () => {
 
       // Wait for the async fetch to resolve to avoid act() warnings
       await waitFor(() => {
-        expect(screen.getByText('Response')).toBeInTheDocument();
+        expect(screen.getAllByText('Response').length).toBeGreaterThan(0);
       });
     });
 
@@ -187,10 +187,32 @@ describe('ChatWidget', () => {
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       await waitFor(() => {
-        expect(screen.getByText('Hero answer')).toBeInTheDocument();
+        expect(screen.getAllByText('Hero answer').length).toBeGreaterThan(0);
       });
       const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
       expect(JSON.parse(String(init.body))).toMatchObject({ message: 'Question from hero' });
+    });
+
+    it('keeps a question asked from elsewhere in the input while a reply is loading', async () => {
+      let resolveFetch: (value: unknown) => void = () => {};
+      mockFetch.mockImplementationOnce(() => new Promise((resolve) => (resolveFetch = resolve)));
+
+      render(<ChatWidget />);
+      act(() => {
+        askChat('First question');
+      });
+      await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(1));
+
+      act(() => {
+        askChat('Second question');
+      });
+
+      expect(screen.getByLabelText('Type your message')).toHaveValue('Second question');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        resolveFetch(createMockResponse({ reply: 'Done' }));
+      });
     });
   });
 
@@ -225,7 +247,7 @@ describe('ChatWidget', () => {
       fireEvent.click(screen.getByLabelText('Send message'));
 
       await waitFor(() => {
-        expect(screen.getByText('Response')).toBeInTheDocument();
+        expect(screen.getAllByText('Response').length).toBeGreaterThan(0);
       });
 
       fireEvent.click(screen.getByLabelText('Clear chat history'));

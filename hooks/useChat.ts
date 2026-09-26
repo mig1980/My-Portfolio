@@ -217,6 +217,9 @@ export function useChat({
   const messagesRef = useRef<ChatMessage[]>([]);
   messagesRef.current = messages;
 
+  // Synchronous guard: state updates lag, so two quick calls could both pass an isLoading check
+  const inFlightRef = useRef<boolean>(false);
+
   // Track rate limit timeout and countdown interval
   const rateLimitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rateLimitIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -256,7 +259,8 @@ export function useChat({
   const sendMessage = useCallback(
     async (content: string): Promise<void> => {
       const trimmedContent = content.trim();
-      if (!trimmedContent || isLoading || isRateLimited) return;
+      if (!trimmedContent || inFlightRef.current || isRateLimited) return;
+      inFlightRef.current = true;
 
       // Clear previous failed message and suggestions
       setFailedMessage(null);
@@ -449,31 +453,31 @@ export function useChat({
         setFailedMessage(trimmedContent);
       } finally {
         clearTimeout(timeoutId);
+        inFlightRef.current = false;
         setIsLoading(false);
       }
     },
-    [endpoint, timeout, isLoading, isRateLimited]
+    [endpoint, timeout, isRateLimited]
   );
 
   const retryLastMessage = useCallback(async (): Promise<void> => {
-    if (!failedMessage || isLoading || isRateLimited) return;
+    if (!failedMessage || inFlightRef.current || isRateLimited) return;
 
-    // Remove the failed user message before retrying
-    setMessages((prev: ChatMessage[]) => {
-      // Find and remove the last user message that matches the failed content
-      // Using reverse iteration for ES2020 compatibility (instead of findLastIndex)
-      let lastIndex = -1;
-      for (let i = prev.length - 1; i >= 0; i--) {
-        if (prev[i]?.role === 'user' && prev[i]?.content === failedMessage) {
-          lastIndex = i;
-          break;
-        }
+    // Remove the failed user message before retrying. Update the ref too, because
+    // sendMessage builds history from it before React re-renders.
+    const current = messagesRef.current;
+    let lastIndex = -1;
+    for (let i = current.length - 1; i >= 0; i--) {
+      if (current[i]?.role === 'user' && current[i]?.content === failedMessage) {
+        lastIndex = i;
+        break;
       }
-      if (lastIndex !== -1) {
-        return [...prev.slice(0, lastIndex), ...prev.slice(lastIndex + 1)];
-      }
-      return prev;
-    });
+    }
+    if (lastIndex !== -1) {
+      const next = [...current.slice(0, lastIndex), ...current.slice(lastIndex + 1)];
+      messagesRef.current = next;
+      setMessages(next);
+    }
 
     // Clear error and retry
     setError(null);
@@ -481,7 +485,7 @@ export function useChat({
     setFailedMessage(null);
 
     await sendMessage(messageToRetry);
-  }, [failedMessage, isLoading, isRateLimited, sendMessage]);
+  }, [failedMessage, isRateLimited, sendMessage]);
 
   const clearHistory = useCallback((): void => {
     setMessages([]);

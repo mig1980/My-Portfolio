@@ -169,6 +169,18 @@ describe('useChat', () => {
 
       expect(result.current.suggestions).toEqual(['Follow up 1', 'Follow up 2']);
     });
+
+    it('ignores a second send fired before the first finishes', async () => {
+      mockFetch.mockResolvedValue(createMockResponse({ reply: 'Response' }));
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await Promise.all([result.current.sendMessage('A'), result.current.sendMessage('A')]);
+      });
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('error handling', () => {
@@ -317,6 +329,24 @@ describe('useChat', () => {
 
       expect(result.current.error).toBeNull();
       expect(result.current.messages).toHaveLength(2);
+    });
+
+    it('does not resend the failed message as history on retry', async () => {
+      mockFetch
+        .mockResolvedValueOnce(createMockResponse({ error: 'Error' }, { ok: false, status: 500 }))
+        .mockResolvedValueOnce(createMockResponse({ reply: 'Success' }));
+
+      const { result } = renderHook(() => useChat());
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+      await act(async () => {
+        await result.current.retryLastMessage();
+      });
+
+      const [, init] = mockFetch.mock.calls[1] as [string, RequestInit];
+      expect(JSON.parse(String(init.body))).toMatchObject({ message: 'Hello', history: [] });
     });
 
     it('does nothing if no failed message', async () => {

@@ -100,7 +100,7 @@ const MODEL_CHAIN: readonly string[] = [
 const ALLOWED_ORIGINS: readonly string[] = [
   'https://gavrilov.ai',
   'https://www.gavrilov.ai',
-  'https://aboutme-portfolio.pages.dev',
+  'https://my-portfolio-bu2.pages.dev',
 ] as const;
 
 // ============================================================================

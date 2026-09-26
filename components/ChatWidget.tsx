@@ -199,7 +199,15 @@ const MessageBubble = memo<MessageBubbleProps>(
                 : 'bg-stone-100 text-ink rounded-bl-md'
             }`}
           >
-            {isUser ? message.content : displayedText}
+            {isUser ? (
+              message.content
+            ) : (
+              <>
+                {/* Screen readers get the full reply once; the animated copy is visual only */}
+                <span className="sr-only">{message.content}</span>
+                <span aria-hidden="true">{displayedText}</span>
+              </>
+            )}
             {/* Typing cursor for animation effect */}
             {isTyping && (
               <span
@@ -721,12 +729,17 @@ const ChatWidget: React.FC = memo(() => {
       const question = (e as CustomEvent<ChatAskDetail>).detail?.question?.trim();
       if (!question) return;
       setIsOpen(true);
-      if (isOnline) void sendMessage(question);
+      // Can't send right now: keep the question in the input instead of dropping it
+      if (!isOnline || isLoading || isRateLimited) {
+        setInput(question);
+        return;
+      }
+      void sendMessage(question);
     };
 
     window.addEventListener(CHAT_ASK_EVENT, handleAsk);
     return () => window.removeEventListener(CHAT_ASK_EVENT, handleAsk);
-  }, [sendMessage, isOnline]);
+  }, [sendMessage, isOnline, isLoading, isRateLimited]);
 
   const toggleChat = useCallback((): void => {
     // Check current state BEFORE updating
@@ -894,8 +907,8 @@ const ChatWidget: React.FC = memo(() => {
               </div>
             )}
 
-            {/* Message List */}
-            <div aria-live="polite" aria-atomic="false" aria-relevant="additions">
+            {/* Message List (the role="log" container already announces additions) */}
+            <div>
               {messages.map((message) => (
                 <MessageBubble
                   key={message.id}

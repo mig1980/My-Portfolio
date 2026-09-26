@@ -70,10 +70,9 @@ export function useBodyScrollLock(isLocked: boolean): void {
       document.body.style.overflow = originalOverflow;
       document.body.style.paddingRight = originalPaddingRight;
 
-      // Restore scroll position in next frame to avoid blocking the UI
-      // Using requestAnimationFrame prevents the synchronous reflow that causes freeze
+      // 'instant' so the page doesn't smooth-scroll from the top (html has scroll-behavior: smooth)
       requestAnimationFrame(() => {
-        window.scrollTo(0, scrollY);
+        window.scrollTo({ top: scrollY, behavior: 'instant' });
       });
     };
   }, [isLocked]);

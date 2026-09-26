@@ -173,7 +173,12 @@ export const SKILLS: SkillGroup[] = [
   {
     category: 'Leadership',
     icon: <Users className="w-5 h-5" />,
-    skills: ['Executives', 'Organizations', 'Ecosystems', 'Alignment'],
+    skills: [
+      'C-Suite Partnerships',
+      'AI-First Enterprise Strategy',
+      'Cross-functional Team Leadership',
+      'Complex Deal Closure',
+    ],
   },
   {
     category: 'Deals',

@@ -30,7 +30,7 @@ const Expertise: React.FC = memo(() => {
               <h3 className="text-xl font-semibold text-ink">{group.category}</h3>
             </div>
 
-            <ul className="space-y-2 text-stone-700 leading-relaxed">
+            <ul className="space-y-3 text-stone-700 leading-snug">
               {group.skills.map((skill) => (
                 <li key={skill}>{skill}</li>
               ))}

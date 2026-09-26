@@ -62,9 +62,6 @@ const About: React.FC = memo(() => {
               <p key={index}>{paragraph}</p>
             ))}
           </div>
-          <p className="mt-8 font-display text-3xl md:text-4xl leading-tight text-primary-700">
-            {PERSONAL_INFO.summaryEmphasis}
-          </p>
 
           {/* Awards & Recognition Subsection */}
           <div className="mt-16">

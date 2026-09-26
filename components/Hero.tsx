@@ -131,10 +131,10 @@ const Hero: React.FC = memo(() => {
                 <ArrowUp className="w-4 h-4" aria-hidden="true" />
               </button>
             </form>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="font-mono text-xs uppercase tracking-[0.2em] text-stone-600 mr-1">
-                Try asking
-              </span>
+            <p className="mt-4 mb-2 font-mono text-xs uppercase tracking-[0.2em] text-stone-600">
+              Try asking
+            </p>
+            <div className="flex flex-wrap gap-2">
               {HERO_QUESTIONS.map((suggested) => (
                 <button
                   key={suggested}
@@ -167,9 +167,8 @@ const Hero: React.FC = memo(() => {
           </div>
           <figcaption className="mt-4 pt-3 border-t border-stone-300 text-sm">
             <div className="font-semibold">{PERSONAL_INFO.name}</div>
-            <div className="text-stone-600">
-              {PERSONAL_INFO.title} · {PERSONAL_INFO.location}
-            </div>
+            <div className="text-stone-600">{PERSONAL_INFO.title}</div>
+            <div className="text-stone-600">{PERSONAL_INFO.location}</div>
           </figcaption>
         </figure>
       </div>

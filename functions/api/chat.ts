@@ -190,7 +190,7 @@ Industries.
 Healthcare and Life Sciences, including pharma. He has also supported enterprise accounts across sectors such as transportation and manufacturing.
 
 Career path: engineer, architect, strategist, dealmaker.
-He started his career building and operating technology, then became an architect, a strategist and eventually a dealmaker. His mindset never changed: understand the problem, challenge assumptions, design a solution and make it work. Today, the systems are just bigger.
+He started his career building and operating technology, then became an architect, a strategist and eventually a dealmaker. His mindset never changed: understand the problem, challenge assumptions, design a solution and make it work.
 IT Operations Manager and Team Lead at Allied Testing (Apr 2002 to July 2005): led a team of systems engineers and managed IT services and operations.
 IT Solutions Architect at Systematica Group (July 2005 to Oct 2006): led architectural design and technical strategy for complex IT solutions.
 Partner Technology Strategist at Microsoft (Oct 2006 to July 2008), then Account Technology Strategist (July 2008 to Mar 2011).

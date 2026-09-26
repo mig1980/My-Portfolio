@@ -36,7 +36,6 @@ export const PERSONAL_INFO = {
   summary: `I started my career building and operating technology. I became an architect, strategist and eventually a dealmaker.
 
 The mindset never really changed: understand the problem, challenge assumptions, design a solution and make it work.`,
-  summaryEmphasis: 'Today, the systems are just bigger.',
 };
 
 /**
@@ -44,7 +43,7 @@ The mindset never really changed: understand the problem, challenge assumptions,
  */
 export const SUGGESTED_QUESTIONS: readonly string[] = [
   'How did Michael go from engineer to dealmaker?',
-  'What has Michael actually built?',
+  "What's the biggest deal Michael has structured?",
   "What's his philosophy on enterprise AI?",
   'What does he believe about complex deals?',
 ];

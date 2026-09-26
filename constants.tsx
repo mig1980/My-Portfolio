@@ -168,7 +168,12 @@ export const SKILLS: SkillGroup[] = [
   {
     category: 'Business',
     icon: <TrendingUp className="w-5 h-5" />,
-    skills: ['Strategy', 'Transformation', 'Economics', 'Growth'],
+    skills: [
+      'Transformational Partnerships',
+      'Novel Deal Structures',
+      'Platform Economics',
+      'B2B Ecosystem Development',
+    ],
   },
   {
     category: 'Leadership',

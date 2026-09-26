@@ -101,6 +101,8 @@ const Navigation: React.FC = memo(() => {
           <img
             src="/Logo.webp"
             alt="Michael Gavrilov"
+            width={48}
+            height={48}
             className={`w-auto transition-all duration-300 ${isScrolled ? 'h-10' : 'h-12'}`}
           />
         </a>

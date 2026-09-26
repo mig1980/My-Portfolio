@@ -25,7 +25,7 @@ import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 import { CHAT_ASK_EVENT } from '../utils/chatEvents';
-import { SUGGESTED_QUESTIONS } from '../constants';
+import { CHAT_WELCOME_QUESTIONS } from '../constants';
 import type { ChatAskDetail, ChatMessage } from '../types';
 
 // ============================================================================
@@ -858,14 +858,8 @@ const ChatWidget: React.FC = memo(() => {
           >
             {/* Welcome Message */}
             {messages.length === 0 && (
-              <div className="py-2">
+              <div>
                 <div className="text-center">
-                  <div
-                    className="w-12 h-12 bg-primary-50 rounded-full flex items-center 
-                               justify-center mx-auto mb-3"
-                  >
-                    <Bot className="w-6 h-6 text-primary-700" aria-hidden="true" />
-                  </div>
                   <h3 className="text-ink font-semibold mb-1">
                     Hi! I&apos;m Michael&apos;s AI assistant
                   </h3>
@@ -878,7 +872,7 @@ const ChatWidget: React.FC = memo(() => {
                 {/* Quick Questions */}
                 <p className="text-stone-600 text-xs uppercase tracking-wide mb-2">Try asking</p>
                 <div className="flex flex-col gap-2">
-                  {SUGGESTED_QUESTIONS.map((question) => (
+                  {CHAT_WELCOME_QUESTIONS.map((question) => (
                     <button
                       key={question}
                       type="button"

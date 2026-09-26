@@ -8,7 +8,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import ChatWidget from '../components/ChatWidget';
 import { askChat } from '../utils/chatEvents';
-import { SUGGESTED_QUESTIONS } from '../constants';
+import { CHAT_WELCOME_QUESTIONS } from '../constants';
 
 const scrollState = vi.hoisted(() => ({ pastHero: true }));
 vi.mock('../hooks/useScrollPosition', () => ({
@@ -108,13 +108,13 @@ describe('ChatWidget', () => {
     it('displays quick question buttons', () => {
       render(<ChatWidget />);
       fireEvent.click(screen.getByLabelText('Open AI assistant'));
-      for (const question of SUGGESTED_QUESTIONS) {
+      for (const question of CHAT_WELCOME_QUESTIONS) {
         expect(screen.getByText(question)).toBeInTheDocument();
       }
     });
 
     it('sends message when quick question is clicked', async () => {
-      const [firstQuestion = ''] = SUGGESTED_QUESTIONS;
+      const [firstQuestion = ''] = CHAT_WELCOME_QUESTIONS;
       mockFetch.mockResolvedValueOnce(
         createMockResponse({ reply: 'Michael has 20+ years of experience.' })
       );

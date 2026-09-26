@@ -31,22 +31,30 @@ export const PERSONAL_INFO = {
   taglineHighlight: 'Dealmaker by instinct.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
+  focus: 'Technology · AI · Strategy',
   intro: 'I turn ambitious AI ideas into business reality.',
   resumeUrl: '/CV/Michael-Gavrilov-Resume.pdf',
   summary: `I started my career building and operating technology. I became an architect, strategist and eventually a dealmaker.
 
 The mindset never really changed: understand the problem, challenge assumptions, design a solution and make it work.`,
+  summaryEmphasis: 'Today, the systems are just bigger.',
 };
 
 /**
- * Suggested questions for the chat widget; the hero shows the first two.
+ * Suggested questions: the hero shows the first three, the chat welcome shows the rest
+ * (starting from the third, so the two lists overlap by one).
  */
 export const SUGGESTED_QUESTIONS: readonly string[] = [
   'How does Michael approach complex problems?',
   "What's the biggest deal Michael has structured?",
+  'How did Michael go from engineer to dealmaker?',
   "What's his philosophy on enterprise AI?",
   'What does he believe about complex deals?',
 ];
+
+export const HERO_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS.slice(0, 3);
+
+export const CHAT_WELCOME_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS.slice(2);
 
 /**
  * Career progression, oldest first. Each role in EXPERIENCE maps to one stage.
@@ -254,36 +262,17 @@ export const CERTIFICATIONS: Certification[] = [
  */
 export const AWARDS: AwardItem[] = [
   {
-    id: 'platinum-club',
-    title: 'Platinum Club',
+    id: 'platinum-gold-club',
+    title: 'Platinum & Gold Club',
     issuer: 'Microsoft',
-    awardLevel: '2x Recipient',
+    awardLevel: '2x Platinum · 3x Gold',
     description:
-      'Honored twice for exceptional performance, awarded to the top tier of achievers worldwide.',
+      'Platinum Club for top-tier performance worldwide; Gold Club for revenue growth and customer impact.',
     color: 'platinum',
-    badgeUrl: '/Awards/PlatinumClub.png',
-  },
-  {
-    id: 'gold-club',
-    title: 'Gold Club Award',
-    issuer: 'Microsoft',
-    awardLevel: '2x Recipient',
-    description:
-      'Awarded for outstanding contribution to revenue growth and strategic customer impact.',
-    color: 'gold',
-    badgeUrl: '/Awards/GoldClub.png',
-    link: '/Awards/Gold_Club_Award_Letter.pdf',
-  },
-  {
-    id: 'champion',
-    title: 'Champion Award',
-    issuer: 'Microsoft',
-    awardLevel: 'FY23 Q4',
-    description:
-      'Transformational Deals as One Microsoft—recognized for driving cloud-first approach on a strategic enterprise engagement.',
-    color: 'purple',
-    badgeUrl: '/Awards/Champion.png',
-    link: '/Awards/Champion_Award_Letter.pdf',
+    badges: [
+      { src: '/Awards/PlatinumClub.png', alt: 'Platinum Club badge' },
+      { src: '/Awards/GoldClub.png', alt: 'Gold Club badge' },
+    ],
   },
   {
     id: 'attainment-100',
@@ -292,7 +281,7 @@ export const AWARDS: AwardItem[] = [
     awardLevel: 'FY25',
     description: 'Achieved 100% cumulative tenured weighted attainment on a sales quota plan.',
     color: 'green',
-    badgeUrl: '/Awards/100Attainment.png',
+    badges: [{ src: '/Awards/100Attainment.png', alt: '100% Attainment badge' }],
   },
 ];
 
@@ -300,7 +289,7 @@ export const AWARDS: AwardItem[] = [
  * Life outside work.
  * Displayed in the About section.
  */
-export const OUTSIDE_WORK_MOTTO = 'Family first. Always learning. Constantly moving.';
+export const OUTSIDE_WORK_MOTTO = 'Family first. Always learning. Usually moving.';
 
 export const OUTSIDE_WORK: OutsideWorkGroup[] = [
   {
@@ -321,7 +310,7 @@ export const OUTSIDE_WORK: OutsideWorkGroup[] = [
  */
 export const STATS: StatItem[] = [
   { value: 20, suffix: '+', label: 'Years Experience' },
-  { value: 500, prefix: '$', suffix: 'M+', label: 'In Multi-Year Agreements' },
+  { value: 500, prefix: '$', suffix: 'M+', label: 'in multi-year agreements' },
   { value: 4, suffix: '×', label: 'Top-Performer Awards' },
 ];
 

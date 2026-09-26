@@ -75,8 +75,8 @@ const App: React.FC = () => {
         {/* Below-fold sections lazy loaded for faster initial paint */}
         <Suspense fallback={null}>
           <Timeline />
-          <Education />
           <ThoughtLeadership />
+          <Education />
           <Contact />
         </Suspense>
       </PageWrapper>

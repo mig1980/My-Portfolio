@@ -23,9 +23,9 @@ import { handleImageError } from '../utils/dom';
  */
 const Education: React.FC = memo(() => {
   return (
-    <Section id="education">
+    <Section id="education" darker>
       <SectionHeading
-        number="05"
+        number="06"
         label="Education"
         title="Education & credentials"
         className="mb-14"

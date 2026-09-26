@@ -190,7 +190,7 @@ Industries.
 Healthcare and Life Sciences, including pharma. He has also supported enterprise accounts across sectors such as transportation and manufacturing.
 
 Career path: engineer, architect, strategist, dealmaker.
-He started his career building and operating technology, then became an architect, a strategist and eventually a dealmaker. His mindset never changed: understand the problem, challenge assumptions, design a solution and make it work.
+He started his career building and operating technology, then became an architect, a strategist and eventually a dealmaker. His mindset never changed: understand the problem, challenge assumptions, design a solution and make it work. Today, the systems are just bigger.
 IT Operations Manager and Team Lead at Allied Testing (Apr 2002 to July 2005): led a team of systems engineers and managed IT services and operations.
 IT Solutions Architect at Systematica Group (July 2005 to Oct 2006): led architectural design and technical strategy for complex IT solutions.
 Partner Technology Strategist at Microsoft (Oct 2006 to July 2008), then Account Technology Strategist (July 2008 to Mar 2011).
@@ -213,7 +213,7 @@ Quantified outcomes.
 He has architected complex, multi-year agreements totaling more than $500M in total contract value. In prior enterprise roles, he generated an average of about $20M annually. Earlier in his Microsoft career, he led partner programs that drove a 150% increase in partner-influenced revenue. In an IT operations leadership role, he delivered process improvements and automation that increased operational efficiency by 25%.
 
 Awards and recognition.
-He is a 2-time Microsoft Platinum Club recipient and a 2-time Gold Club Award recipient. He received a Champion Award in FY23 Q4 and achieved 100% attainment in FY25.
+He is a 2-time Microsoft Platinum Club recipient and a 3-time Gold Club Award recipient. He received a Champion Award in FY23 Q4 and achieved 100% attainment in FY25.
 
 Education.
 Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from Bauman Moscow State Technical University.

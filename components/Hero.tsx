@@ -5,15 +5,12 @@
 
 import React, { memo, useCallback, useState } from 'react';
 import { ArrowRight, ArrowUp, Download, Sparkles } from 'lucide-react';
-import { PERSONAL_INFO, SUGGESTED_QUESTIONS } from '../constants';
+import { PERSONAL_INFO, HERO_QUESTIONS } from '../constants';
 import { askChat } from '../utils/chatEvents';
 import { trackEvent } from '../utils/analytics';
 
 /** Maximum question length (aligned with chat backend) */
 const MAX_QUESTION_LENGTH = 500;
-
-/** Suggestions shown under the ask box; the chat widget shows the full list */
-const HERO_QUESTIONS = SUGGESTED_QUESTIONS.slice(0, 2);
 
 /**
  * Hero section component for the portfolio landing area.
@@ -72,6 +69,10 @@ const Hero: React.FC = memo(() => {
               <div className="text-sm text-stone-600">{PERSONAL_INFO.title}</div>
             </div>
           </div>
+
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-stone-600 mb-6">
+            {PERSONAL_INFO.focus}
+          </p>
 
           <h1 className="font-display text-[clamp(2.375rem,11.5vw,3rem)] sm:text-6xl md:text-7xl lg:text-8xl leading-[0.92] sm:leading-[0.95] tracking-tight text-balance">
             {/* Separate blocks so each line balances on its own (no lone "instinct.") */}

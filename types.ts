@@ -127,8 +127,8 @@ export interface AwardItem {
   color?: 'platinum' | 'gold' | 'blue' | 'green' | 'purple';
   /** Optional link to award details */
   link?: string;
-  /** Optional path to badge image (e.g., '/awards/PlatinumClub.png') */
-  badgeUrl?: string;
+  /** Optional badge images; several when one card groups related awards */
+  badges?: { src: string; alt: string }[];
 }
 
 /**

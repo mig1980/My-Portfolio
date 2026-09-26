@@ -50,10 +50,6 @@ const About: React.FC = memo(() => {
       <div className="grid md:grid-cols-12 gap-12 items-start">
         <div className="md:col-span-4">
           <SectionHeading number="01" label="About" title="About me" />
-          <blockquote className="mt-8 border-l-2 border-primary-700 pl-4 text-stone-700 leading-relaxed">
-            Colleagues know me as someone who listens first, gives honest advice, and turns complex
-            challenges into actionable plans.
-          </blockquote>
         </div>
 
         <div className="md:col-span-8">
@@ -62,6 +58,9 @@ const About: React.FC = memo(() => {
               <p key={index}>{paragraph}</p>
             ))}
           </div>
+          <p className="mt-10 font-display text-4xl md:text-5xl leading-tight text-primary-700">
+            {PERSONAL_INFO.summaryEmphasis}
+          </p>
 
           {/* Awards & Recognition Subsection */}
           <div className="mt-16">
@@ -98,16 +97,23 @@ const About: React.FC = memo(() => {
                       />
                     )}
 
-                    {award.badgeUrl && (
-                      <div className="mb-3 p-1.5 bg-white rounded-md inline-block overflow-hidden border border-stone-200">
-                        <img
-                          src={award.badgeUrl}
-                          alt={`${award.title} badge`}
-                          width={48}
-                          height={48}
-                          loading="lazy"
-                          className={`w-12 h-12 object-contain ${award.title !== 'Champion Award' ? 'scale-150' : ''}`}
-                        />
+                    {award.badges && award.badges.length > 0 && (
+                      <div className="mb-3 flex gap-2">
+                        {award.badges.map((badge) => (
+                          <div
+                            key={badge.src}
+                            className="p-1.5 bg-white rounded-md overflow-hidden border border-stone-200"
+                          >
+                            <img
+                              src={badge.src}
+                              alt={badge.alt}
+                              width={48}
+                              height={48}
+                              loading="lazy"
+                              className="w-12 h-12 object-contain scale-150"
+                            />
+                          </div>
+                        ))}
                       </div>
                     )}
 

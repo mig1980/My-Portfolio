@@ -40,8 +40,7 @@ export const PERSONAL_INFO = {
   taglineHighlight: 'Dealmaker by instinct.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
-  focus: 'Technology · AI · Strategy',
-  intro: 'I help global enterprises turn ambitious technology into business reality.',
+  intro: 'I help global enterprises turn ambitious AI into business reality.',
   resumeUrl: '/CV/Michael-Gavrilov-Resume.pdf',
   summary: `I started my career building and operating technology. I became an architect, strategist and eventually a dealmaker.
 

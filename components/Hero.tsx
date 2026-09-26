@@ -70,10 +70,6 @@ const Hero: React.FC = memo(() => {
             </div>
           </div>
 
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-stone-600 mb-6">
-            {PERSONAL_INFO.focus}
-          </p>
-
           <h1 className="font-display text-[clamp(2.375rem,11.5vw,3rem)] sm:text-6xl md:text-7xl lg:text-8xl leading-[0.92] sm:leading-[0.95] tracking-tight text-balance">
             {PERSONAL_INFO.tagline}
             <br />

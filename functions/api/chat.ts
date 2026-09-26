@@ -87,13 +87,21 @@ const TOTAL_BUDGET_MS = 25000;
 /** Skip remaining models when less than this much budget is left */
 const MIN_ATTEMPT_MS = 3000;
 
-/** Ordered model fallback chain (first = primary) */
+/**
+ * Ordered model fallback chain (first = primary). Free-tier daily limits (Sept 2026):
+ * 3.8 Flash 20/day, 3.5 & 3.1 Flash-Lite 500/day each, Gemma 4 26B 14,400/day.
+ */
 const MODEL_CHAIN: readonly string[] = [
-  'gemini-2.5-flash', // Primary: fast, capable
-  'gemini-2.5-flash-lite', // Fallback: lighter/faster
-  'gemini-3-flash-preview', // Fallback: newest (preview)
-  'gemma-4-26b-a4b-it', // Fallback: open model (Gemma 4)
+  'gemini-3.8-flash', // Primary: best quality
+  'gemini-3.5-flash-lite', // Fallback: fast, high free quota
+  'gemini-3.1-flash-lite', // Fallback: separate high free quota
+  'gemma-4-26b-a4b-it', // Fallback: open model, largest free quota
 ] as const;
+
+/** Thinking tokens count toward maxOutputTokens; short factual answers only need low. */
+const THINKING_LEVEL: Readonly<Record<string, string>> = {
+  'gemini-3.8-flash': 'low',
+};
 
 /** Allowed production origins */
 const ALLOWED_ORIGINS: readonly string[] = [
@@ -436,6 +444,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
       attemptedModels.push(modelName);
 
+      const thinkingLevel = THINKING_LEVEL[modelName];
+      const modelPayload = thinkingLevel
+        ? {
+            ...requestPayload,
+            generationConfig: {
+              ...requestPayload.generationConfig,
+              thinkingConfig: { thinkingLevel },
+            },
+          }
+        : requestPayload;
+
       const controller = new AbortController();
       const timeoutId = setTimeout(
         () => controller.abort(),
@@ -449,7 +468,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestPayload),
+            body: JSON.stringify(modelPayload),
             signal: controller.signal,
           }
         );

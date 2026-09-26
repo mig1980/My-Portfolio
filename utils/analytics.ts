@@ -124,10 +124,10 @@ export async function initAnalytics(): Promise<void> {
   }
 
   try {
-    initGtag(measurementId);
     await loadScript(`${GA_SCRIPT_SRC}?id=${encodeURIComponent(measurementId)}`);
-  } catch (error) {
-    console.warn('Failed to initialize analytics', error);
+    initGtag(measurementId);
+  } catch {
+    // Tracking protection commonly blocks gtag.js; analytics must remain optional.
   }
 }
 

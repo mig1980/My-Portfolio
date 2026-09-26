@@ -158,7 +158,12 @@ export const SKILLS: SkillGroup[] = [
   {
     category: 'Technology',
     icon: <Cpu className="w-5 h-5" />,
-    skills: ['AI', 'Cloud', 'Platforms', 'Security'],
+    skills: [
+      'Generative AI Strategy',
+      'Copilot Enablement',
+      'AI Value Realization',
+      'AI Business Integration',
+    ],
   },
   {
     category: 'Business',

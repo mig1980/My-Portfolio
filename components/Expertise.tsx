@@ -30,16 +30,9 @@ const Expertise: React.FC = memo(() => {
               <h3 className="text-xl font-semibold text-ink">{group.category}</h3>
             </div>
 
-            <ul className="flex flex-wrap gap-x-2 gap-y-1 text-stone-700 leading-relaxed">
-              {group.skills.map((skill, idx) => (
-                <li key={skill}>
-                  {skill}
-                  {idx < group.skills.length - 1 && (
-                    <span className="ml-2 text-stone-400" aria-hidden="true">
-                      ·
-                    </span>
-                  )}
-                </li>
+            <ul className="space-y-2 text-stone-700 leading-relaxed">
+              {group.skills.map((skill) => (
+                <li key={skill}>{skill}</li>
               ))}
             </ul>
           </Card>

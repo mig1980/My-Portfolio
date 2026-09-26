@@ -19,16 +19,7 @@ import type {
   CareerStage,
   OutsideWorkGroup,
 } from './types';
-import {
-  Cpu,
-  TrendingUp,
-  Linkedin,
-  Mail,
-  Dumbbell,
-  Lightbulb,
-  Users,
-  Handshake,
-} from 'lucide-react';
+import { Linkedin, Mail, Dumbbell, Lightbulb } from 'lucide-react';
 import { getLogoUrl } from './utils/logo';
 
 /**
@@ -157,7 +148,6 @@ export const EXPERIENCE: JobRole[] = [
 export const SKILLS: SkillGroup[] = [
   {
     category: 'Technology',
-    icon: <Cpu className="w-5 h-5" />,
     skills: [
       'Generative AI Strategy',
       'Copilot Enablement',
@@ -167,7 +157,6 @@ export const SKILLS: SkillGroup[] = [
   },
   {
     category: 'Business',
-    icon: <TrendingUp className="w-5 h-5" />,
     skills: [
       'Transformational Partnerships',
       'Novel Deal Structures',
@@ -177,7 +166,6 @@ export const SKILLS: SkillGroup[] = [
   },
   {
     category: 'Leadership',
-    icon: <Users className="w-5 h-5" />,
     skills: [
       'C-Suite Partnerships',
       'AI-First Enterprise Strategy',
@@ -187,7 +175,6 @@ export const SKILLS: SkillGroup[] = [
   },
   {
     category: 'Deals',
-    icon: <Handshake className="w-5 h-5" />,
     skills: [
       'Value Negotiation',
       'Strategic Account Planning',

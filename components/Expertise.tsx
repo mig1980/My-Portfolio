@@ -1,19 +1,18 @@
 /**
  * @fileoverview Expertise section component ("Where I operate").
- * @description Shows four areas of work, each with a short list of topics.
+ * @description Editorial index: one ruled row per area, items in two columns.
  */
 
 import React, { memo } from 'react';
 import Section from './ui/Section';
 import SectionHeading from './ui/SectionHeading';
-import Card from './ui/Card';
 import { SKILLS } from '../constants';
 
 /**
  * Expertise section component.
  * Features:
- * - Four area cards with icons
- * - Responsive grid (1 / 2 / 4 columns)
+ * - One full-width row per area, separated by hairline rules
+ * - Area name in display serif, items in a two-column list
  *
  * @returns The expertise section
  */
@@ -22,20 +21,27 @@ const Expertise: React.FC = memo(() => {
     <Section id="expertise">
       <SectionHeading number="03" label="Expertise" title="Where I operate." className="mb-14" />
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="border-b border-stone-300">
         {SKILLS.map((group) => (
-          <Card key={group.category}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2.5 bg-primary-50 rounded-md text-primary-700">{group.icon}</div>
-              <h3 className="text-xl font-semibold text-ink">{group.category}</h3>
-            </div>
-
-            <ul className="space-y-3 text-stone-700 leading-snug">
+          <div
+            key={group.category}
+            className="grid md:grid-cols-12 gap-5 md:gap-8 py-8 md:py-10 border-t border-stone-300"
+          >
+            <h3 className="md:col-span-4 lg:col-span-3 font-display text-3xl md:text-4xl leading-none text-ink">
+              {group.category}
+            </h3>
+            <ul className="md:col-span-8 lg:col-span-9 grid sm:grid-cols-2 gap-x-10 gap-y-3">
               {group.skills.map((skill) => (
-                <li key={skill}>{skill}</li>
+                <li key={skill} className="flex gap-3 text-lg text-stone-700 leading-snug">
+                  <span
+                    className="mt-[0.7em] w-4 h-px bg-primary-700 shrink-0"
+                    aria-hidden="true"
+                  />
+                  {skill}
+                </li>
               ))}
             </ul>
-          </Card>
+          </div>
         ))}
       </div>
     </Section>

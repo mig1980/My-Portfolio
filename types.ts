@@ -32,16 +32,14 @@ export interface CareerStage {
 }
 
 /**
- * Represents a category of skills with associated icon.
- * Used in the Expertise section to display competency areas.
+ * Represents a category of skills.
+ * Used in the Expertise section to display areas of work.
  */
 export interface SkillGroup {
-  /** Category name (e.g., "Technical Skills", "Leadership") */
+  /** Category name (e.g., "Technology") */
   category: string;
   /** Array of individual skill names */
   skills: string[];
-  /** React icon component for visual representation */
-  icon: React.ReactNode;
 }
 
 /**

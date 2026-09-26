@@ -71,7 +71,7 @@
   --color-paper-deep: #ece8df;
   --color-ink: #1c1917;
 
-  --font-family-sans: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
   --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
 
   --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;

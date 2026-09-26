@@ -43,7 +43,7 @@ const Contact: React.FC = memo(() => {
     <footer id="contact" className="bg-ink text-paper pt-24 pb-28 px-6 md:px-12 lg:px-24">
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-12 gap-12 mb-24">
-          <div className="md:col-span-6">
+          <div className="md:col-span-6 min-w-0">
             <SectionHeading
               number="07"
               label="Contact"
@@ -52,7 +52,7 @@ const Contact: React.FC = memo(() => {
             />
           </div>
 
-          <div className="md:col-span-6 md:pt-10">
+          <div className="md:col-span-6 md:pt-10 min-w-0">
             {SOCIAL_LINKS.map((link) => {
               const isEmail = link.url.startsWith('mailto:');
               return (
@@ -65,7 +65,7 @@ const Contact: React.FC = memo(() => {
                   onClick={handleContactClick}
                   className={ROW_CLASS}
                 >
-                  <span className="flex items-center gap-4">
+                  <span className="flex items-center gap-4 min-w-0">
                     <span className="text-stone-400 group-hover:text-primary-300 transition-colors">
                       {link.icon}
                     </span>
@@ -73,7 +73,9 @@ const Contact: React.FC = memo(() => {
                       <span className="block font-mono text-xs uppercase tracking-[0.2em] text-stone-400">
                         {link.platform}
                       </span>
-                      <span className="block text-lg md:text-xl">{toDisplayText(link.url)}</span>
+                      <span className="block text-lg md:text-xl [overflow-wrap:anywhere]">
+                        {toDisplayText(link.url)}
+                      </span>
                     </span>
                   </span>
                   <ArrowUpRight className="w-5 h-5 shrink-0" aria-hidden="true" />

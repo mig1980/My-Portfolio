@@ -68,7 +68,21 @@ describe('POST /api/chat', () => {
 
       expect(res.status).toBe(200);
       expect(data.reply).toBe('Hello');
-      expect(calledModels()).toEqual(['gemini-2.5-flash']);
+      expect(calledModels()).toEqual(['gemini-3.8-flash']);
+    });
+
+    it('asks only Gemini 3.8 Flash for low thinking', async () => {
+      mockFetch.mockResolvedValueOnce(geminiError(429)).mockResolvedValueOnce(geminiReply('Hi'));
+
+      await onRequestPost(createContext({ message: 'Hi' }));
+
+      const configs = mockFetch.mock.calls.map(
+        ([, init]) =>
+          (JSON.parse(String((init as RequestInit).body)) as { generationConfig: object })
+            .generationConfig
+      );
+      expect(configs[0]).toMatchObject({ thinkingConfig: { thinkingLevel: 'low' } });
+      expect(configs[1]).not.toHaveProperty('thinkingConfig');
     });
 
     it('falls back to the next model on 404 (retired model)', async () => {
@@ -79,7 +93,7 @@ describe('POST /api/chat', () => {
 
       expect(res.status).toBe(200);
       expect(data.reply).toBe('Hi');
-      expect(calledModels()).toEqual(['gemini-2.5-flash', 'gemini-2.5-flash-lite']);
+      expect(calledModels()).toEqual(['gemini-3.8-flash', 'gemini-3.5-flash-lite']);
     });
 
     it('falls back to the next model on 400', async () => {
@@ -133,7 +147,7 @@ describe('POST /api/chat', () => {
       const res = await pending;
 
       expect(res.status).toBe(200);
-      expect(calledModels()).toEqual(['gemini-2.5-flash', 'gemini-2.5-flash-lite']);
+      expect(calledModels()).toEqual(['gemini-3.8-flash', 'gemini-3.5-flash-lite']);
     });
 
     it('returns 504 before the 30s client timeout when all models hang', async () => {
@@ -152,7 +166,7 @@ describe('POST /api/chat', () => {
       const res = await pending;
       const data = (await res.json()) as ChatResponseBody;
       expect(res.status).toBe(504);
-      expect(data.attemptedModels).toEqual(['gemini-2.5-flash', 'gemini-2.5-flash-lite']);
+      expect(data.attemptedModels).toEqual(['gemini-3.8-flash', 'gemini-3.5-flash-lite']);
     });
   });
 });

@@ -183,7 +183,12 @@ export const SKILLS: SkillGroup[] = [
   {
     category: 'Deals',
     icon: <Handshake className="w-5 h-5" />,
-    skills: ['Partnerships', 'Negotiation', 'Value', 'Scale'],
+    skills: [
+      'Value Negotiation',
+      'Strategic Account Planning',
+      'Go-to-Market Strategy',
+      'Insight Selling',
+    ],
   },
 ];
 

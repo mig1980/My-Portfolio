@@ -85,6 +85,32 @@ describe('POST /api/chat', () => {
       expect(configs[1]).not.toHaveProperty('thinkingConfig');
     });
 
+    it('joins multi-part replies and drops thought parts', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            candidates: [
+              {
+                content: {
+                  parts: [
+                    { text: 'internal reasoning', thought: true },
+                    { text: 'Michael is a two-time' },
+                    { text: ' Platinum Club recipient.' },
+                  ],
+                },
+              },
+            ],
+          }),
+          { status: 200 }
+        )
+      );
+
+      const res = await onRequestPost(createContext({ message: 'Hi' }));
+      const data = (await res.json()) as ChatResponseBody;
+
+      expect(data.reply).toBe('Michael is a two-time Platinum Club recipient.');
+    });
+
     it('falls back to the next model on 404 (retired model)', async () => {
       mockFetch.mockResolvedValueOnce(geminiError(404)).mockResolvedValueOnce(geminiReply('Hi'));
 

@@ -206,14 +206,14 @@ export const EDUCATION: EducationItem[] = [
   {
     id: 'bmstu-ms-ise',
     degree: "Master's degree, Information Systems Engineering",
-    institution: 'Bauman Moscow State Technical University',
+    institution: 'Bauman State Technical University',
     type: 'Master',
     logo: getLogoUrl('bmstu.ru'),
   },
   {
     id: 'bmstu-bs-ce',
     degree: "Bachelor's degree, Computer Engineering",
-    institution: 'Bauman Moscow State Technical University',
+    institution: 'Bauman State Technical University',
     type: 'Bachelor',
     logo: getLogoUrl('bmstu.ru'),
   },

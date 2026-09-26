@@ -216,7 +216,7 @@ Awards and recognition.
 He is a 2-time Microsoft Platinum Club recipient and a 3-time Gold Club Award recipient. He received a Champion Award in FY23 Q4 and achieved 100% attainment in FY25.
 
 Education.
-Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from Bauman Moscow State Technical University.
+Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from Bauman State Technical University.
 
 Certifications and executive education.
 Microsoft Certified: Azure Solutions Architect Expert. AWS Certified Cloud Practitioner. Selling to the C-Suite from Wharton Executive Education. Business Strategy and Financial Acumen from INSEAD Executive Education. Value Negotiation from INSEAD Executive Education.

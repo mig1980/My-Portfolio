@@ -38,6 +38,8 @@ interface ChatRequest {
 
 interface GeminiContentPart {
   text?: string;
+  /** True for thinking-model reasoning parts, which must not be shown */
+  thought?: boolean;
 }
 
 interface GeminiContent {
@@ -419,7 +421,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         temperature: 0.7,
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 2048,
       },
       safetySettings: [
         { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
@@ -556,8 +558,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         continue;
       }
 
-      const reply = parts[0]?.text;
-      if (!reply || reply.trim().length === 0) {
+      // Newer models may split the answer across several parts
+      const reply = parts
+        .filter((part) => !part.thought && typeof part.text === 'string')
+        .map((part) => part.text)
+        .join('');
+      if (reply.trim().length === 0) {
         lastStatus = geminiResponse.status || 502;
         lastErrorMessage = 'Empty text in AI response';
         continue;

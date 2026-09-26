@@ -46,7 +46,7 @@ const SUBHEADING_CLASS = 'font-mono text-xs uppercase tracking-[0.2em] text-ston
  */
 const About: React.FC = memo(() => {
   return (
-    <Section id="about">
+    <Section id="about" className="pt-14 md:pt-20">
       <div className="grid md:grid-cols-12 gap-12 items-start">
         <div className="md:col-span-4">
           <SectionHeading number="01" label="About" title="About me" />
@@ -90,7 +90,7 @@ const About: React.FC = memo(() => {
                   <CardWrapper
                     key={award.id}
                     {...cardProps}
-                    className={`group relative p-5 rounded-lg border border-stone-200 border-t-2 ${accentBar} bg-white transition-colors duration-300 hover:border-stone-400 ${
+                    className={`group relative p-5 rounded-lg border border-stone-200 border-t-2 ${accentBar} bg-white transition-[border-color,box-shadow,transform] duration-300 hover:border-stone-400 hover:shadow-md hover:-translate-y-0.5 motion-reduce:hover:translate-y-0 ${
                       award.link ? 'cursor-pointer focus-ring-inset' : ''
                     }`}
                   >

@@ -37,7 +37,7 @@ const Card: React.FC<CardProps> = memo(({ children, className = '', hoverEffect 
     <div
       className={`
         relative p-6 rounded-lg border border-stone-200 bg-white
-        ${hoverEffect ? 'hover:border-stone-400 transition-colors duration-300 group' : ''}
+        ${hoverEffect ? 'hover:border-stone-400 hover:shadow-md hover:-translate-y-0.5 motion-reduce:hover:translate-y-0 transition-[border-color,box-shadow,transform] duration-300 group' : ''}
         ${className}
       `}
     >

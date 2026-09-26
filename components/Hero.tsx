@@ -74,7 +74,7 @@ const Hero: React.FC = memo(() => {
             {PERSONAL_INFO.focus}
           </p>
 
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight">
+          <h1 className="font-display text-[clamp(2.375rem,11.5vw,3rem)] sm:text-6xl md:text-7xl lg:text-8xl leading-[0.92] sm:leading-[0.95] tracking-tight text-balance">
             {PERSONAL_INFO.tagline}
             <br />
             <em className="text-primary-700">{PERSONAL_INFO.taglineHighlight}</em>
@@ -133,14 +133,17 @@ const Hero: React.FC = memo(() => {
                 <ArrowUp className="w-4 h-4" aria-hidden="true" />
               </button>
             </form>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="font-mono text-xs uppercase tracking-[0.2em] text-stone-600 mr-1">
+                Try asking
+              </span>
               {HERO_QUESTIONS.map((suggested) => (
                 <button
                   key={suggested}
                   type="button"
                   data-question={suggested}
                   onClick={handleSuggestionClick}
-                  className="px-3 py-1.5 text-sm text-stone-700 hover:text-ink bg-white/60 border border-stone-300 hover:border-ink rounded-full transition-colors focus-ring focus-visible:ring-offset-paper"
+                  className="px-3.5 py-1.5 text-left text-sm font-medium text-primary-800 bg-primary-50 hover:bg-primary-100 border border-primary-200 hover:border-primary-400 rounded-full transition-colors focus-ring focus-visible:ring-offset-paper"
                 >
                   {suggested}
                 </button>

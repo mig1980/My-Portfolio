@@ -8,6 +8,7 @@
 
 import React, { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
+  ArrowRight,
   MessageCircle,
   X,
   Send,
@@ -863,38 +864,44 @@ const ChatWidget: React.FC = memo(() => {
           >
             {/* Welcome Message */}
             {messages.length === 0 && (
-              <div className="text-center py-6">
-                <div
-                  className="w-16 h-16 bg-primary-50 rounded-full flex items-center 
-                             justify-center mx-auto mb-4"
-                >
-                  <Bot className="w-8 h-8 text-primary-700" aria-hidden="true" />
+              <div className="py-2">
+                <div className="text-center">
+                  <div
+                    className="w-12 h-12 bg-primary-50 rounded-full flex items-center 
+                               justify-center mx-auto mb-3"
+                  >
+                    <Bot className="w-6 h-6 text-primary-700" aria-hidden="true" />
+                  </div>
+                  <h3 className="text-ink font-semibold mb-1">
+                    Hi! I&apos;m Michael&apos;s AI assistant
+                  </h3>
+                  <p className="text-stone-600 text-sm mb-5">
+                    Ask me anything about Michael&apos;s professional background, experience, or
+                    skills.
+                  </p>
                 </div>
-                <h3 className="text-ink font-semibold mb-2">
-                  Hi! I&apos;m Michael&apos;s AI assistant
-                </h3>
-                <p className="text-stone-600 text-sm mb-4">
-                  Ask me anything about Michael&apos;s professional background, experience, or
-                  skills.
-                </p>
 
                 {/* Quick Questions */}
-                <div className="space-y-2">
-                  <p className="text-stone-600 text-xs uppercase tracking-wide">Quick questions</p>
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {QUICK_QUESTIONS.map((question) => (
-                      <button
-                        key={question}
-                        type="button"
-                        onClick={() => handleQuickQuestion(question)}
-                        className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 
-                                   text-xs rounded-full transition-colors focus-ring"
-                        disabled={isLoading || isRateLimited || !isOnline}
-                      >
-                        {question}
-                      </button>
-                    ))}
-                  </div>
+                <p className="text-stone-600 text-xs uppercase tracking-wide mb-2">Try asking</p>
+                <div className="flex flex-col gap-2">
+                  {QUICK_QUESTIONS.map((question) => (
+                    <button
+                      key={question}
+                      type="button"
+                      onClick={() => handleQuickQuestion(question)}
+                      className="group flex items-center justify-between gap-3 w-full px-4 py-3 text-left
+                                 bg-primary-50 hover:bg-primary-100 text-primary-800 border border-primary-200
+                                 hover:border-primary-400 text-sm font-medium rounded-xl transition-colors focus-ring
+                                 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isLoading || isRateLimited || !isOnline}
+                    >
+                      <span>{question}</span>
+                      <ArrowRight
+                        className="w-4 h-4 shrink-0 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  ))}
                 </div>
               </div>
             )}

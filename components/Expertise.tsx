@@ -30,13 +30,9 @@ const Expertise: React.FC = memo(() => {
             <h3 className="md:col-span-4 lg:col-span-3 font-display text-3xl md:text-4xl leading-none text-ink">
               {group.category}
             </h3>
-            <ul className="md:col-span-8 lg:col-span-9 grid sm:grid-cols-2 gap-x-10 gap-y-3">
+            <ul className="md:col-span-8 lg:col-span-9 grid sm:grid-cols-2 gap-x-10 gap-y-3 list-disc pl-5 marker:text-primary-700">
               {group.skills.map((skill) => (
-                <li key={skill} className="flex gap-3 text-lg text-stone-700 leading-snug">
-                  <span
-                    className="mt-[0.7em] w-4 h-px bg-primary-700 shrink-0"
-                    aria-hidden="true"
-                  />
+                <li key={skill} className="pl-1 text-lg text-stone-700 leading-snug">
                   {skill}
                 </li>
               ))}

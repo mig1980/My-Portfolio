@@ -149,37 +149,37 @@ export const SKILLS: SkillGroup[] = [
   {
     category: 'Technology',
     skills: [
-      'Generative AI Strategy',
-      'Copilot Enablement',
+      'Enterprise & Agentic AI',
+      'Cloud & Platforms',
       'AI Value Realization',
-      'AI Business Integration',
+      'Technology Strategy',
     ],
   },
   {
-    category: 'Business',
+    category: 'Go-to-Market',
     skills: [
-      'Transformational Partnerships',
-      'Novel Deal Structures',
-      'Platform Economics',
-      'B2B Ecosystem Development',
+      'Strategic Accounts',
+      'Enterprise GTM',
+      'Competitive Strategy',
+      'Ecosystem Development',
     ],
   },
   {
     category: 'Leadership',
     skills: [
-      'C-Suite Partnerships',
-      'AI-First Enterprise Strategy',
-      'Cross-functional Team Leadership',
-      'Complex Deal Closure',
+      'Executive Partnerships',
+      'Cross-functional Leadership',
+      'Organizational Alignment',
+      'Transformation at Scale',
     ],
   },
   {
     category: 'Deals',
     skills: [
+      'Complex Deal Structuring',
       'Value Negotiation',
-      'Strategic Account Planning',
-      'Go-to-Market Strategy',
-      'Insight Selling',
+      'Platform Economics',
+      'Multi-Year Partnerships',
     ],
   },
 ];

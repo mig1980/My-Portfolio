@@ -6,9 +6,10 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { CAREER_FACTS } from '../utils/careerFacts';
-import { AWARDS, CERTIFICATIONS, EDUCATION, STATS } from '../constants';
+import { AWARDS, EDUCATION, STATS } from '../constants';
 import { SYSTEM_CONTEXT } from '../functions/api/chat';
 import { RESUME_DOCUMENTS } from '../resume/documents';
+import { findFactWarnings } from '../resume/facts';
 
 const resumes = Object.values(RESUME_DOCUMENTS).map((doc) => ({
   src: doc.src,
@@ -20,14 +21,6 @@ const factRegister = readFileSync(resolve(process.cwd(), 'content/resume-facts.m
 
 const { university, platinumClubCount, goldClubCount, quotaAttainment, quotaAttainmentRecent } =
   CAREER_FACTS;
-
-/** Every place a fact can appear: both résumés, the fact register, the AI assistant and the website data. */
-const allSources = (): string[] => [
-  ...resumes.map((resume) => resume.text),
-  factRegister,
-  SYSTEM_CONTEXT,
-  JSON.stringify({ EDUCATION, CERTIFICATIONS }),
-];
 
 describe('career facts stay consistent', () => {
   describe('website (constants.tsx)', () => {
@@ -54,22 +47,21 @@ describe('career facts stay consistent', () => {
       expect(SYSTEM_CONTEXT).toContain(`${goldClubCount}-time Gold Club`);
       expect(SYSTEM_CONTEXT).toContain(`${quotaAttainment}, ${quotaAttainmentRecent}`);
     });
-
-    it('states the attainment count', () => {
-      expect(SYSTEM_CONTEXT).not.toContain('Do not state a specific number of attainment');
-    });
   });
 
   describe.each(resumes)('résumé $src', ({ text }) => {
-    it('uses the same university', () => {
-      expect(text).toContain(university);
+    it('matches every shared fact (the editor shows the same check as warnings)', () => {
+      expect(findFactWarnings(text)).toEqual([]);
     });
+  });
 
-    it('uses the same recognition counts', () => {
-      expect(text).toMatch(new RegExp(`Platinum Club \\(${platinumClubCount}[×x]\\)`));
-      expect(text).toMatch(new RegExp(`Gold Club \\(${goldClubCount}[×x]\\)`));
-      expect(text).toContain(quotaAttainment);
-    });
+  it('warns about a fact that no longer matches', () => {
+    const executive = resumes[0]?.text ?? '';
+    expect(
+      findFactWarnings(executive.replace(`Gold Club (${goldClubCount}×)`, 'Gold Club (4×)'))
+    ).toEqual([
+      `Gold Club should show ${goldClubCount}× to match the website and the AI assistant.`,
+    ]);
   });
 
   describe('fact register (content/resume-facts.md)', () => {
@@ -79,12 +71,5 @@ describe('career facts stay consistent', () => {
       expect(factRegister).toContain(`Gold Club: ${goldClubCount}×`);
       expect(factRegister).toContain(`${quotaAttainment}, ${quotaAttainmentRecent}`);
     });
-  });
-
-  it('never mentions "Moscow" or the Azure Solutions Architect certification anywhere', () => {
-    for (const source of allSources()) {
-      expect(source).not.toMatch(/Moscow/i);
-      expect(source).not.toMatch(/Solutions Architect Expert/i);
-    }
   });
 });

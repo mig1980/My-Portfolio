@@ -9,6 +9,7 @@ import type { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import type { AdminResumeFile } from '../types';
 import { renderResume } from '../resume/render';
 import { validateResumeHtml } from '../resume/validate';
+import { findFactWarnings } from '../resume/facts';
 import { RESUME_DOCUMENTS, RESUME_DOC_IDS, pdfUrl, type ResumeDocId } from '../resume/documents';
 import { AdminApiError, loadBuildStatus, loadResume, publishResume } from './api';
 import type { FitResult } from './fit';
@@ -146,6 +147,8 @@ const ResumeEditor = ({ docId, onSwitchDoc }: ResumeEditorProps) => {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [build, setBuild] = useState<BuildState>({ phase: 'idle' });
   const editorRef = useRef<ReactCodeMirrorRef | null>(null);
+  const publishButtonRef = useRef<HTMLButtonElement>(null);
+  const wasDialogOpenRef = useRef(false);
 
   const debouncedHtml = useDebouncedValue(html, PREVIEW_DEBOUNCE_MS);
   const isChecking = debouncedHtml !== html;
@@ -153,6 +156,7 @@ const ResumeEditor = ({ docId, onSwitchDoc }: ResumeEditorProps) => {
     () => validateResumeHtml(debouncedHtml, { pageMargin: doc.pageMargin }),
     [debouncedHtml, doc.pageMargin]
   );
+  const factWarnings = useMemo(() => findFactWarnings(debouncedHtml), [debouncedHtml]);
   const srcDoc = useMemo(
     () => renderResume(debouncedHtml, { variant: 'enterprise' }),
     [debouncedHtml]
@@ -211,6 +215,12 @@ const ResumeEditor = ({ docId, onSwitchDoc }: ResumeEditorProps) => {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
+
+  // Return focus to Publish when the dialog closes (a no-op once publishing has disabled it).
+  useEffect(() => {
+    if (wasDialogOpenRef.current && !isDialogOpen) publishButtonRef.current?.focus();
+    wasDialogOpenRef.current = isDialogOpen;
+  }, [isDialogOpen]);
 
   useEffect(() => {
     if (build.phase !== 'building') return;
@@ -343,123 +353,134 @@ const ResumeEditor = ({ docId, onSwitchDoc }: ResumeEditorProps) => {
 
   return (
     <div className="flex h-screen flex-col bg-paper text-ink">
-      <header className="flex flex-wrap items-center gap-3 border-b border-stone-200 bg-white px-4 py-2">
-        <h1 className="font-display text-2xl">Résumé editor</h1>
-        <DocSwitcher docId={docId} onSwitch={onSwitchDoc} />
-        <FitBadge fit={fit} />
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          <a
-            href={liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-2 text-sm text-primary-700 underline underline-offset-2 focus-ring"
+      {/* While the dialog is open, everything else is inert: no focus, no clicks. */}
+      <div className="contents" inert={isDialogOpen}>
+        <header className="flex flex-wrap items-center gap-3 border-b border-stone-200 bg-white px-4 py-2">
+          <h1 className="font-display text-2xl">Résumé editor</h1>
+          <DocSwitcher docId={docId} onSwitch={onSwitchDoc} />
+          <FitBadge fit={fit} />
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <a
+              href={liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2 text-sm text-primary-700 underline underline-offset-2 focus-ring"
+            >
+              Live PDF
+            </a>
+            <button type="button" onClick={handleRevert} className={buttonClass}>
+              Revert
+            </button>
+            <button type="button" onClick={handleDownload} className={buttonClass}>
+              Download HTML
+            </button>
+            <button
+              ref={publishButtonRef}
+              type="button"
+              onClick={handleOpenDialog}
+              disabled={!canPublish}
+              className="rounded bg-primary-700 px-4 py-1.5 text-sm font-semibold text-white hover:bg-primary-800 disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
+            >
+              Publish
+            </button>
+          </div>
+        </header>
+
+        {(draftOffer !== null || notice || build.phase !== 'idle') && (
+          <div className="space-y-2 border-b border-stone-200 bg-white px-4 py-2">
+            {draftOffer !== null && (
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <span>You have unpublished changes from last time.</span>
+                <button type="button" onClick={handleRestoreDraft} className={buttonClass}>
+                  Restore them
+                </button>
+                <button type="button" onClick={handleDiscardDraft} className={buttonClass}>
+                  Discard
+                </button>
+              </div>
+            )}
+            {notice && (
+              <div role={notice.tone === 'error' ? 'alert' : 'status'} className="text-sm">
+                <p className={notice.tone === 'error' ? 'text-red-800' : 'text-primary-800'}>
+                  {notice.text}
+                </p>
+                {notice.errors && notice.errors.length > 0 && (
+                  <ul className="mt-1 list-disc pl-5 text-red-800">
+                    {notice.errors.map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+            <BuildStatus build={build} />
+          </div>
+        )}
+
+        <div className="flex border-b border-stone-200 bg-white md:hidden" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'code'}
+            onClick={handleShowCode}
+            className={`flex-1 py-2 text-sm ${tab === 'code' ? 'font-semibold text-primary-700' : ''}`}
           >
-            Live PDF
-          </a>
-          <button type="button" onClick={handleRevert} className={buttonClass}>
-            Revert
-          </button>
-          <button type="button" onClick={handleDownload} className={buttonClass}>
-            Download HTML
+            Code
           </button>
           <button
             type="button"
-            onClick={handleOpenDialog}
-            disabled={!canPublish}
-            className="rounded bg-primary-700 px-4 py-1.5 text-sm font-semibold text-white hover:bg-primary-800 disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
+            role="tab"
+            aria-selected={tab === 'preview'}
+            onClick={handleShowPreview}
+            className={`flex-1 py-2 text-sm ${tab === 'preview' ? 'font-semibold text-primary-700' : ''}`}
           >
-            Publish
+            Preview
           </button>
         </div>
-      </header>
 
-      {(draftOffer !== null || notice || build.phase !== 'idle') && (
-        <div className="space-y-2 border-b border-stone-200 bg-white px-4 py-2">
-          {draftOffer !== null && (
-            <div className="flex flex-wrap items-center gap-2 text-sm">
-              <span>You have unpublished changes from last time.</span>
-              <button type="button" onClick={handleRestoreDraft} className={buttonClass}>
-                Restore them
-              </button>
-              <button type="button" onClick={handleDiscardDraft} className={buttonClass}>
-                Discard
-              </button>
+        <main className="grid min-h-0 flex-1 md:grid-cols-2">
+          <section
+            aria-label="Code"
+            className={`min-h-0 flex-col border-stone-200 md:flex md:border-r ${tab === 'code' ? 'flex' : 'hidden'}`}
+          >
+            <div className="flex items-center justify-between border-b border-stone-200 bg-white px-3 py-1 text-xs">
+              <span className="text-stone-500">Ctrl+F to find and replace</span>
+              <label className="flex items-center gap-1">
+                <input type="checkbox" checked={lineWrap} onChange={handleToggleWrap} />
+                Wrap lines
+              </label>
             </div>
-          )}
-          {notice && (
-            <div role={notice.tone === 'error' ? 'alert' : 'status'} className="text-sm">
-              <p className={notice.tone === 'error' ? 'text-red-800' : 'text-primary-800'}>
-                {notice.text}
-              </p>
-              {notice.errors && notice.errors.length > 0 && (
-                <ul className="mt-1 list-disc pl-5 text-red-800">
-                  {notice.errors.map((error) => (
-                    <li key={error}>{error}</li>
-                  ))}
-                </ul>
-              )}
+            <div className="min-h-0 flex-1 overflow-hidden bg-white">
+              <HtmlEditor
+                value={html}
+                onChange={setHtml}
+                lineWrap={lineWrap}
+                editorRef={editorRef}
+              />
             </div>
-          )}
-          <BuildStatus build={build} />
-        </div>
-      )}
-
-      <div className="flex border-b border-stone-200 bg-white md:hidden" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'code'}
-          onClick={handleShowCode}
-          className={`flex-1 py-2 text-sm ${tab === 'code' ? 'font-semibold text-primary-700' : ''}`}
-        >
-          Code
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === 'preview'}
-          onClick={handleShowPreview}
-          className={`flex-1 py-2 text-sm ${tab === 'preview' ? 'font-semibold text-primary-700' : ''}`}
-        >
-          Preview
-        </button>
+            <div className="border-t border-stone-200 bg-white">
+              <ValidationPanel
+                errors={validation.errors}
+                warnings={factWarnings}
+                isChecking={isChecking}
+                onJump={handleJump}
+              />
+            </div>
+          </section>
+          <section
+            aria-label="Preview"
+            className={`min-h-0 overflow-auto bg-stone-200 p-4 md:block ${tab === 'preview' ? 'block' : 'hidden'}`}
+          >
+            <PreviewFrame srcDoc={srcDoc} doc={doc} onFit={handleFit} />
+          </section>
+        </main>
       </div>
-
-      <main className="grid min-h-0 flex-1 md:grid-cols-2">
-        <section
-          aria-label="Code"
-          className={`min-h-0 flex-col border-stone-200 md:flex md:border-r ${tab === 'code' ? 'flex' : 'hidden'}`}
-        >
-          <div className="flex items-center justify-between border-b border-stone-200 bg-white px-3 py-1 text-xs">
-            <span className="text-stone-500">Ctrl+F to find and replace</span>
-            <label className="flex items-center gap-1">
-              <input type="checkbox" checked={lineWrap} onChange={handleToggleWrap} />
-              Wrap lines
-            </label>
-          </div>
-          <div className="min-h-0 flex-1 overflow-hidden bg-white">
-            <HtmlEditor value={html} onChange={setHtml} lineWrap={lineWrap} editorRef={editorRef} />
-          </div>
-          <div className="border-t border-stone-200 bg-white">
-            <ValidationPanel
-              errors={validation.errors}
-              isChecking={isChecking}
-              onJump={handleJump}
-            />
-          </div>
-        </section>
-        <section
-          aria-label="Preview"
-          className={`min-h-0 overflow-auto bg-stone-200 p-4 md:block ${tab === 'preview' ? 'block' : 'hidden'}`}
-        >
-          <PreviewFrame srcDoc={srcDoc} doc={doc} onFit={handleFit} />
-        </section>
-      </main>
 
       {isDialogOpen && base && (
         <PublishDialog
           before={base.html}
           after={html}
+          warnings={factWarnings}
           isBusy={isPublishing}
           onConfirm={handleConfirmPublish}
           onCancel={handleCloseDialog}

@@ -138,6 +138,25 @@ describe('ResumeEditor', () => {
     expect(publishButton().disabled).toBe(true);
   });
 
+  it('warns about a changed shared fact but still allows publishing', async () => {
+    await renderLoaded();
+    await editAndOpenDialog(template.replace('Gold Club (3×)', 'Gold Club (4×)'));
+    expect(screen.getAllByText(/Gold Club should show 3×/)).toHaveLength(2);
+    expect(screen.getByRole('dialog')).toHaveTextContent(/You can still publish/);
+  });
+
+  it('makes the page inert behind the dialog and returns focus to Publish', async () => {
+    await renderLoaded();
+    await editAndOpenDialog(template.replace('Executive Summary', 'Summary'));
+    expect(screen.getByRole('button', { name: 'Revert' }).closest('[inert]')).not.toBeNull();
+    expect(screen.getByLabelText(/What changed/)).toHaveFocus();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    await waitFor(() => expect(publishButton()).toHaveFocus());
+    expect(screen.getByRole('button', { name: 'Revert' }).closest('[inert]')).toBeNull();
+  });
+
   it('explains a conflict when the file changed elsewhere (409)', async () => {
     await renderLoaded();
     mockFetch.mockImplementation((_url: string, init?: RequestInit) =>

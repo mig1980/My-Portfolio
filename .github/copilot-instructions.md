@@ -94,6 +94,7 @@ AboutMe/
 │   ├── documents.ts        # Registry: id → src, out, exact page target, fit settings, required text order
 │   ├── pdf.ts              # Fit-setting builder, page constants, @page margin parser, page count/date pinning (isomorphic)
 │   ├── textCheck.ts        # ATS text rules used by scripts/check-resume-text.ts
+│   ├── facts.ts            # Shared-fact cross-check: editor warnings (never blocks Publish) + CI test
 │   └── github.ts           # GitHub REST helpers for the admin Functions
 ├── scripts/
 │   ├── build-resume.ts     # Playwright: fits each document to its exact page count → both PDFs
@@ -101,7 +102,7 @@ AboutMe/
 │   └── test-gemini-models.ts  # Manual model check
 ├── docs/resume-admin-plan.md  # Design, decisions and manual setup for the résumé editor
 ├── styles/globals.css      # Tailwind v4 + custom utilities
-├── tests/                  # Vitest tests (337 tests, 23 files)
+├── tests/                  # Vitest tests (336 tests, 23 files)
 ├── .github/prompts/        # /resume-update, /resume-review, /resume-tailor
 ├── .github/workflows/
 │   ├── ci.yml              # Lint, format, type-check, tests, build
@@ -183,7 +184,7 @@ Flow: `/admin/` editor → `PUT /api/admin/resume` (validates, commits `content/
 - Admin Functions fail closed (500) when config is missing; `PUT` requires same-origin `Origin`, JSON content type, ≤ 128 KB body and a 40-char `sha`.
 - Admin commits use `docs(resume): …` (commitlint has no `content` type).
 - The PDF build (`scripts/build-resume.ts`) serves the page from a fake origin via `page.route`, blocks every other request and disables JavaScript. Don't loosen this. It writes nothing unless every document hits its exact page target.
-- Career facts (university, club counts, quota attainment) live in `utils/careerFacts.ts`. Change them there, then update both résumé HTML files; `tests/careerFacts.test.ts` fails if the site, the assistant and the résumés disagree. The owner removed "Moscow" and the Azure Solutions Architect certification everywhere; the test keeps them out.
+- Career facts (university, club counts, quota attainment) live in `utils/careerFacts.ts`. Change them there, then update both résumé HTML files. The editor warns (without blocking Publish) when a résumé no longer matches (`resume/facts.ts`), and `tests/careerFacts.test.ts` fails in CI if the site, the assistant, the résumés and the fact register disagree.
 - Never import `admin/` code from the public site (keeps CodeMirror out of the main bundle).
 - Cloudflare Pages settings (Production and Preview): `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`, `GITHUB_TOKEN` (fine-grained PAT, this repo only, Contents RW + Actions R), `GITHUB_REPO`.
 

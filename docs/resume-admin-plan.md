@@ -179,7 +179,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 
 ### Phase 7: Résumé content & ATS upgrade (done Sept 27, 2026)
 
-- **A. Executive (1 page):** content ported from the owner's updated `resume_template.html`: one "Microsoft — 2006 – Present" employer block with a single Recognition line, metric-first summary and bullets, keyword variants in Core Expertise. (Later on Sept 27 the owner removed the Azure Solutions Architect certification and "Moscow" everywhere: site, AI assistant and both résumés.) Section headings use `letter-spacing: 1px` (was 2.4px, which pdf.js read as "E X E C U T I V E"). Fits at 9.4pt / gap 0.7.
+- **A. Executive (1 page):** content ported from the owner's updated `resume_template.html`: one "Microsoft — 2006 – Present" employer block with a single Recognition line, metric-first summary and bullets, keyword variants in Core Expertise. Section headings use `letter-spacing: 1px` (was 2.4px, which pdf.js read as "E X E C U T I V E"). Fits at 9.4pt / gap 0.7.
 - **B. ATS version (exactly 2 pages):** `content/resume-ats.html` (single column, plain UPPERCASE headings, real bullets, "5x", Inter with ligatures off, `@page` print margins). `resume/documents.ts` is the registry (`id → src, out, pages, fit, pageMargin, commitScope, requiredText`). The build prints every candidate and needs exactly `pages` pages; it writes nothing unless every document hits its target. Lands at 10.5pt / gap 0.7. The validator allows `@page` margins only for documents with `pageMargin: 'any'`. Admin: Executive | ATS switcher (`?doc=`, allow-listed server-side), per-document drafts, sha, status and page-target badge (the multi-page preview is an estimate; the build is exact). `/CV/MGavrilovCV-ATS.pdf` is `noindex` and not linked from the site.
 - **C. ATS-readability check:** `npm run resume:check` (`scripts/check-resume-text.ts`, pdf.js) fails on a wrong page count, split words ("E XECUTIVE" or "E X E C U T I V E"), ligature characters, or missing/out-of-order phrases (name → title → summary → experience → Microsoft → current role → Education). Runs in `resume-pdf.yml` after the build, before committing. Verified: the old committed PDF fails it; both new PDFs pass.
 - **D. Validation:** type-check, lint, 314 tests, build, `resume:build`, `resume:check` all pass.
@@ -189,7 +189,9 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - **Validator decodes first:** HTML entities and CSS escapes are decoded before any check; URL attributes use an allow-list (relative, `data:`, `#`; only `<a href>` may link out; every `srcset` candidate is checked).
 - **One source for career facts:** `utils/careerFacts.ts` feeds the website and the AI assistant; `tests/careerFacts.test.ts` checks both résumés match. Quota attainment reads "100% quota attainment in 9 fiscal years, including FY25 and FY26".
 - **Employer headings:** Instrument Serif 16pt, larger than role titles; margins trimmed so the executive page still fits at 9.4pt.
-- **Content removals:** "Moscow" and the Azure Solutions Architect certification are gone from the site, the assistant and both résumés (the test keeps them out).
+- **Fact cross-check:** the editor warns, without blocking Publish, when a résumé's shared facts no longer match the website and the assistant (`resume/facts.ts`); the same check runs in `tests/careerFacts.test.ts`.
+- **Publish dialog:** the page behind it is `inert` while it's open, the diff scrolls by keyboard, and focus returns to Publish on close.
+- **Admin CSP:** `/admin` and `/admin/*` add a second, stricter policy (no inline scripts, same-origin only); browsers enforce both.
 - **Validation:** type-check, lint, 336 tests (23 files), build, `resume:build` (executive 1 page at 9.4pt, ATS 2 pages at 10.5pt) and `resume:check` all pass.
 
 ### Status

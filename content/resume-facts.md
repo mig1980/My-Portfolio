@@ -58,14 +58,11 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 | Wharton Executive Education: Selling to the C-Suite | Everywhere |
 | INSEAD Executive Education: Business Strategy and Financial Acumen; Value Negotiation | Everywhere |
 
-**Do not list:** the lapsed Azure architect-level certification. The owner removed it from the site, the assistant and both résumés on Sept 27, 2026.
-
 ## Education (shared)
 
 - M.S., Management of Technology, New York University Tandon School of Engineering
 - M.S., Information Systems Engineering, Bauman State Technical University
 - B.S., Computer Engineering, Bauman State Technical University
-- The university name has no city in it; the owner removed it everywhere
 - Years are not published
 
 ## Projects and community

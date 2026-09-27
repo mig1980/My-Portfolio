@@ -33,7 +33,7 @@ export const PERSONAL_INFO = {
   location: 'New York City',
   focus: 'Technology · AI · Strategy',
   intro: 'I turn ambitious AI ideas into business reality.',
-  resumeUrl: '/CV/Michael-Gavrilov-Resume.pdf',
+  resumeUrl: '/CV/MGavrilovCV.pdf',
   summary:
     'I started my career building and operating technology. I became an architect, a strategist, and eventually a strategic account leader. The mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work.',
   summaryEmphasis: 'Today, the systems are bigger.',

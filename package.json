@@ -21,7 +21,7 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "resume:build": "tsx scripts/build-resume.ts",
-    "resume:build:private": "tsx scripts/build-resume.ts --private",
+    "resume:build:local": "tsx scripts/build-resume.ts --local",
     "prepare": "husky"
   },
   "dependencies": {

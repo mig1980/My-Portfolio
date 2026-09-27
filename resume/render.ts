@@ -7,8 +7,6 @@ export type ResumeVariant = 'hls' | 'enterprise';
 
 export interface RenderOptions {
   variant: ResumeVariant;
-  /** Only injected by local private builds; must never be committed. */
-  phone?: string;
   /** Overrides the template's `--fs` (points). */
   fontSizePt?: number;
   /** Overrides the template's `--gap` multiplier. */
@@ -22,15 +20,7 @@ export const TITLES = {
   enterprise: 'Strategic Account Director, Global Enterprise',
 } as const satisfies Record<ResumeVariant, string>;
 
-export const CONTACT_LOCATION = 'New York City, NY';
-export const CONTACT_LINKS = [
-  'contact@gavrilov.ai',
-  'linkedin.com/in/mgavrilov',
-  'gavrilov.ai',
-] as const;
 export const TEMPLATE_FONT_BASE = '/fonts/';
-
-const CONTACT_SEPARATOR = '<span class="sep">|</span>';
 
 function escapeHtml(value: string): string {
   return value
@@ -47,22 +37,13 @@ function assertPositive(name: string, value: number): void {
   }
 }
 
-/** Location, then phone (private builds only), then email, LinkedIn and website. */
-export function buildContactLine(phone?: string): string {
-  const trimmedPhone = phone?.trim();
-  const parts = [CONTACT_LOCATION, ...(trimmedPhone ? [trimmedPhone] : []), ...CONTACT_LINKS];
-  return parts.map(escapeHtml).join(CONTACT_SEPARATOR);
-}
-
 /**
- * Replaces `{{TITLE}}` / `{{CONTACT}}`, optionally rewrites font URLs, and appends a
- * `:root` override for `--fs` / `--gap`. The rest of the markup is left untouched.
+ * Replaces `{{TITLE}}`, optionally rewrites font URLs, and appends a `:root` override
+ * for `--fs` / `--gap`. The rest of the markup is left untouched.
  */
 export function renderResume(html: string, opts: RenderOptions): string {
-  // Function replacers stop `$&`-style patterns in values from being interpreted.
-  let out = html
-    .replace('{{TITLE}}', () => escapeHtml(TITLES[opts.variant]))
-    .replace('{{CONTACT}}', () => buildContactLine(opts.phone));
+  // A function replacer stops `$&`-style patterns in the title from being interpreted.
+  let out = html.replace('{{TITLE}}', () => escapeHtml(TITLES[opts.variant]));
 
   const { fontBase } = opts;
   if (fontBase !== undefined && fontBase !== TEMPLATE_FONT_BASE) {

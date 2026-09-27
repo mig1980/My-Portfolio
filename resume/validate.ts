@@ -47,16 +47,6 @@ const FORBIDDEN_PATTERNS: readonly PatternRule[] = [
       /\s(?:src|srcset|poster|data|background|action|formaction)\s*=\s*["']?\s*(?:https?:)?\/\//gi,
     message: () => 'Remove the external resource. Images and fonts must be local files.',
   },
-  {
-    pattern: /(?:\+?1[\s.-]*)?\(?\b\d{3}\)?[\s.-]*\d{3}[\s.-]*\d{4}\b/g,
-    message: () =>
-      'Remove the phone number. It is added only in private builds and must never be in the repo.',
-  },
-  {
-    pattern: /\+\d{1,3}[\s.-]?\(?\d{1,4}\)?(?:[\s.-]?\d{2,4}){2,}/g,
-    message: () =>
-      'Remove the phone number. It is added only in private builds and must never be in the repo.',
-  },
 ];
 
 function lineOf(text: string, index: number): number {
@@ -79,11 +69,9 @@ function checkStructure(html: string, errors: string[]): void {
     errors.push('End the file with </html>.');
   }
 
-  for (const placeholder of ['{{TITLE}}', '{{CONTACT}}']) {
-    const count = countOccurrences(html, placeholder);
-    if (count !== 1) {
-      errors.push(`${placeholder} must appear exactly once (found ${count}).`);
-    }
+  const titleCount = countOccurrences(html, '{{TITLE}}');
+  if (titleCount !== 1) {
+    errors.push(`{{TITLE}} must appear exactly once (found ${titleCount}).`);
   }
 
   const rootBlock = /:root\s*\{([^}]*)\}/i.exec(html)?.[1] ?? '';

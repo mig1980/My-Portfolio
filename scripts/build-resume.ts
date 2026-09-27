@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 /**
  * @fileoverview Builds the résumé PDF from content/resume.html, shrinking it until it fits on one page.
- * Run with: npm run resume:build          → public/CV/MGavrilovCV.pdf (Enterprise title, no phone)
- *           npm run resume:build:private  → all 4 variants (with/without phone) in RESUME_OUTPUT_DIR
+ * Run with: npm run resume:build        → public/CV/MGavrilovCV.pdf (Enterprise title)
+ *           npm run resume:build:local  → both title versions in RESUME_OUTPUT_DIR
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -30,23 +30,12 @@ const ORIGIN = 'https://resume.local';
 
 interface BuildJob {
   variant: ResumeVariant;
-  phone?: string;
   outFile: string;
 }
 
-const PRIVATE_FILES: ReadonlyArray<{ name: string; variant: ResumeVariant; withPhone: boolean }> = [
-  { name: 'Michael_Gavrilov_Resume_2026_Executive.pdf', variant: 'hls', withPhone: true },
-  { name: 'Michael_Gavrilov_Resume_2026_Executive_Public.pdf', variant: 'hls', withPhone: false },
-  {
-    name: 'Michael_Gavrilov_Resume_2026_Executive_Enterprise.pdf',
-    variant: 'enterprise',
-    withPhone: true,
-  },
-  {
-    name: 'Michael_Gavrilov_Resume_2026_Executive_Enterprise_Public.pdf',
-    variant: 'enterprise',
-    withPhone: false,
-  },
+const LOCAL_FILES: ReadonlyArray<{ name: string; variant: ResumeVariant }> = [
+  { name: 'Michael_Gavrilov_Resume_2026_Executive.pdf', variant: 'hls' },
+  { name: 'Michael_Gavrilov_Resume_2026_Executive_Enterprise.pdf', variant: 'enterprise' },
 ];
 
 function requireEnv(name: string): string {
@@ -71,22 +60,17 @@ function sourceDate(): Date {
 }
 
 function planJobs(args: readonly string[]): BuildJob[] {
-  const unknown = args.filter((arg) => arg !== '--public' && arg !== '--private');
+  const unknown = args.filter((arg) => arg !== '--local');
   if (unknown.length > 0) throw new Error(`Unknown option(s): ${unknown.join(' ')}`);
 
-  if (!args.includes('--private')) {
+  if (!args.includes('--local')) {
     return [{ variant: 'enterprise', outFile: PUBLIC_PDF_PATH }];
   }
 
   const envFile = join(ROOT, '.env.local');
   if (existsSync(envFile)) process.loadEnvFile(envFile);
-  const phone = requireEnv('RESUME_PHONE');
   const outputDir = requireEnv('RESUME_OUTPUT_DIR');
-  return PRIVATE_FILES.map(({ name, variant, withPhone }) => ({
-    variant,
-    phone: withPhone ? phone : undefined,
-    outFile: join(outputDir, name),
-  }));
+  return LOCAL_FILES.map(({ name, variant }) => ({ variant, outFile: join(outputDir, name) }));
 }
 
 async function serveFromDisk(page: Page, getHtml: () => string): Promise<void> {
@@ -124,7 +108,7 @@ async function buildOne(
   setHtml: (html: string) => void
 ): Promise<{ pdf: Uint8Array; setting: FitSetting }> {
   for (const setting of FIT_SETTINGS) {
-    setHtml(renderResume(template, { variant: job.variant, phone: job.phone, ...setting }));
+    setHtml(renderResume(template, { variant: job.variant, ...setting }));
     if ((await measureHeight(page)) > LETTER_HEIGHT_PX) continue;
 
     const pdf = await page.pdf({

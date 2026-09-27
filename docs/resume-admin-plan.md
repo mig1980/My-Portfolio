@@ -15,7 +15,7 @@ A private page on gavrilov.ai, visible only to Michael. It lets him **edit the r
 | Hosting | Cloudflare Pages (Git-connected), Functions in `functions/api/` (only `chat.ts`), also served at `my-portfolio-bu2.pages.dev` |
 | Résumé source | **Outside the repo**: `OneDrive\Documents\CV\source\resume_template.html` + `build.py` (Python + local Edge headless, auto-shrinks to 1 page) |
 | Résumé output | `public/CV/MGavrilovCV.pdf` (linked from `constants.tsx` → `resumeUrl`, and referenced in `chat.ts` system prompt) |
-| Variants | 4 PDFs: {Healthcare & Life Sciences, Global Enterprise} title × {with phone, public}. Only *Enterprise + Public* goes on the site |
+| Variants | 2 PDFs: Healthcare & Life Sciences or Global Enterprise title (phone is public, in both). Only *Enterprise* goes on the site |
 | CI | `.github/workflows/ci.yml`: lint, format:check, type-check, test:coverage, build on PRs/pushes to `main` |
 | Fonts in PDF | Georgia + Segoe UI, which are **not available on Ubuntu runners** |
 
@@ -36,10 +36,10 @@ Browser (/admin/resume)             Cloudflare Pages Function            GitHub
 
 Key design decisions:
 
-1. **The single source of truth is `content/resume.html`**: the full HTML + `<style>` template Michael edits by hand. It is the same file as today's `OneDrive\Documents\CV\source\resume_template.html`. It never contains the phone number.
-2. **One shared TypeScript function** (`resume/render.ts`) fills in the placeholders (`{{TITLE}}`, `{{CONTACT}}`) and sets the fit variables (`--fs`, `--gap`). The admin preview, the CI PDF build and the local private build all use it, so the preview matches the PDF.
+1. **The single source of truth is `content/resume.html`**: the full HTML + `<style>` template Michael edits by hand. It is the same file as today's `OneDrive\Documents\CV\source\resume_template.html`, with the contact line (including the phone, which Michael is fine making public) written directly in it.
+2. **One shared TypeScript function** (`resume/render.ts`) fills in `{{TITLE}}` and sets the fit variables (`--fs`, `--gap`). The admin preview, the CI PDF build and the local build all use it, so the preview matches the PDF.
 3. **PDF built in GitHub Actions with Playwright** (not in the Cloudflare build, and not by the Function, since Workers can't run Chromium).
-4. **Python `build.py` is retired.** `npm run resume:build` replaces it locally, including the private (phone) variants written to OneDrive.
+4. **Python `build.py` is retired.** `npm run resume:build` replaces it locally, and `npm run resume:build:local` writes both title versions to OneDrive.
 5. **Auth = Cloudflare Access at the edge + JWT verification in the Function** (defense in depth). No passwords in the app.
 6. **Admin is a separate Vite entry** (`admin/index.html`), so none of its code ends up in the public bundle.
 7. **Raw HTML is allowed, but it's contained.** The preview is an `iframe srcdoc` with `sandbox=""` (no scripts, no same-origin access), and it's never injected into the admin React tree. The server rejects `<script>`, `on*=` handlers, `javascript:` URLs, `<iframe>/<object>/<embed>`, and external `http(s)` resources, because fonts and images must be local.
@@ -47,7 +47,7 @@ Key design decisions:
 ## Target file layout
 
 ```
-content/resume.html                 # hand-edited HTML + CSS template (public-safe, no phone)
+content/resume.html                 # hand-edited HTML + CSS template
 resume/render.ts                    # renderResume(html, opts) → HTML string (pure, isomorphic)
 resume/validate.ts                  # validateResumeHtml(html) → { ok, errors[] } (shared client/server)
 scripts/build-resume.ts             # Playwright: render → fit-to-1-page loop → PDFs
@@ -72,19 +72,16 @@ The file is a complete HTML document (`<!DOCTYPE html>` … `</html>`) with one 
 | Rule | Why |
 |---|---|
 | Contains `{{TITLE}}` exactly once | Replaced with the HLS or Enterprise title per variant |
-| Contains `{{CONTACT}}` exactly once | Replaced with location · (phone, private only) · email · LinkedIn · website |
 | `:root` defines `--fs` and `--gap`, and the CSS uses them | The fit-to-one-page loop overrides them (`--fs` 9.6→9.2pt, `--gap` 1→0.7) |
 | `@page { size: Letter; margin: 0; }` | PDF page size |
 | Fonts via `@font-face { src: url('/fonts/…') }` only (the site's own Inter + Instrument Serif in `public/fonts/`) | Must work both in the browser preview and in CI (no external URLs) |
 | No `<script>`, `on*=` attributes, `javascript:`, `<iframe>`, `<object>`, `<embed>`, `<link>`, external `http(s)` URLs | Safety; the PDF build runs this HTML in Chromium |
-| No phone-number pattern | The public repo must never contain it |
 | ≤ 100 KB | Size limit |
 
 ```ts
 // resume/render.ts
 export interface RenderOptions {
   variant: 'hls' | 'enterprise';
-  phone?: string;        // only injected by local private builds
   fontSizePt?: number;   // overrides --fs
   gap?: number;          // overrides --gap
   fontBase?: string;     // replaces '/fonts/' in url(); omit in browser, file:// folder in CI
@@ -106,8 +103,9 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 
 - **Done (Sept 27, 2026).** Template copied to `content/resume.html` (LF line endings).
 - **Fonts (done):** switched to the site's own `public/fonts/` files (Inter body, Instrument Serif name + tagline). To keep today's one-page fit, body gets `letter-spacing: -0.01em` and `--lh` 1.17 → 1.13; the tagline is 11pt. Measured with Edge: same height as the old Georgia/Segoe version, fits at 9.4pt / gap 0.7.
-- Implement `resume/render.ts` (placeholder fill, contact line with the ` | ` separator, CSS variable override) and `resume/validate.ts` (every rule in the Template contract).
-- Tests: placeholders replaced; phone only when provided; override injected; each forbidden pattern is rejected with a readable message; the current template passes validation.
+- Implement `resume/render.ts` (title fill, CSS variable override) and `resume/validate.ts` (every rule in the Template contract).
+- Tests: title replaced and escaped; override injected; each forbidden pattern is rejected with a readable message; the current template passes validation.
+- **Update (Sept 27, 2026):** the phone is public, so the contact line (location | phone | email | LinkedIn | website) is plain HTML in the template. The `{{CONTACT}}` placeholder, phone injection and phone-number check were removed.
 
 **Acceptance:** `npm run test:run` passes, and `renderResume(html, {variant:'enterprise'})` opened in a browser looks like the current PDF.
 ### Phase 2: PDF build script and GitHub Action
@@ -117,14 +115,14 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
   - Read `content/resume.html`, run `validateResumeHtml` (fail on errors), render, then `page.pdf({ format: 'Letter', printBackground: true, margin: 0 })`.
   - Fit loop over `fontSizePt ∈ [9.6, 9.5, 9.4, 9.3, 9.2] × gap ∈ [1, .85, .7]`. Measure `document.body.scrollHeight ≤ 11in` before printing (faster than printing each try).
   - **Fail with exit 1 if it can't fit on one page.** Never write a 2-page PDF.
-  - Flags: `--public` (default) writes `public/CV/MGavrilovCV.pdf` (Enterprise, no phone). `--private` writes all 4 variants to `RESUME_OUTPUT_DIR`, using `RESUME_PHONE` from `.env.local`.
-- npm scripts: `"resume:build": "tsx scripts/build-resume.ts"` and `"resume:build:private": "tsx scripts/build-resume.ts --private"`.
+  - Default writes `public/CV/MGavrilovCV.pdf` (Enterprise title). `--local` writes both title versions (`Michael_Gavrilov_Resume_2026_Executive.pdf` = HLS, `..._Executive_Enterprise.pdf`) to `RESUME_OUTPUT_DIR` from `.env.local`.
+- npm scripts: `"resume:build": "tsx scripts/build-resume.ts"` and `"resume:build:local": "tsx scripts/build-resume.ts --local"`.
 - `.github/workflows/resume-pdf.yml`:
   - `on: push` to `main`, `paths: [content/resume.html, resume/**, public/fonts/**, scripts/build-resume.ts]`, plus `workflow_dispatch`.
   - `permissions: contents: write`, `concurrency: resume-pdf` (cancel in progress).
   - Steps: checkout, setup-node 20, `npm ci`, `npx playwright install --with-deps chromium`, `npm run resume:build`. If the PDF changed, commit `chore(resume): regenerate PDF` as `github-actions[bot]` and push.
   - Loop-safe: the PDF isn't in the `paths` filter, and pushes made with `GITHUB_TOKEN` don't trigger workflows.
-- Add `.env.example` entries: `RESUME_PHONE=`, `RESUME_OUTPUT_DIR=`.
+- Add `.env.example` entry: `RESUME_OUTPUT_DIR=`.
 - **Done (Sept 27, 2026)**, with these details:
   - The page is served from a fake `https://resume.local` origin via `page.route` (HTML from memory, fonts from `public/fonts/`); every other request is blocked and page JavaScript is disabled.
   - Each candidate is also printed and page-counted; only a verified 1-page PDF is written.
@@ -171,10 +169,10 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - Tests: the debounce/render hook, fit-meter math, validation-panel rendering, and the publish flow with mocked fetch (200, 409 stale sha, 422 validation).
 ### Phase 6: Cleanup and docs
 
-- Update `README.md` and `.github/copilot-instructions.md` (new folders, commands, admin architecture, the Template contract, and the rule that `content/resume.html` must never contain a phone number).
+- Update `README.md` and `.github/copilot-instructions.md` (new folders, commands, admin architecture and the Template contract).
 - Optional: extract plain text from `content/resume.html` at build time for `functions/api/chat.ts`'s system prompt, so the AI assistant stays in sync.
 - Optional: add a Split/Code/Preview layout toggle, and snippets for common blocks (new role, new bullet).
-- Delete `OneDrive\Documents\CV\source\build.py` once `npm run resume:build:private` is confirmed working.
+- Delete `OneDrive\Documents\CV\source\build.py` once `npm run resume:build:local` is confirmed working.
 
 ---
 
@@ -187,7 +185,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 2. **GitHub**: create the fine-grained PAT described in Phase 4 (expires in 1 year, and set a reminder to renew it).
 3. **Cloudflare Pages → Settings → Variables & Secrets (Production and Preview)**: `GITHUB_TOKEN`, `GITHUB_REPO`, `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`.
 4. **Branch protection on `main`** (if enabled): allow `github-actions[bot]` to push, or change the workflow to open a PR (see Decisions).
-5. Local: add `RESUME_PHONE` and `RESUME_OUTPUT_DIR="C:\Users\mgavril\OneDrive - Gavril\Documents\CV"` to `.env.local`.
+5. Local: add `RESUME_OUTPUT_DIR="C:\Users\mgavril\OneDrive - Gavril\Documents\CV"` to `.env.local`.
 
 ## Decisions to make before starting
 
@@ -195,7 +193,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 |---|---|---|
 | 1 | PDF fonts (Georgia/Segoe UI aren't on Linux) | **Decided: reuse the site fonts** (Instrument Serif for the name, Inter for body). Done in Phase 1. |
 | 2 | Publish directly to `main`, or through a PR? | **Direct to `main`** (it's your personal site, and the HTML is validated server-side). Add a "Save draft" later that commits to a `resume/draft` branch to get a Cloudflare preview URL. |
-| 3 | Should the site show the HLS or the Enterprise title? | Keep **Enterprise + Public** (current behavior). |
+| 3 | Should the site show the HLS or the Enterprise title? | Keep **Enterprise** (current behavior). |
 | 4 | Should the admin page also edit website content (`constants.tsx`)? | **Not now.** Do Phase 6 optional items later. |
 
 ## Security checklist (review each PR against this)
@@ -203,7 +201,6 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - [ ] `/admin*` and `/api/admin/*` are behind Access on **every** hostname, including `*.pages.dev`
 - [ ] The Function verifies the JWT itself (doesn't rely on Access alone)
 - [ ] The PAT is fine-grained, limited to one repo, with minimal scopes, and stored only as a Cloudflare secret
-- [ ] `content/resume.html` never contains the phone number, and the validator + a test reject phone-like patterns
 - [ ] User HTML is only rendered inside `iframe sandbox=""` (no `allow-scripts`, no `allow-same-origin`), and never via `dangerouslySetInnerHTML`. The validator blocks scripts, event handlers and external URLs on both client and server
 - [ ] Server-side validation (authoritative), 128 KB limit and sha-based concurrency on PUT
 - [ ] `noindex` + `no-store` on admin routes. Nothing from admin is in the public bundle

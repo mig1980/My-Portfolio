@@ -24,13 +24,6 @@ describe('validateResumeHtml', () => {
     expect(validateResumeHtml(template)).toEqual({ ok: true, errors: [] });
   });
 
-  it('does not mistake years, ranges and amounts for phone numbers', () => {
-    const html = withBody(
-      '<p>2005–2006 · 2017 – 2024 · (2002-2005) · $500M · 20+ years · 150%</p>'
-    );
-    expect(validateResumeHtml(html).ok).toBe(true);
-  });
-
   it('allows ordinary external links', () => {
     expect(validateResumeHtml(withBody('<a href="https://gavrilov.ai">site</a>')).ok).toBe(true);
   });
@@ -58,17 +51,6 @@ describe('validateResumeHtml', () => {
       expectRejected(withBody(snippet), messagePart);
     });
 
-    it.each([
-      '212-555-0123',
-      '(212) 555-0123',
-      '212.555.0123',
-      '2125550123',
-      '+1 212 555 0123',
-      '+44 20 7946 0958',
-    ])('rejects the phone number %s', (phone) => {
-      expectRejected(withBody(`<p>${phone}</p>`), 'phone number');
-    });
-
     it('reports the line of the problem', () => {
       const html = withBody('<script></script>');
       const line = html.split('\n').findIndex((l) => l.includes('<script>')) + 1;
@@ -86,8 +68,8 @@ describe('validateResumeHtml', () => {
       );
     });
 
-    it('rejects a duplicated {{CONTACT}}', () => {
-      expectRejected(withBody('{{CONTACT}}'), '{{CONTACT}} must appear exactly once (found 2)');
+    it('rejects a duplicated {{TITLE}}', () => {
+      expectRejected(withBody('{{TITLE}}'), '{{TITLE}} must appear exactly once (found 2)');
     });
 
     it('requires --fs and --gap in :root', () => {

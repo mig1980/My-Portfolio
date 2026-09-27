@@ -5,7 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { renderResume, buildContactLine, TITLES } from '../resume/render';
+import { renderResume, TITLES } from '../resume/render';
 
 const template = readFileSync(resolve(process.cwd(), 'content', 'resume.html'), 'utf8');
 
@@ -24,36 +24,13 @@ describe('renderResume', () => {
 
   it('leaves the rest of the markup untouched when no options are given', () => {
     const html = renderResume(template, { variant: 'enterprise' });
-    const expected = template
-      .replace('{{TITLE}}', TITLES.enterprise)
-      .replace('{{CONTACT}}', buildContactLine());
-    expect(html).toBe(expected);
+    expect(html).toBe(template.replace('{{TITLE}}', TITLES.enterprise));
   });
 
-  describe('contact line', () => {
-    it('omits the phone by default', () => {
-      expect(buildContactLine()).toBe(
-        'New York City, NY<span class="sep">|</span>contact@gavrilov.ai<span class="sep">|</span>' +
-          'linkedin.com/in/mgavrilov<span class="sep">|</span>gavrilov.ai'
-      );
-    });
-
-    it('puts the phone right after the location when provided', () => {
-      const html = renderResume('{{CONTACT}}', { variant: 'enterprise', phone: ' 555-0100 ' });
-      expect(html.startsWith('New York City, NY<span class="sep">|</span>555-0100<span')).toBe(
-        true
-      );
-    });
-
-    it('ignores a blank phone', () => {
-      expect(buildContactLine('   ')).toBe(buildContactLine());
-    });
-
-    it('escapes the phone and does not expand replacement patterns', () => {
-      const html = renderResume('{{CONTACT}}', { variant: 'enterprise', phone: '$&<b>' });
-      expect(html).toContain('$&amp;&lt;b&gt;');
-      expect(html).not.toContain('{{CONTACT}}');
-    });
+  it('keeps the contact line from the template', () => {
+    const html = renderResume(template, { variant: 'hls' });
+    expect(html).toContain('+1-551-208-1538');
+    expect(html).toContain('contact@gavrilov.ai');
   });
 
   describe('fit overrides', () => {

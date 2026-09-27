@@ -1,0 +1,210 @@
+# Build Plan: Private Résumé Admin (`/admin/resume`)
+
+> Hand this file to GitHub Copilot (Chat: `#file:docs/resume-admin-plan.md`, or paste each phase into a Copilot coding-agent issue).
+> Follow `.github/copilot-instructions.md` for all code conventions.
+
+## Goal
+
+A private page on gavrilov.ai, visible only to Michael. It lets him **edit the résumé's raw HTML/CSS directly** in a code editor, with a side-by-side live preview and a one-page fit meter. When he clicks **Publish**, the change is committed to GitHub, a GitHub Action regenerates `public/CV/MGavrilovCV.pdf`, and Cloudflare Pages redeploys the site.
+
+## Current state (as of Sept 27, 2026)
+
+| Area | Today |
+|---|---|
+| Stack | React 19 + TS strict + Tailwind v4 + Vite 6, single SPA (`App.tsx` does pathname routing: `/`, `/legal`, else 404) |
+| Hosting | Cloudflare Pages (Git-connected), Functions in `functions/api/` (only `chat.ts`), also served at `my-portfolio-bu2.pages.dev` |
+| Résumé source | **Outside the repo**: `OneDrive\Documents\CV\source\resume_template.html` + `build.py` (Python + local Edge headless, auto-shrinks to 1 page) |
+| Résumé output | `public/CV/MGavrilovCV.pdf` (linked from `constants.tsx` → `resumeUrl`, and referenced in `chat.ts` system prompt) |
+| Variants | 4 PDFs: {Healthcare & Life Sciences, Global Enterprise} title × {with phone, public}. Only *Enterprise + Public* goes on the site |
+| CI | `.github/workflows/ci.yml`: lint, format:check, type-check, test:coverage, build on PRs/pushes to `main` |
+| Fonts in PDF | Georgia + Segoe UI, which are **not available on Ubuntu runners** |
+
+## Architecture
+
+```
+Browser (/admin/resume)             Cloudflare Pages Function            GitHub
+┌───────────────────────┐  GET/PUT  ┌─────────────────────────┐  API   ┌───────────────────────┐
+│ HTML code editor      │ ────────▶ │ /api/admin/resume       │ ─────▶ │ content/resume.html    │
+│ Live preview (iframe) │           │ • verifies CF Access JWT│        │ (commit on main)       │
+│ Fit meter             │ ◀──────── │ • GitHub Contents API   │        └──────────┬────────────┘
+│ Build status          │           │ • GitHub Actions status │                   │ push (paths filter)
+└───────────────────────┘           └─────────────────────────┘                   ▼
+        ▲  protected by Cloudflare Access (/admin*, /api/admin/*)     .github/workflows/resume-pdf.yml
+        │                                                             • Playwright Chromium
+        └──────────── Cloudflare Pages redeploy ◀──── commits public/CV/MGavrilovCV.pdf
+```
+
+Key design decisions:
+
+1. **The single source of truth is `content/resume.html`**: the full HTML + `<style>` template Michael edits by hand. It is the same file as today's `OneDrive\Documents\CV\source\resume_template.html`. It never contains the phone number.
+2. **One shared TypeScript function** (`resume/render.ts`) fills in the placeholders (`{{TITLE}}`, `{{CONTACT}}`) and sets the fit variables (`--fs`, `--gap`). The admin preview, the CI PDF build and the local private build all use it, so the preview matches the PDF.
+3. **PDF built in GitHub Actions with Playwright** (not in the Cloudflare build, and not by the Function, since Workers can't run Chromium).
+4. **Python `build.py` is retired.** `npm run resume:build` replaces it locally, including the private (phone) variants written to OneDrive.
+5. **Auth = Cloudflare Access at the edge + JWT verification in the Function** (defense in depth). No passwords in the app.
+6. **Admin is a separate Vite entry** (`admin/index.html`), so none of its code ends up in the public bundle.
+7. **Raw HTML is allowed, but it's contained.** The preview is an `iframe srcdoc` with `sandbox=""` (no scripts, no same-origin access), and it's never injected into the admin React tree. The server rejects `<script>`, `on*=` handlers, `javascript:` URLs, `<iframe>/<object>/<embed>`, and external `http(s)` resources, because fonts and images must be local.
+
+## Target file layout
+
+```
+content/resume.html                 # hand-edited HTML + CSS template (public-safe, no phone)
+resume/render.ts                    # renderResume(html, opts) → HTML string (pure, isomorphic)
+resume/validate.ts                  # validateResumeHtml(html) → { ok, errors[] } (shared client/server)
+scripts/build-resume.ts             # Playwright: render → fit-to-1-page loop → PDFs
+admin/index.html                    # second Vite entry
+admin/main.tsx                      # admin app root
+admin/ResumeEditor.tsx              # code editor + preview + fit meter + publish
+admin/components/…                  # HtmlEditor (CodeMirror), PreviewFrame, FitMeter, BuildStatus, DiffDialog
+functions/api/admin/_middleware.ts  # verifies Cf-Access-Jwt-Assertion for all /api/admin/*
+functions/api/admin/resume.ts       # GET (read html+sha) / PUT (commit with sha)
+functions/api/admin/status.ts       # latest resume-pdf workflow run
+.github/workflows/resume-pdf.yml
+tests/resumeRender.test.ts
+tests/resumeValidate.test.ts
+tests/adminResume.test.ts
+tests/adminAuth.test.ts
+```
+
+## Template contract (`content/resume.html`)
+
+The file is a complete HTML document (`<!DOCTYPE html>` … `</html>`) with one `<style>` block. Michael can change anything, as long as these rules hold:
+
+| Rule | Why |
+|---|---|
+| Contains `{{TITLE}}` exactly once | Replaced with the HLS or Enterprise title per variant |
+| Contains `{{CONTACT}}` exactly once | Replaced with location · (phone, private only) · email · LinkedIn · website |
+| `:root` defines `--fs` and `--gap`, and the CSS uses them | The fit-to-one-page loop overrides them (`--fs` 9.6→9.2pt, `--gap` 1→0.7) |
+| `@page { size: Letter; margin: 0; }` | PDF page size |
+| Fonts via `@font-face { src: url('/fonts/…') }` only (the site's own Inter + Instrument Serif in `public/fonts/`) | Must work both in the browser preview and in CI (no external URLs) |
+| No `<script>`, `on*=` attributes, `javascript:`, `<iframe>`, `<object>`, `<embed>`, `<link>`, external `http(s)` URLs | Safety; the PDF build runs this HTML in Chromium |
+| No phone-number pattern | The public repo must never contain it |
+| ≤ 100 KB | Size limit |
+
+```ts
+// resume/render.ts
+export interface RenderOptions {
+  variant: 'hls' | 'enterprise';
+  phone?: string;        // only injected by local private builds
+  fontSizePt?: number;   // overrides --fs
+  gap?: number;          // overrides --gap
+  fontBase?: string;     // replaces '/fonts/' in url(); omit in browser, file:// folder in CI
+}
+export const TITLES = { hls: 'Strategic Account Director, Healthcare & Life Sciences',
+                        enterprise: 'Strategic Account Director, Global Enterprise' } as const;
+export function renderResume(html: string, opts: RenderOptions): string;
+
+// resume/validate.ts: runs in the editor (live error list) AND in the Function (authoritative)
+export function validateResumeHtml(html: string): { ok: boolean; errors: string[] };
+```
+
+Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</style>` override right before `</head>`. It never parses or rewrites the rest of Michael's markup.
+---
+
+## Phases (one PR each)
+
+### Phase 1: Move the résumé template into the repo (no UI yet)
+
+- **Done (Sept 27, 2026).** Template copied to `content/resume.html` (LF line endings).
+- **Fonts (done):** switched to the site's own `public/fonts/` files (Inter body, Instrument Serif name + tagline). To keep today's one-page fit, body gets `letter-spacing: -0.01em` and `--lh` 1.17 → 1.13; the tagline is 11pt. Measured with Edge: same height as the old Georgia/Segoe version, fits at 9.4pt / gap 0.7.
+- Implement `resume/render.ts` (placeholder fill, contact line with the ` | ` separator, CSS variable override) and `resume/validate.ts` (every rule in the Template contract).
+- Tests: placeholders replaced; phone only when provided; override injected; each forbidden pattern is rejected with a readable message; the current template passes validation.
+
+**Acceptance:** `npm run test:run` passes, and `renderResume(html, {variant:'enterprise'})` opened in a browser looks like the current PDF.
+### Phase 2: PDF build script and GitHub Action
+
+- Add dev deps: `playwright` (Chromium only) and `tsx`.
+- `scripts/build-resume.ts`:
+  - Read `content/resume.html`, run `validateResumeHtml` (fail on errors), render, then `page.pdf({ format: 'Letter', printBackground: true, margin: 0 })`.
+  - Fit loop over `fontSizePt ∈ [9.6, 9.5, 9.4, 9.3, 9.2] × gap ∈ [1, .85, .7]`. Measure `document.body.scrollHeight ≤ 11in` before printing (faster than printing each try).
+  - **Fail with exit 1 if it can't fit on one page.** Never write a 2-page PDF.
+  - Flags: `--public` (default) writes `public/CV/MGavrilovCV.pdf` (Enterprise, no phone). `--private` writes all 4 variants to `RESUME_OUTPUT_DIR`, using `RESUME_PHONE` from `.env.local`.
+- npm scripts: `"resume:build": "tsx scripts/build-resume.ts"` and `"resume:build:private": "tsx scripts/build-resume.ts --private"`.
+- `.github/workflows/resume-pdf.yml`:
+  - `on: push` to `main`, `paths: [content/resume.html, resume/**, public/fonts/**, scripts/build-resume.ts]`, plus `workflow_dispatch`.
+  - `permissions: contents: write`, `concurrency: resume-pdf` (cancel in progress).
+  - Steps: checkout, setup-node 20, `npm ci`, `npx playwright install --with-deps chromium`, `npm run resume:build`. If the PDF changed, commit `chore(resume): regenerate PDF` as `github-actions[bot]` and push.
+  - Loop-safe: the PDF isn't in the `paths` filter, and pushes made with `GITHUB_TOKEN` don't trigger workflows.
+- Add `.env.example` entries: `RESUME_PHONE=`, `RESUME_OUTPUT_DIR=`.
+
+**Acceptance:** editing `content/resume.html` on a branch, then merging, produces a new PDF commit, and Cloudflare deploys it.
+
+### Phase 3: Auth layer (build before any admin endpoint)
+
+- `functions/api/admin/_middleware.ts` runs for every `/api/admin/*` request:
+  - Reads the `Cf-Access-Jwt-Assertion` header and verifies it (RS256) against `https://<TEAM>.cloudflareaccess.com/cdn-cgi/access/certs`. Check `aud === CF_ACCESS_AUD`, `iss`, `exp`, and that `email === ADMIN_EMAIL`.
+  - Uses WebCrypto (`crypto.subtle.importKey('jwk', …)`). Cache the JWKS in module scope for 10 minutes. `jose` is acceptable if it keeps the code much simpler.
+  - Returns 401 JSON on failure. Every response gets `Cache-Control: no-store`.
+- Env/secrets in Cloudflare Pages: `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`.
+- `public/_headers`: add a `/admin/*` block with `X-Robots-Tag: noindex, nofollow` and `Cache-Control: no-store`. Add `Disallow: /admin` to `robots.txt`.
+- Tests (`tests/adminAuth.test.ts`): missing header → 401, bad signature → 401, wrong aud → 401, expired → 401, wrong email → 403, valid → passes through. Generate a test RSA key in the test and mock the JWKS fetch.
+
+**Acceptance:** `curl https://gavrilov.ai/api/admin/resume` returns the Access login redirect or 401, never data.
+
+### Phase 4: Admin API (GitHub-backed)
+
+- `GET /api/admin/resume` calls the GitHub Contents API `GET /repos/mig1980/My-Portfolio/contents/content/resume.html?ref=main` and returns `{ html, sha }`.
+- `PUT /api/admin/resume` takes the body `{ html, sha, message? }`, runs `validateResumeHtml(html)` (422 with the error list if it fails), then `PUT contents` with base64 UTF-8 HTML (normalize to LF line endings), `sha`, `branch: main`, and message `content(resume): <message or 'update via admin'>` (must pass commitlint). GitHub returns 409 when the sha is stale; pass that through so the UI can show "changed elsewhere, reload."
+- `GET /api/admin/status` returns the latest run of `resume-pdf.yml` (`status`, `conclusion`, `html_url`, `updated_at`) plus the last commit touching `public/CV/MGavrilovCV.pdf`.
+- Secret: `GITHUB_TOKEN`, a **fine-grained PAT** limited to `mig1980/My-Portfolio` with Contents: read/write and Actions: read. Also set `GITHUB_REPO=mig1980/My-Portfolio`.
+- Reject bodies over 128 KB. Allow only `GET` and `PUT`. Require `Content-Type: application/json`. Same-origin only (check `Origin` against the allowed list in `chat.ts`).
+- Tests mock `fetch` the same way `tests/chat.test.ts` does.
+
+### Phase 5: Admin UI
+
+- Vite multi-page: `build.rollupOptions.input = { main: 'index.html', admin: 'admin/index.html' }`. Cloudflare serves `/admin/` from `dist/admin/index.html`. Check that `App.tsx`'s 404 logic doesn't catch it; it won't, because it's a different HTML file.
+- `ResumeEditor.tsx`, a split-screen layout:
+  - **Left: HTML code editor.** Use **CodeMirror 6** (`@codemirror/lang-html`, `@uiw/react-codemirror` or a thin wrapper) with syntax highlighting, autoclose tags, search/replace (Ctrl+F/Ctrl+H), line numbers, fold and word-wrap toggle. Loaded only in the admin bundle. Monaco is too heavy.
+  - **Right: live preview.** `<iframe sandbox="" srcdoc={renderResume(html, {variant})}>`, updated with a ~300 ms debounce and scaled to fit the pane at Letter proportions. Toolbar: variant toggle (HLS / Enterprise), zoom (fit / 100%) and a "show page boundary" line at 11in.
+  - **Fit meter:** after load, render at the smallest fit settings and compare `contentDocument.body.scrollHeight` with 1056 px. Show "Fits at 9.4pt ✓", or "Over by ~N lines ✗" in red.
+  - **Validation panel:** live `validateResumeHtml` errors under the editor. Clicking an error jumps to its line. Publish is disabled while errors exist.
+  - Draft autosaved to `localStorage`, with a "Restore unsaved draft?" prompt on load. `beforeunload` guard.
+  - Buttons: **Revert** (reload from GitHub), **Download HTML**, **Publish**. Publish opens a confirm dialog with a line diff (`diff` package, or a small LCS implementation), plus an optional commit message, then PUT.
+  - After publishing, poll `/api/admin/status` every 10 s until the workflow completes. Then show ✓ with a link to `/CV/MGavrilovCV.pdf?v=<sha>`, or ✗ with a link to the failed Action log.
+  - Resizable divider between panes. Mobile: tabs (Code / Preview) instead of split.
+- Tests: the debounce/render hook, fit-meter math, validation-panel rendering, and the publish flow with mocked fetch (200, 409 stale sha, 422 validation).
+### Phase 6: Cleanup and docs
+
+- Update `README.md` and `.github/copilot-instructions.md` (new folders, commands, admin architecture, the Template contract, and the rule that `content/resume.html` must never contain a phone number).
+- Optional: extract plain text from `content/resume.html` at build time for `functions/api/chat.ts`'s system prompt, so the AI assistant stays in sync.
+- Optional: add a Split/Code/Preview layout toggle, and snippets for common blocks (new role, new bullet).
+- Delete `OneDrive\Documents\CV\source\build.py` once `npm run resume:build:private` is confirmed working.
+
+---
+
+## Manual setup Michael must do (Copilot can't)
+
+1. **Cloudflare Zero Trust → Access → Applications → Self-hosted**
+   - Domains: `gavrilov.ai/admin*`, `gavrilov.ai/api/admin/*`, **and** `my-portfolio-bu2.pages.dev/admin*`, `*.my-portfolio-bu2.pages.dev/admin*` and the matching `/api/admin/*` paths. Preview deployments would otherwise expose the admin page.
+   - Policy: Allow, with Emails = your address only. Identity provider: GitHub or one-time PIN.
+   - Copy the **Application Audience (AUD) tag** and your **team domain**.
+2. **GitHub**: create the fine-grained PAT described in Phase 4 (expires in 1 year, and set a reminder to renew it).
+3. **Cloudflare Pages → Settings → Variables & Secrets (Production and Preview)**: `GITHUB_TOKEN`, `GITHUB_REPO`, `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`.
+4. **Branch protection on `main`** (if enabled): allow `github-actions[bot]` to push, or change the workflow to open a PR (see Decisions).
+5. Local: add `RESUME_PHONE` and `RESUME_OUTPUT_DIR="C:\Users\mgavril\OneDrive - Gavril\Documents\CV"` to `.env.local`.
+
+## Decisions to make before starting
+
+| # | Question | Recommendation |
+|---|---|---|
+| 1 | PDF fonts (Georgia/Segoe UI aren't on Linux) | **Decided: reuse the site fonts** (Instrument Serif for the name, Inter for body). Done in Phase 1. |
+| 2 | Publish directly to `main`, or through a PR? | **Direct to `main`** (it's your personal site, and the HTML is validated server-side). Add a "Save draft" later that commits to a `resume/draft` branch to get a Cloudflare preview URL. |
+| 3 | Should the site show the HLS or the Enterprise title? | Keep **Enterprise + Public** (current behavior). |
+| 4 | Should the admin page also edit website content (`constants.tsx`)? | **Not now.** Do Phase 6 optional items later. |
+
+## Security checklist (review each PR against this)
+
+- [ ] `/admin*` and `/api/admin/*` are behind Access on **every** hostname, including `*.pages.dev`
+- [ ] The Function verifies the JWT itself (doesn't rely on Access alone)
+- [ ] The PAT is fine-grained, limited to one repo, with minimal scopes, and stored only as a Cloudflare secret
+- [ ] `content/resume.html` never contains the phone number, and the validator + a test reject phone-like patterns
+- [ ] User HTML is only rendered inside `iframe sandbox=""` (no `allow-scripts`, no `allow-same-origin`), and never via `dangerouslySetInnerHTML`. The validator blocks scripts, event handlers and external URLs on both client and server
+- [ ] Server-side validation (authoritative), 128 KB limit and sha-based concurrency on PUT
+- [ ] `noindex` + `no-store` on admin routes. Nothing from admin is in the public bundle
+
+## Suggested Copilot prompts
+
+Use one per phase (Copilot Chat in agent mode, or as the body of a coding-agent issue):
+
+> Implement **Phase N** of `docs/resume-admin-plan.md`. Follow `.github/copilot-instructions.md`. Keep the change limited to this phase. Add the listed tests. Run `npm run type-check && npm run lint && npm run test:run && npm run build`, and fix anything that fails before finishing.
+
+For Phase 1, attach `OneDrive\Documents\CV\source\resume_template.html`, or paste it in, because Copilot can't see your OneDrive.

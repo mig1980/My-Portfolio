@@ -187,7 +187,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 ### Follow-ups before the first push (done Sept 27, 2026)
 
 - **Validator decodes first:** HTML entities and CSS escapes are decoded before any check; URL attributes use an allow-list (relative, `data:`, `#`; only `<a href>` may link out; every `srcset` candidate is checked).
-- **One source for career facts:** `utils/careerFacts.ts` feeds the website and the AI assistant; `tests/careerFacts.test.ts` checks both résumés match. Quota attainment reads "100% quota attainment in 9 fiscal years, including FY25 and FY26".
+- **One source for career facts:** `utils/careerFacts.ts` feeds the website and the AI assistant; `tests/careerFacts.test.ts` checks both résumés match. Quota attainment reads "Consistent 100% quota attainment, including FY25 and FY26".
 - **Employer headings:** Instrument Serif 16pt, larger than role titles; margins trimmed so the executive page still fits at 9.4pt.
 - **Fact cross-check:** the editor warns, without blocking Publish, when a résumé's shared facts no longer match the website and the assistant (`resume/facts.ts`); the same check runs in `tests/careerFacts.test.ts`.
 - **Publish dialog:** the page behind it is `inert` while it's open, the diff scrolls by keyboard, and focus returns to Publish on close.

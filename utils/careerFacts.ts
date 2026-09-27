@@ -8,6 +8,6 @@ export const CAREER_FACTS = {
   university: 'Bauman State Technical University',
   platinumClubCount: 2,
   goldClubCount: 3,
-  quotaAttainment: '100% quota attainment in 9 fiscal years',
-  quotaAttainmentRecent: 'including FY25 and FY26',
+  /** Preceded by "Consistent" (or "consistent" mid-sentence) wherever it appears. */
+  quotaAttainment: '100% quota attainment, including FY25 and FY26',
 } as const;

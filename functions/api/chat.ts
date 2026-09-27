@@ -223,7 +223,7 @@ Quantified outcomes.
 He structures strategic agreements exceeding $500M in total contract value, expanding the partnership across AI, Azure, Data, Security, Modern Work and Business Applications. In prior enterprise roles, he delivered average annual revenue exceeding $20M. Earlier in his Microsoft career, he led partner programs that drove a 150% increase in partner-influenced revenue. In an IT operations leadership role, he delivered process improvements and automation that increased operational efficiency by 25%.
 
 Awards and recognition.
-He is a ${CAREER_FACTS.platinumClubCount}-time Microsoft Platinum Club recipient and a ${CAREER_FACTS.goldClubCount}-time Gold Club Award recipient. He received a Champion Award in FY23 Q4. He has achieved ${CAREER_FACTS.quotaAttainment}, ${CAREER_FACTS.quotaAttainmentRecent}.
+He is a ${CAREER_FACTS.platinumClubCount}-time Microsoft Platinum Club recipient and a ${CAREER_FACTS.goldClubCount}-time Gold Club Award recipient. He received a Champion Award in FY23 Q4. He has achieved consistent ${CAREER_FACTS.quotaAttainment}.
 
 Education.
 Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from ${CAREER_FACTS.university}.

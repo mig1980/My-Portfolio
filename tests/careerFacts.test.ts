@@ -19,8 +19,7 @@ const resumes = Object.values(RESUME_DOCUMENTS).map((doc) => ({
 
 const factRegister = readFileSync(resolve(process.cwd(), 'content/resume-facts.md'), 'utf8');
 
-const { university, platinumClubCount, goldClubCount, quotaAttainment, quotaAttainmentRecent } =
-  CAREER_FACTS;
+const { university, platinumClubCount, goldClubCount, quotaAttainment } = CAREER_FACTS;
 
 describe('career facts stay consistent', () => {
   describe('website (constants.tsx)', () => {
@@ -45,7 +44,7 @@ describe('career facts stay consistent', () => {
       expect(SYSTEM_CONTEXT).toContain(university);
       expect(SYSTEM_CONTEXT).toContain(`${platinumClubCount}-time Microsoft Platinum Club`);
       expect(SYSTEM_CONTEXT).toContain(`${goldClubCount}-time Gold Club`);
-      expect(SYSTEM_CONTEXT).toContain(`${quotaAttainment}, ${quotaAttainmentRecent}`);
+      expect(SYSTEM_CONTEXT).toContain(`consistent ${quotaAttainment}`);
     });
   });
 
@@ -69,7 +68,7 @@ describe('career facts stay consistent', () => {
       expect(factRegister).toContain(university);
       expect(factRegister).toContain(`Platinum Club: ${platinumClubCount}×`);
       expect(factRegister).toContain(`Gold Club: ${goldClubCount}×`);
-      expect(factRegister).toContain(`${quotaAttainment}, ${quotaAttainmentRecent}`);
+      expect(factRegister).toContain(`Consistent ${quotaAttainment}`);
     });
   });
 });

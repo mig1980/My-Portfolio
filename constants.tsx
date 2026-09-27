@@ -274,7 +274,7 @@ export const AWARDS: AwardItem[] = [
     id: 'attainment-100',
     title: '100% Attainment',
     issuer: 'Microsoft',
-    description: `${CAREER_FACTS.quotaAttainment}, ${CAREER_FACTS.quotaAttainmentRecent}.`,
+    description: `Consistent ${CAREER_FACTS.quotaAttainment}.`,
     color: 'green',
     badges: [
       { src: '/Awards/100Attainmentretired_7Time.png', alt: '100% Attainment 7-time winner badge' },

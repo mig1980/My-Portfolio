@@ -45,7 +45,7 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 
 - Microsoft Platinum Club: 2×
 - Microsoft Gold Club: 3×
-- Quota attainment: 100% quota attainment in 9 fiscal years, including FY25 and FY26
+- Quota attainment: Consistent 100% quota attainment, including FY25 and FY26 (no count of years is published)
 - The website's "5× Microsoft Platinum & Gold Club recognition" stat is 2 + 3 awards. It is not the account-growth "5×".
 
 ## Certifications and executive education

@@ -67,11 +67,11 @@ export const EXPERIENCE: JobRole[] = [
     period: 'Jan 2017 - Present',
     stage: 'Account Leader',
     description: [
-      'Own the C-suite relationship and multi-year technology and AI strategy for a top-5 global pharmaceutical company, one of Microsoft’s strategic Healthcare & Life Sciences accounts.',
+      'Own C-suite relationships and the multi-year technology and AI strategy for a top-5 global pharmaceutical company, one of Microsoft’s strategic Healthcare & Life Sciences accounts.',
       'Structure strategic agreements exceeding $500M in total contract value, expanding the partnership across AI, Azure, Data, Security, Modern Work and Business Applications.',
       'Scale generative and agentic AI from experimentation to enterprise deployment, navigating the technical, governance, and organizational complexity of regulated environments.',
       'Lead a 30+ person virtual team spanning specialist sales, engineering, customer success, support, services and global system integrator partners.',
-      'Established executive governance and quarterly business reviews with CIO, CDO and business leadership, aligning Microsoft roadmaps with priorities across R&D, manufacturing and commercial functions.',
+      'Establish executive governance and quarterly business reviews with CIO, CDO and business leadership, aligning Microsoft roadmaps with priorities across R&D, manufacturing and commercial functions.',
       'Lead complex, multi-stakeholder negotiations, balancing customer outcomes, transformation investments, risk and long-term partnership economics.',
       'Recognition: Microsoft Platinum Club | 100% attainment',
     ],

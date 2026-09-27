@@ -26,7 +26,7 @@ import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useScrollPosition } from '../hooks/useScrollPosition';
 import { CHAT_ASK_EVENT } from '../utils/chatEvents';
 import { MAX_CHAT_MESSAGE_LENGTH as MAX_INPUT_LENGTH } from '../utils/chatLimits';
-import { CHAT_WELCOME_QUESTIONS } from '../constants';
+import { SUGGESTED_QUESTIONS } from '../constants';
 import type { ChatAskDetail, ChatMessage } from '../types';
 
 // ============================================================================
@@ -884,7 +884,7 @@ const ChatWidget: React.FC = memo(() => {
                 {/* Quick Questions */}
                 <p className="text-stone-600 text-xs uppercase tracking-wide mb-2">Try asking</p>
                 <div className="flex flex-col gap-2">
-                  {CHAT_WELCOME_QUESTIONS.map((question) => (
+                  {SUGGESTED_QUESTIONS.map((question) => (
                     <button
                       key={question}
                       type="button"

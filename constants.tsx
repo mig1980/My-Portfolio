@@ -48,10 +48,6 @@ export const SUGGESTED_QUESTIONS: readonly string[] = [
   'How did Michael move from engineer to strategic account leader?',
 ];
 
-export const HERO_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS;
-
-export const CHAT_WELCOME_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS;
-
 /**
  * Career progression, oldest first. Each role in EXPERIENCE maps to one stage.
  */

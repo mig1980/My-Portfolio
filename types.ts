@@ -201,17 +201,6 @@ export interface ChatAskDetail {
 }
 
 /**
- * API request format for chat endpoint.
- * @internal Used by useChat hook
- */
-export interface ChatApiRequest {
-  /** User's message text */
-  message: string;
-  /** Previous conversation history */
-  history?: ChatHistoryItem[];
-}
-
-/**
  * API response format from chat endpoint.
  * Uses discriminated union for type-safe response handling.
  * @internal Used by useChat hook

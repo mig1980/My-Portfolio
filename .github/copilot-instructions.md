@@ -69,7 +69,7 @@ AboutMe/
 ├── functions/api/          # Cloudflare Pages Functions
 │   └── chat.ts             # Gemini API proxy with 4-model fallback
 ├── styles/globals.css      # Tailwind v4 + custom utilities
-├── tests/                  # Vitest tests (141 tests, 14 files)
+├── tests/                  # Vitest tests (155 tests, 14 files)
 └── public/
     ├── _headers            # Security headers (CSP, CORS)
     └── _redirects          # SPA routing
@@ -161,4 +161,4 @@ GitHub Actions runs on every PR:
 
 ---
 
-*Last updated: September 25, 2026*
+*Last updated: September 26, 2026*

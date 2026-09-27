@@ -5,7 +5,7 @@
 
 import React, { memo, useCallback, useState } from 'react';
 import { ArrowRight, ArrowUp, Download, Sparkles } from 'lucide-react';
-import { PERSONAL_INFO, HERO_QUESTIONS } from '../constants';
+import { PERSONAL_INFO, SUGGESTED_QUESTIONS } from '../constants';
 import { askChat } from '../utils/chatEvents';
 import { trackEvent } from '../utils/analytics';
 import { MAX_CHAT_MESSAGE_LENGTH } from '../utils/chatLimits';
@@ -134,7 +134,7 @@ const Hero: React.FC = memo(() => {
               Try asking
             </p>
             <div className="flex flex-wrap gap-2">
-              {HERO_QUESTIONS.map((suggested) => (
+              {SUGGESTED_QUESTIONS.map((suggested) => (
                 <button
                   key={suggested}
                   type="button"

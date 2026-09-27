@@ -26,7 +26,7 @@ const APPROACH_STEPS: ApproachStep[] = [
   {
     icon: Telescope,
     title: 'Zoom out',
-    description: 'Find the business problem hiding behind the technology conversation.',
+    description: 'Find the business problem behind the technology conversation.',
   },
   {
     icon: Users,

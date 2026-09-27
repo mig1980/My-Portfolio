@@ -120,7 +120,7 @@ export interface AwardItem {
   /** Organization that granted the award */
   issuer: string;
   /** Level or tier of the award (e.g., "Platinum", "Gold") */
-  awardLevel: string;
+  awardLevel?: string;
   /** Brief description of the achievement */
   description: string;
   /** Visual theme color for the award card */

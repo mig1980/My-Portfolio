@@ -28,15 +28,15 @@ import { getLogoUrl } from './utils/logo';
 export const PERSONAL_INFO = {
   name: 'Michael Gavrilov',
   tagline: 'Engineer at heart.',
-  taglineHighlight: 'Strategic account leader by experience.',
+  taglineHighlight: 'Strategic account leader by trade.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
   focus: 'Technology · AI · Strategy',
   intro: 'I turn ambitious AI ideas into business reality.',
   resumeUrl: '/CV/Michael-Gavrilov-Resume.pdf',
   summary:
-    'I started my career building and operating technology. I became an architect, strategist, and eventually a strategic account leader. The mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work.',
-  summaryEmphasis: 'Today, the systems are just bigger.',
+    'I started my career building and operating technology. I became an architect, a strategist, and eventually a strategic account leader. The mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work.',
+  summaryEmphasis: 'Today, the systems are bigger.',
 };
 
 /**
@@ -166,7 +166,7 @@ export const SKILLS: SkillGroup[] = [
       'Strategic Accounts',
       'Multi-Year Account Strategy',
       'Enterprise Transformation',
-      'Growth & Opportunity Development',
+      'Growth Strategy',
     ],
   },
   {
@@ -279,14 +279,9 @@ export const AWARDS: AwardItem[] = [
     id: 'attainment-100',
     title: '100% Attainment',
     issuer: 'Microsoft',
-    awardLevel: '7× (through 2024) · 2025 · 2026',
-    description: 'Achieved 100% cumulative tenured weighted attainment on a sales quota plan.',
+    description: 'Consistent quota attainment across multiple fiscal years.',
     color: 'green',
-    badges: [
-      { src: '/Awards/100Attainmentretired_7Time.png', alt: '100% Attainment 7-time winner badge' },
-      { src: '/Awards/100Attainment_2025.png', alt: '100% Attainment 2025 badge' },
-      { src: '/Awards/100Attainment__2026.png', alt: '100% Attainment 2026 badge' },
-    ],
+    badges: [{ src: '/Awards/100Attainment__2026.png', alt: '100% Attainment 2026 badge' }],
   },
 ];
 
@@ -316,7 +311,7 @@ export const OUTSIDE_WORK: OutsideWorkGroup[] = [
 export const STATS: StatItem[] = [
   { value: 20, suffix: '+', label: 'Years across technology and business' },
   { value: 500, prefix: '$', suffix: 'M+', label: 'in multi-year agreements' },
-  { value: 5, suffix: '×', label: 'Top-Performer Awards' },
+  { value: 5, suffix: '×', label: 'Microsoft Platinum & Gold Club recognition' },
 ];
 
 /**

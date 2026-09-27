@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Michael Gavrilov - Resume</title>
+<style>
+  @font-face { font-family: "Inter"; font-style: normal; font-weight: 400; src: url('/fonts/inter-regular.woff2') format('woff2'); }
+  @font-face { font-family: "Inter"; font-style: normal; font-weight: 600; src: url('/fonts/inter-semibold.woff2') format('woff2'); }
+  @font-face { font-family: "Inter"; font-style: normal; font-weight: 700; src: url('/fonts/inter-bold.woff2') format('woff2'); }
+  @font-face { font-family: "Instrument Serif"; font-style: normal; font-weight: 400; src: url('/fonts/instrument-serif-regular.woff2') format('woff2'); }
+  @font-face { font-family: "Instrument Serif"; font-style: italic; font-weight: 400; src: url('/fonts/instrument-serif-italic.woff2') format('woff2'); }
+  @page { size: Letter; margin: 0; }
+  :root { --fs: 9.6pt; --lh: 1.13; --gap: 1; --navy: #1b2f52; --muted: #555; --rule: #c9d1de; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 8.5in; }
+  body { font-family: "Inter", Arial, sans-serif; font-size: var(--fs); line-height: var(--lh); letter-spacing: -0.01em; color: #1a1a1a;
+         padding: calc(0.34in * var(--gap)) 0.45in 0.2in 0.45in; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  h1 { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: 27pt; line-height: 1.1; color: var(--navy); letter-spacing: 0.2px; }
+  .title { font-weight: 600; font-size: 11pt; color: var(--navy); margin-top: 3pt; }
+  .tag { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-size: 11pt; color: #5b6b85; margin-top: 1pt; }
+  .contact { font-size: 9.2pt; color: #333; margin-top: 3pt; padding-bottom: calc(5pt * var(--gap)); border-bottom: 2px solid var(--navy); }
+  .contact span.sep { color: #999; margin: 0 5px; }
+  h2 { font-size: 9.8pt; font-weight: bold; letter-spacing: 2.4px; text-transform: uppercase; color: var(--navy);
+       margin-top: calc(9pt * var(--gap)); padding-bottom: 1.5pt; border-bottom: 1px solid var(--rule); margin-bottom: calc(3pt * var(--gap)); }
+  p.summary { margin-bottom: 0; }
+  .kv b { color: var(--navy); font-weight: 700; }
+  .role { margin-top: calc(4.5pt * var(--gap)); }
+  .role-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .role-head .r { font-weight: 700; font-size: 10.2pt; color: var(--navy); }
+  .role-head .co { font-weight: 400; color: #333; }
+  .role-head .dates { color: #444; font-size: 9.4pt; white-space: nowrap; }
+  .scope { font-style: italic; color: #5b6b85; font-size: 9.2pt; margin-top: 0.5pt; }
+  ul { list-style: none; margin-top: 1pt; }
+  li { position: relative; padding-left: 16px; margin-top: calc(0.8pt * var(--gap)); }
+  li::before { content: "\25B8"; position: absolute; left: 3px; top: 0; color: var(--navy); font-size: 8pt; }
+  li b { font-weight: 700; }
+  .rec { margin-top: 1pt; color: #444; }
+  .rec b { color: var(--navy); }
+  .edu div { margin-top: 0.5pt; }
+  .edu b { font-weight: 700; }
+</style>
+</head>
+<body>
+  <h1>Michael Gavrilov</h1>
+  <div class="title">{{TITLE}} — Microsoft</div>
+  <div class="tag">Engineer at heart. Strategic account leader by trade.</div>
+  <div class="contact">{{CONTACT}}</div>
+
+  <h2>Executive Summary</h2>
+  <p class="summary">Engineer turned strategic account leader with 20+ years at Microsoft. I lead Microsoft's strategic partnership with a top-5 global pharmaceutical company, owning the C-suite relationship and multi-year strategy across Cloud, AI, Data, Security and Modern Work. I structure complex multi-year agreements exceeding $500M, orchestrate large virtual teams, and help regulated enterprises move AI from experimentation to governed, production-scale outcomes.</p>
+
+  <h2>Core Expertise</h2>
+  <div class="kv"><b>Leadership:</b> C-Suite Executive Partnerships · Executive Governance &amp; QBRs · Virtual Team Leadership</div>
+  <div class="kv"><b>Commercial:</b> Multi-Year Account Strategy · Complex Deal Structuring &amp; Negotiation · Revenue &amp; Forecast Management</div>
+  <div class="kv"><b>Technology:</b> Enterprise &amp; Agentic AI Transformation · Cloud &amp; AI Architecture · Regulated-Industry (GxP) Environments</div>
+  <div class="kv"><b>Builder:</b> QuantumInvestor.net (generative-AI investment research experiment) · gavrilov.ai (open-source site with AI assistant)</div>
+
+  <h2>Professional Experience</h2>
+  <div class="role">
+    <div class="role-head"><div><span class="r">Strategic Account Director, Healthcare &amp; Life Sciences</span><span class="co"> · Microsoft</span></div><div class="dates">2017 – Present</div></div>
+    <div class="scope">Executive owner of a top-5 global pharmaceutical account, one of Microsoft's strategic HLS relationships</div>
+    <ul>
+      <li>Own C-suite relationships and the multi-year technology and AI strategy across Azure, Data, Security, Modern Work and Business Applications.</li>
+      <li>Grew the strategic account <b>~5× since 2017 (~20% revenue CAGR)</b>, expanding Microsoft's share of the customer's technology spend.</li>
+      <li>Structure strategic agreements exceeding <b>$500M in total contract value</b>, balancing customer outcomes, transformation investments, risk and long-term partnership economics.</li>
+      <li>Scale generative and agentic AI from experimentation to enterprise deployment, navigating the technical, governance and organizational complexity of regulated environments.</li>
+      <li>Lead a <b>30+ person virtual team</b> spanning specialist sales, engineering, customer success, support, services and global system integrator partners.</li>
+      <li>Establish executive governance and quarterly business reviews with CIO, CDO and business leadership, aligning Microsoft roadmaps with R&amp;D, manufacturing and commercial priorities.</li>
+    </ul>
+    <div class="rec"><b>Recognition:</b> Platinum Club · 100% attainment</div>
+  </div>
+
+  <div class="role">
+    <div class="role-head"><div><span class="r">Senior Account Executive, Enterprise Accounts</span><span class="co"> · Microsoft</span></div><div class="dates">2011 – 2017</div></div>
+    <ul>
+      <li>Owned executive relationships, account strategy and commercial execution for multinational enterprise customers across multiple industries, delivering <b>$20M+ average annual revenue</b>.</li>
+      <li>Led complex enterprise agreement renewals and expansions spanning Office 365, Azure, Dynamics and Microsoft cloud services.</li>
+      <li>Orchestrated sales, technical, services and partner teams around customer priorities, technology adoption and long-term account growth.</li>
+    </ul>
+    <div class="rec"><b>Recognition:</b> Gold Club · 100% attainment</div>
+  </div>
+
+  <div class="role">
+    <div class="role-head"><div><span class="r">Account Technology Strategist, Enterprise Accounts</span><span class="co"> · Microsoft</span></div><div class="dates">2008 – 2011</div></div>
+    <ul>
+      <li>Served as technology strategist and trusted advisor to CIOs and IT leadership across multinational enterprise accounts.</li>
+      <li>Developed multi-year technology roadmaps spanning infrastructure modernization, virtualization, collaboration and emerging cloud technologies.</li>
+      <li>Drove adoption and value-realization programs supporting enterprise agreement renewals and expansion.</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-head"><div><span class="r">Partner Technology Strategist</span><span class="co"> · Microsoft</span></div><div class="dates">2006 – 2008</div></div>
+    <ul>
+      <li>Built go-to-market strategies with systems integrators and ISV partners, increasing <b>partner-influenced revenue by 150%</b>.</li>
+      <li>Developed technical relationships with partner and customer CTOs and CIOs to shape joint solutions and opportunities.</li>
+      <li>Enabled partner technical teams on the Microsoft platform, accelerating solution readiness and enterprise deployments.</li>
+    </ul>
+  </div>
+
+  <div class="role">
+    <div class="role-head"><div><span class="r">Earlier Career</span></div><div class="dates">2002 – 2006</div></div>
+    <ul>
+      <li><b>IT Solutions Architect, Systematica Group</b> (2005–2006) — led architecture and technical strategy for complex enterprise IT solutions in pre-sales engagements.</li>
+      <li><b>IT Operations Manager / Team Lead, Allied Testing</b> (2002–2005) — led 8 systems engineers; automation and process improvements raised operational efficiency 25%.</li>
+    </ul>
+  </div>
+
+  <h2>Education</h2>
+  <div class="edu">
+    <div><b>M.S., Management of Technology</b> — New York University Tandon School of Engineering</div>
+    <div><b>M.S., Information Systems Engineering</b> — Bauman State Technical University</div>
+    <div><b>B.S., Computer Engineering</b> — Bauman State Technical University</div>
+  </div>
+
+  <h2>Certifications &amp; Executive Education</h2>
+  <div class="kv"><b>Certifications:</b> Azure Solutions Architect Expert · Azure AI Fundamentals · AWS Certified Cloud Practitioner · Challenger Insight Selling</div>
+  <div class="kv"><b>Executive Education:</b> Wharton (Selling to the C-Suite) · INSEAD (Business Strategy &amp; Financial Acumen; Value Negotiation)</div>
+</body>
+</html>

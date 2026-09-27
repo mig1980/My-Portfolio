@@ -153,6 +153,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - Secret: `GITHUB_TOKEN`, a **fine-grained PAT** limited to `mig1980/My-Portfolio` with Contents: read/write and Actions: read. Also set `GITHUB_REPO=mig1980/My-Portfolio`.
 - Reject bodies over 128 KB. Allow only `GET` and `PUT`. Require `Content-Type: application/json`. Same-origin only (check `Origin` against the allowed list in `chat.ts`).
 - Tests mock `fetch` the same way `tests/chat.test.ts` does.
+- **Done (Sept 27, 2026)** (code only; works live after the Manual setup). GitHub helpers live in `resume/github.ts`. The same-origin check compares `Origin` with the request's own origin (works on every hostname, no list to maintain). PUT normalizes CRLF → LF, turns the optional message into a one-line lowercase-first subject (≤ 72 chars), and returns `{ sha, commitSha, commitUrl }`. Status reports `run: null` while `resume-pdf.yml` isn't on `main` yet. Missing/invalid `GITHUB_TOKEN`/`GITHUB_REPO` → 500; GitHub errors → 502 (token never echoed).
 
 ### Phase 5: Admin UI
 

@@ -144,7 +144,7 @@ My-Portfolio/
 - Client-side environment variables use the `VITE_` prefix. See `.env.example`.
 - Local secrets belong in `.env.local` (ignored by git).
 - The chat API runs as a Cloudflare Pages Function and requires a server-side `GEMINI_API_KEY` secret (set in Cloudflare, not in the repo).
-- The admin API needs `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD` and `ADMIN_EMAIL` in Cloudflare Pages (Production and Preview). Without them it returns 500 and serves nothing.
+- The admin API needs `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`, `GITHUB_TOKEN` (fine-grained PAT for this repo only: Contents read/write, Actions read) and `GITHUB_REPO` (`mig1980/My-Portfolio`) in Cloudflare Pages (Production and Preview). Without them it returns 500 and serves nothing.
 
 ## Deployment
 

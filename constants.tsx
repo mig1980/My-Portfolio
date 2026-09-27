@@ -28,15 +28,15 @@ import { getLogoUrl } from './utils/logo';
 export const PERSONAL_INFO = {
   name: 'Michael Gavrilov',
   tagline: 'Engineer at heart.',
-  taglineHighlight: 'Strategic account leader by experience.',
+  taglineHighlight: 'Strategic account leader by trade.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
   focus: 'Technology · AI · Strategy',
   intro: 'I turn ambitious AI ideas into business reality.',
   resumeUrl: '/CV/Michael-Gavrilov-Resume.pdf',
   summary:
-    'I started my career building and operating technology. I became an architect, strategist, and eventually a strategic account leader. The mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work.',
-  summaryEmphasis: 'Today, the systems are just bigger.',
+    'I started my career building and operating technology. I became an architect, a strategist, and eventually a strategic account leader. The mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work.',
+  summaryEmphasis: 'Today, the systems are bigger.',
 };
 
 /**
@@ -47,10 +47,6 @@ export const SUGGESTED_QUESTIONS: readonly string[] = [
   'How has Michael led strategic enterprise relationships?',
   'How did Michael move from engineer to strategic account leader?',
 ];
-
-export const HERO_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS;
-
-export const CHAT_WELCOME_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS;
 
 /**
  * Career progression, oldest first. Each role in EXPERIENCE maps to one stage.
@@ -71,11 +67,11 @@ export const EXPERIENCE: JobRole[] = [
     period: 'Jan 2017 - Present',
     stage: 'Account Leader',
     description: [
-      'Own the C-suite relationship and multi-year technology and AI strategy for a top-5 global pharmaceutical company, one of Microsoft’s strategic Healthcare & Life Sciences accounts.',
+      'Own C-suite relationships and the multi-year technology and AI strategy for a top-5 global pharmaceutical company, one of Microsoft’s strategic Healthcare & Life Sciences accounts.',
       'Structure strategic agreements exceeding $500M in total contract value, expanding the partnership across AI, Azure, Data, Security, Modern Work and Business Applications.',
-      'Grew Azure consumption and helped move generative and agentic AI from pilots into production within regulated environments.',
+      'Scale generative and agentic AI from experimentation to enterprise deployment, navigating the technical, governance, and organizational complexity of regulated environments.',
       'Lead a 30+ person virtual team spanning specialist sales, engineering, customer success, support, services and global system integrator partners.',
-      'Established executive governance and quarterly business reviews with CIO, CDO and business leadership, aligning Microsoft roadmaps with priorities across R&D, manufacturing and commercial functions.',
+      'Establish executive governance and quarterly business reviews with CIO, CDO and business leadership, aligning Microsoft roadmaps with priorities across R&D, manufacturing and commercial functions.',
       'Lead complex, multi-stakeholder negotiations, balancing customer outcomes, transformation investments, risk and long-term partnership economics.',
       'Recognition: Microsoft Platinum Club | 100% attainment',
     ],
@@ -170,7 +166,7 @@ export const SKILLS: SkillGroup[] = [
       'Strategic Accounts',
       'Multi-Year Account Strategy',
       'Enterprise Transformation',
-      'Growth & Opportunity Development',
+      'Growth Strategy',
     ],
   },
   {
@@ -283,8 +279,7 @@ export const AWARDS: AwardItem[] = [
     id: 'attainment-100',
     title: '100% Attainment',
     issuer: 'Microsoft',
-    awardLevel: '7× (through 2024) · 2025 · 2026',
-    description: 'Achieved 100% cumulative tenured weighted attainment on a sales quota plan.',
+    description: 'Consistent quota attainment across multiple fiscal years.',
     color: 'green',
     badges: [
       { src: '/Awards/100Attainmentretired_7Time.png', alt: '100% Attainment 7-time winner badge' },
@@ -320,7 +315,7 @@ export const OUTSIDE_WORK: OutsideWorkGroup[] = [
 export const STATS: StatItem[] = [
   { value: 20, suffix: '+', label: 'Years across technology and business' },
   { value: 500, prefix: '$', suffix: 'M+', label: 'in multi-year agreements' },
-  { value: 5, suffix: '×', label: 'Top-Performer Awards' },
+  { value: 5, suffix: '×', label: 'Microsoft Platinum & Gold Club recognition' },
 ];
 
 /**

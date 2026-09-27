@@ -121,8 +121,9 @@ const About: React.FC = memo(() => {
                     <h4 className="text-ink font-semibold text-lg mb-1">{award.title}</h4>
 
                     <div className="text-xs font-semibold uppercase tracking-wider text-stone-600 mb-3">
-                      {award.issuer && `${award.issuer} • `}
-                      <span className={accentText}>{award.awardLevel}</span>
+                      {award.issuer}
+                      {award.issuer && award.awardLevel && ' • '}
+                      {award.awardLevel && <span className={accentText}>{award.awardLevel}</span>}
                     </div>
 
                     <p className="text-sm text-stone-700 leading-snug">{award.description}</p>

@@ -6,7 +6,7 @@ Personal site for Michael Gavrilov (gavrilov.ai): a light, editorial single-page
 
 ## Features
 
-- **Sections:** Hero with "Ask my AI assistant" box → Stats → 01 About → 02 How I think → 03 Where I operate → 04 Experience (Engineer → Architect → Strategist → Dealmaker) → 05 Projects → 06 Education → 07 Contact
+- **Sections:** Hero with "Ask my AI assistant" box → Stats → 01 About → 02 How I think → 03 Where I operate → 04 Experience (Engineer → Architect → Strategist → Strategic Account Leader) → 05 Projects → 06 Education → 07 Contact
 - **AI assistant:** Gemini-backed chat (`functions/api/chat.ts`) with a 4-model fallback chain, suggested questions, follow-up suggestions, retry, offline and rate-limit states, and 24-hour history in `localStorage`
 - **Deep links:** `/#experience`, `/#projects`, etc. scroll to the section even though below-the-fold sections load lazily
 - **Design:** paper/ink palette with a blue accent; Instrument Serif for headlines, Inter for text (self-hosted in `public/fonts/`)
@@ -20,7 +20,7 @@ Personal site for Michael Gavrilov (gavrilov.ai): a light, editorial single-page
 | Experience, stages, education, certifications | `constants.tsx` → `EXPERIENCE`, `CAREER_STAGES`, `EDUCATION`, `CERTIFICATIONS` |
 | "Where I operate" areas | `constants.tsx` → `SKILLS` |
 | Awards (badges in `public/Awards/`) | `constants.tsx` → `AWARDS` |
-| Suggested chat questions | `constants.tsx` → `SUGGESTED_QUESTIONS` (hero shows the first 3) |
+| Suggested chat questions | `constants.tsx` → `SUGGESTED_QUESTIONS` (shown in the hero and the chat welcome) |
 | "How I think" principles and statement | `components/MyApproach.tsx` |
 | Facts the AI assistant may use | `functions/api/chat.ts` → `SYSTEM_CONTEXT` |
 | Page title, description, social cards | `index.html` |

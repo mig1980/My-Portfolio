@@ -120,7 +120,7 @@ export interface AwardItem {
   /** Organization that granted the award */
   issuer: string;
   /** Level or tier of the award (e.g., "Platinum", "Gold") */
-  awardLevel: string;
+  awardLevel?: string;
   /** Brief description of the achievement */
   description: string;
   /** Visual theme color for the award card */
@@ -198,17 +198,6 @@ export interface ChatHistoryItem {
 export interface ChatAskDetail {
   /** Question to send to the assistant */
   question: string;
-}
-
-/**
- * API request format for chat endpoint.
- * @internal Used by useChat hook
- */
-export interface ChatApiRequest {
-  /** User's message text */
-  message: string;
-  /** Previous conversation history */
-  history?: ChatHistoryItem[];
 }
 
 /**

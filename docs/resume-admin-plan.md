@@ -142,6 +142,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - Env/secrets in Cloudflare Pages: `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`.
 - `public/_headers`: add a `/admin/*` block with `X-Robots-Tag: noindex, nofollow` and `Cache-Control: no-store`. Add `Disallow: /admin` to `robots.txt`.
 - Tests (`tests/adminAuth.test.ts`): missing header → 401, bad signature → 401, wrong aud → 401, expired → 401, wrong email → 403, valid → passes through. Generate a test RSA key in the test and mock the JWKS fetch.
+- **Done (Sept 27, 2026)** (code only; works live after the Manual setup). Also: `alg` must be exactly RS256, claims are read only after the signature verifies, unknown `kid` triggers one JWKS refetch (key rotation), JWKS outage → 503, missing/invalid config → 500 (fails closed), and the team domain must be `*.cloudflareaccess.com`. The verified email is passed on as `context.data.adminEmail`.
 
 **Acceptance:** `curl https://gavrilov.ai/api/admin/resume` returns the Access login redirect or 401, never data.
 

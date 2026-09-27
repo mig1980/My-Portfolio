@@ -8,6 +8,7 @@
 /// <reference types="@cloudflare/workers-types" />
 
 import { MAX_CHAT_MESSAGE_LENGTH as MAX_MESSAGE_LENGTH } from '../../utils/chatLimits';
+import { CAREER_FACTS } from '../../utils/careerFacts';
 
 // ============================================================================
 // Type Definitions
@@ -188,7 +189,7 @@ function sanitizeInput(input: string): string {
 // System Context
 // ============================================================================
 
-const SYSTEM_CONTEXT = `You are an AI assistant for Michael Gavrilov's professional portfolio website.
+export const SYSTEM_CONTEXT = `You are an AI assistant for Michael Gavrilov's professional portfolio website.
 Answer questions about Michael based ONLY on the verified facts in this context.
 
 Verified facts.
@@ -222,13 +223,13 @@ Quantified outcomes.
 He structures strategic agreements exceeding $500M in total contract value, expanding the partnership across AI, Azure, Data, Security, Modern Work and Business Applications. In prior enterprise roles, he delivered average annual revenue exceeding $20M. Earlier in his Microsoft career, he led partner programs that drove a 150% increase in partner-influenced revenue. In an IT operations leadership role, he delivered process improvements and automation that increased operational efficiency by 25%.
 
 Awards and recognition.
-He is a 2-time Microsoft Platinum Club recipient and a 3-time Gold Club Award recipient. He received a Champion Award in FY23 Q4. He has achieved consistent quota attainment across multiple fiscal years. Do not state a specific number of attainment awards.
+He is a ${CAREER_FACTS.platinumClubCount}-time Microsoft Platinum Club recipient and a ${CAREER_FACTS.goldClubCount}-time Gold Club Award recipient. He received a Champion Award in FY23 Q4. He has achieved ${CAREER_FACTS.quotaAttainment}, ${CAREER_FACTS.quotaAttainmentRecent}.
 
 Education.
-Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from Bauman State Technical University.
+Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from ${CAREER_FACTS.university}.
 
 Certifications and executive education.
-Microsoft Certified: Azure Solutions Architect Expert. AWS Certified Cloud Practitioner. Selling to the C-Suite from Wharton Executive Education. Business Strategy and Financial Acumen from INSEAD Executive Education. Value Negotiation from INSEAD Executive Education.
+Microsoft Certified: ${CAREER_FACTS.azureCertification}; this certification is no longer current, so never describe it as current. AWS Certified Cloud Practitioner. Selling to the C-Suite from Wharton Executive Education. Business Strategy and Financial Acumen from INSEAD Executive Education. Value Negotiation from INSEAD Executive Education.
 
 Contact methods.
 LinkedIn is linkedin.com/in/mgavrilov. Email is contact@gavrilov.ai. Resume is available at /CV/MGavrilovCV.pdf.

@@ -21,6 +21,7 @@ import type {
 } from './types';
 import { Linkedin, Mail, Dumbbell, Lightbulb } from 'lucide-react';
 import { getLogoUrl } from './utils/logo';
+import { CAREER_FACTS } from './utils/careerFacts';
 
 /**
  * Personal information displayed in Hero and Contact sections.
@@ -204,14 +205,14 @@ export const EDUCATION: EducationItem[] = [
   {
     id: 'bmstu-ms-ise',
     degree: "Master's degree, Information Systems Engineering",
-    institution: 'Bauman State Technical University',
+    institution: CAREER_FACTS.university,
     type: 'Master',
     logo: getLogoUrl('bmstu.ru'),
   },
   {
     id: 'bmstu-bs-ce',
     degree: "Bachelor's degree, Computer Engineering",
-    institution: 'Bauman State Technical University',
+    institution: CAREER_FACTS.university,
     type: 'Bachelor',
     logo: getLogoUrl('bmstu.ru'),
   },
@@ -224,7 +225,7 @@ export const EDUCATION: EducationItem[] = [
 export const CERTIFICATIONS: Certification[] = [
   {
     id: 'azure-solutions-architect',
-    name: 'Microsoft Certified: Azure Solutions Architect Expert',
+    name: `Microsoft Certified: ${CAREER_FACTS.azureCertification}`,
     issuer: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
   },
@@ -263,7 +264,7 @@ export const AWARDS: AwardItem[] = [
     id: 'platinum-gold-club',
     title: 'Platinum & Gold Club',
     issuer: 'Microsoft',
-    awardLevel: '2× Platinum · 3× Gold',
+    awardLevel: `${CAREER_FACTS.platinumClubCount}× Platinum · ${CAREER_FACTS.goldClubCount}× Gold`,
     description:
       'Recognition for sustained customer impact, revenue growth, and top-tier performance.',
     color: 'platinum',
@@ -279,7 +280,7 @@ export const AWARDS: AwardItem[] = [
     id: 'attainment-100',
     title: '100% Attainment',
     issuer: 'Microsoft',
-    description: 'Consistent quota attainment across multiple fiscal years.',
+    description: `${CAREER_FACTS.quotaAttainment}, ${CAREER_FACTS.quotaAttainmentRecent}.`,
     color: 'green',
     badges: [
       { src: '/Awards/100Attainmentretired_7Time.png', alt: '100% Attainment 7-time winner badge' },
@@ -315,7 +316,11 @@ export const OUTSIDE_WORK: OutsideWorkGroup[] = [
 export const STATS: StatItem[] = [
   { value: 20, suffix: '+', label: 'Years across technology and business' },
   { value: 500, prefix: '$', suffix: 'M+', label: 'in multi-year agreements' },
-  { value: 5, suffix: '×', label: 'Microsoft Platinum & Gold Club recognition' },
+  {
+    value: CAREER_FACTS.platinumClubCount + CAREER_FACTS.goldClubCount,
+    suffix: '×',
+    label: 'Microsoft Platinum & Gold Club recognition',
+  },
 ];
 
 /**

@@ -125,6 +125,13 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
   - Steps: checkout, setup-node 20, `npm ci`, `npx playwright install --with-deps chromium`, `npm run resume:build`. If the PDF changed, commit `chore(resume): regenerate PDF` as `github-actions[bot]` and push.
   - Loop-safe: the PDF isn't in the `paths` filter, and pushes made with `GITHUB_TOKEN` don't trigger workflows.
 - Add `.env.example` entries: `RESUME_PHONE=`, `RESUME_OUTPUT_DIR=`.
+- **Done (Sept 27, 2026)**, with these details:
+  - The page is served from a fake `https://resume.local` origin via `page.route` (HTML from memory, fonts from `public/fonts/`); every other request is blocked and page JavaScript is disabled.
+  - Each candidate is also printed and page-counted; only a verified 1-page PDF is written.
+  - PDF dates are pinned to the last commit touching the résumé sources (`resume/pdf.ts`), so rebuilding unchanged content gives identical bytes and the Action doesn't commit noise.
+  - Windows (incl. ARM64) prints with the installed Edge (`channel: 'msedge'`); CI uses Playwright's Chromium headless shell.
+  - Bullets are a CSS triangle instead of `▸`, which Inter doesn't include (it fell back to a system font that CI lacks).
+  - The commit step runs only on `main`, so a manual run on another branch just validates.
 
 **Acceptance:** editing `content/resume.html` on a branch, then merging, produces a new PDF commit, and Cloudflare deploys it.
 

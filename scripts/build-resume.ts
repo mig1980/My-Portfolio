@@ -1,0 +1,193 @@
+/* eslint-disable no-console */
+/**
+ * @fileoverview Builds the résumé PDF from content/resume.html, shrinking it until it fits on one page.
+ * Run with: npm run resume:build          → public/CV/MGavrilovCV.pdf (Enterprise title, no phone)
+ *           npm run resume:build:private  → all 4 variants (with/without phone) in RESUME_OUTPUT_DIR
+ */
+
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { dirname, join, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { chromium, type Page } from 'playwright';
+import { renderResume, type ResumeVariant } from '../resume/render';
+import { validateResumeHtml } from '../resume/validate';
+import {
+  FIT_SETTINGS,
+  LETTER_HEIGHT_PX,
+  LETTER_WIDTH_PX,
+  countPdfPages,
+  normalizePdf,
+  type FitSetting,
+} from '../resume/pdf';
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const TEMPLATE_PATH = join(ROOT, 'content', 'resume.html');
+const FONTS_DIR = join(ROOT, 'public', 'fonts');
+const PUBLIC_PDF_PATH = join(ROOT, 'public', 'CV', 'MGavrilovCV.pdf');
+// Fake origin served entirely from memory/disk via page.route; nothing leaves the machine.
+const ORIGIN = 'https://resume.local';
+
+interface BuildJob {
+  variant: ResumeVariant;
+  phone?: string;
+  outFile: string;
+}
+
+const PRIVATE_FILES: ReadonlyArray<{ name: string; variant: ResumeVariant; withPhone: boolean }> = [
+  { name: 'Michael_Gavrilov_Resume_2026_Executive.pdf', variant: 'hls', withPhone: true },
+  { name: 'Michael_Gavrilov_Resume_2026_Executive_Public.pdf', variant: 'hls', withPhone: false },
+  {
+    name: 'Michael_Gavrilov_Resume_2026_Executive_Enterprise.pdf',
+    variant: 'enterprise',
+    withPhone: true,
+  },
+  {
+    name: 'Michael_Gavrilov_Resume_2026_Executive_Enterprise_Public.pdf',
+    variant: 'enterprise',
+    withPhone: false,
+  },
+];
+
+function requireEnv(name: string): string {
+  const value = process.env[name]?.trim();
+  if (!value) throw new Error(`${name} is not set. Add it to .env.local (see .env.example).`);
+  return value;
+}
+
+/** Last commit touching the résumé sources, so rebuilding unchanged content gives identical bytes. */
+function sourceDate(): Date {
+  try {
+    const iso = execFileSync(
+      'git',
+      ['log', '-1', '--format=%cI', '--', 'content/resume.html', 'resume', 'public/fonts'],
+      { cwd: ROOT, encoding: 'utf8' }
+    ).trim();
+    if (iso) return new Date(iso);
+  } catch {
+    // Not a git checkout; fall through.
+  }
+  return new Date();
+}
+
+function planJobs(args: readonly string[]): BuildJob[] {
+  const unknown = args.filter((arg) => arg !== '--public' && arg !== '--private');
+  if (unknown.length > 0) throw new Error(`Unknown option(s): ${unknown.join(' ')}`);
+
+  if (!args.includes('--private')) {
+    return [{ variant: 'enterprise', outFile: PUBLIC_PDF_PATH }];
+  }
+
+  const envFile = join(ROOT, '.env.local');
+  if (existsSync(envFile)) process.loadEnvFile(envFile);
+  const phone = requireEnv('RESUME_PHONE');
+  const outputDir = requireEnv('RESUME_OUTPUT_DIR');
+  return PRIVATE_FILES.map(({ name, variant, withPhone }) => ({
+    variant,
+    phone: withPhone ? phone : undefined,
+    outFile: join(outputDir, name),
+  }));
+}
+
+async function serveFromDisk(page: Page, getHtml: () => string): Promise<void> {
+  await page.route('**/*', async (route) => {
+    const url = new URL(route.request().url());
+    if (url.origin !== ORIGIN) return route.abort();
+    if (url.pathname === '/') {
+      return route.fulfill({ contentType: 'text/html; charset=utf-8', body: getHtml() });
+    }
+    const fontFile = resolve(
+      FONTS_DIR,
+      `.${decodeURIComponent(url.pathname.replace(/^\/fonts/, ''))}`
+    );
+    if (
+      url.pathname.startsWith('/fonts/') &&
+      fontFile.startsWith(FONTS_DIR + sep) &&
+      existsSync(fontFile)
+    ) {
+      return route.fulfill({ contentType: 'font/woff2', body: readFileSync(fontFile) });
+    }
+    return route.abort();
+  });
+}
+
+async function measureHeight(page: Page): Promise<number> {
+  await page.goto(`${ORIGIN}/`, { waitUntil: 'load' });
+  return page.evaluate(() => document.fonts.ready.then(() => document.body.scrollHeight));
+}
+
+async function buildOne(
+  page: Page,
+  template: string,
+  job: BuildJob,
+  date: Date,
+  setHtml: (html: string) => void
+): Promise<{ pdf: Uint8Array; setting: FitSetting }> {
+  for (const setting of FIT_SETTINGS) {
+    setHtml(renderResume(template, { variant: job.variant, phone: job.phone, ...setting }));
+    if ((await measureHeight(page)) > LETTER_HEIGHT_PX) continue;
+
+    const pdf = await page.pdf({
+      format: 'Letter',
+      printBackground: true,
+      preferCSSPageSize: true,
+      margin: { top: '0', right: '0', bottom: '0', left: '0' },
+    });
+    if (countPdfPages(pdf) === 1) return { pdf: normalizePdf(pdf, date), setting };
+  }
+  throw new Error(
+    `${job.outFile}: does not fit on one page even at the smallest setting. Shorten the content.`
+  );
+}
+
+function writePdf(outFile: string, pdf: Uint8Array): string {
+  mkdirSync(dirname(outFile), { recursive: true });
+  try {
+    writeFileSync(outFile, pdf);
+    return outFile;
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code !== 'EBUSY' && code !== 'EPERM') throw error;
+    // The file is usually locked because it is open in a PDF viewer.
+    const fallback = outFile.replace(/\.pdf$/i, '_new.pdf');
+    writeFileSync(fallback, pdf);
+    console.warn(`${outFile} is locked; wrote ${fallback} instead.`);
+    return fallback;
+  }
+}
+
+async function main(): Promise<void> {
+  const jobs = planJobs(process.argv.slice(2));
+  const template = readFileSync(TEMPLATE_PATH, 'utf8');
+  const { ok, errors } = validateResumeHtml(template);
+  if (!ok) throw new Error(`content/resume.html is invalid:\n  ${errors.join('\n  ')}`);
+  const date = sourceDate();
+
+  // Windows (incl. ARM64) uses the installed Edge; CI uses Playwright's bundled Chromium.
+  const browser = await chromium.launch(process.platform === 'win32' ? { channel: 'msedge' } : {});
+  try {
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      viewport: { width: LETTER_WIDTH_PX, height: LETTER_HEIGHT_PX },
+    });
+    const page = await context.newPage();
+    await page.emulateMedia({ media: 'print' });
+    let html = '';
+    await serveFromDisk(page, () => html);
+
+    for (const job of jobs) {
+      const { pdf, setting } = await buildOne(page, template, job, date, (next) => {
+        html = next;
+      });
+      const written = writePdf(job.outFile, pdf);
+      console.log(`${written}: 1 page at ${setting.fontSizePt}pt, gap ${setting.gap}`);
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
+main().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : error);
+  process.exitCode = 1;
+});

@@ -39,7 +39,7 @@ Key design decisions:
 1. **The single source of truth is `content/resume.html`**: the full HTML + `<style>` template Michael edits by hand. It is the same file as today's `OneDrive\Documents\CV\source\resume_template.html`, with the contact line (including the phone, which Michael is fine making public) written directly in it.
 2. **One shared TypeScript function** (`resume/render.ts`) fills in `{{TITLE}}` and sets the fit variables (`--fs`, `--gap`). The admin preview, the CI PDF build and the local build all use it, so the preview matches the PDF.
 3. **PDF built in GitHub Actions with Playwright** (not in the Cloudflare build, and not by the Function, since Workers can't run Chromium).
-4. **Python `build.py` is retired.** `npm run resume:build` replaces it locally, and `npm run resume:build:local` writes both title versions to OneDrive.
+4. **Python `build.py` is retired.** `npm run resume:build` replaces it and writes only `public/CV/MGavrilovCV.pdf` in the repo (no OneDrive output). Michael never runs it: the GitHub Action does, and all editing happens in the browser at gavrilov.ai/admin.
 5. **Auth = Cloudflare Access at the edge + JWT verification in the Function** (defense in depth). No passwords in the app.
 6. **Admin is a separate Vite entry** (`admin/index.html`), so none of its code ends up in the public bundle.
 7. **Raw HTML is allowed, but it's contained.** The preview is an `iframe srcdoc` with `sandbox=""` (no scripts, no same-origin access), and it's never injected into the admin React tree. The server rejects `<script>`, `on*=` handlers, `javascript:` URLs, `<iframe>/<object>/<embed>`, and external `http(s)` resources, because fonts and images must be local.
@@ -115,14 +115,14 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
   - Read `content/resume.html`, run `validateResumeHtml` (fail on errors), render, then `page.pdf({ format: 'Letter', printBackground: true, margin: 0 })`.
   - Fit loop over `fontSizePt ∈ [9.6, 9.5, 9.4, 9.3, 9.2] × gap ∈ [1, .85, .7]`. Measure `document.body.scrollHeight ≤ 11in` before printing (faster than printing each try).
   - **Fail with exit 1 if it can't fit on one page.** Never write a 2-page PDF.
-  - Default writes `public/CV/MGavrilovCV.pdf` (Enterprise title). `--local` writes both title versions (`Michael_Gavrilov_Resume_2026_Executive.pdf` = HLS, `..._Executive_Enterprise.pdf`) to `RESUME_OUTPUT_DIR` from `.env.local`.
-- npm scripts: `"resume:build": "tsx scripts/build-resume.ts"` and `"resume:build:local": "tsx scripts/build-resume.ts --local"`.
+  - Writes `public/CV/MGavrilovCV.pdf` (Enterprise title). No other outputs.
+- npm script: `"resume:build": "tsx scripts/build-resume.ts"`.
 - `.github/workflows/resume-pdf.yml`:
   - `on: push` to `main`, `paths: [content/resume.html, resume/**, public/fonts/**, scripts/build-resume.ts]`, plus `workflow_dispatch`.
   - `permissions: contents: write`, `concurrency: resume-pdf` (cancel in progress).
   - Steps: checkout, setup-node 20, `npm ci`, `npx playwright install --with-deps chromium`, `npm run resume:build`. If the PDF changed, commit `chore(resume): regenerate PDF` as `github-actions[bot]` and push.
   - Loop-safe: the PDF isn't in the `paths` filter, and pushes made with `GITHUB_TOKEN` don't trigger workflows.
-- Add `.env.example` entry: `RESUME_OUTPUT_DIR=`.
+- No `.env` entries needed.
 - **Done (Sept 27, 2026)**, with these details:
   - The page is served from a fake `https://resume.local` origin via `page.route` (HTML from memory, fonts from `public/fonts/`); every other request is blocked and page JavaScript is disabled.
   - Each candidate is also printed and page-counted; only a verified 1-page PDF is written.
@@ -172,7 +172,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - Update `README.md` and `.github/copilot-instructions.md` (new folders, commands, admin architecture and the Template contract).
 - Optional: extract plain text from `content/resume.html` at build time for `functions/api/chat.ts`'s system prompt, so the AI assistant stays in sync.
 - Optional: add a Split/Code/Preview layout toggle, and snippets for common blocks (new role, new bullet).
-- Delete `OneDrive\Documents\CV\source\build.py` once `npm run resume:build:local` is confirmed working.
+- Delete `OneDrive\Documents\CV\source\build.py` once `npm run resume:build` is confirmed working.
 
 ---
 
@@ -185,7 +185,6 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 2. **GitHub**: create the fine-grained PAT described in Phase 4 (expires in 1 year, and set a reminder to renew it).
 3. **Cloudflare Pages → Settings → Variables & Secrets (Production and Preview)**: `GITHUB_TOKEN`, `GITHUB_REPO`, `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`.
 4. **Branch protection on `main`** (if enabled): allow `github-actions[bot]` to push, or change the workflow to open a PR (see Decisions).
-5. Local: add `RESUME_OUTPUT_DIR="C:\Users\mgavril\OneDrive - Gavril\Documents\CV"` to `.env.local`.
 
 ## Decisions to make before starting
 

@@ -1,16 +1,15 @@
 /* eslint-disable no-console */
 /**
- * @fileoverview Builds the résumé PDF from content/resume.html, shrinking it until it fits on one page.
- * Run with: npm run resume:build        → public/CV/MGavrilovCV.pdf (Enterprise title)
- *           npm run resume:build:local  → both title versions in RESUME_OUTPUT_DIR
+ * @fileoverview Builds public/CV/MGavrilovCV.pdf (Enterprise title) from content/resume.html,
+ * shrinking it until it fits on one page. Run with: npm run resume:build
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, type Page } from 'playwright';
-import { renderResume, type ResumeVariant } from '../resume/render';
+import { renderResume } from '../resume/render';
 import { validateResumeHtml } from '../resume/validate';
 import {
   FIT_SETTINGS,
@@ -28,22 +27,6 @@ const PUBLIC_PDF_PATH = join(ROOT, 'public', 'CV', 'MGavrilovCV.pdf');
 // Fake origin served entirely from memory/disk via page.route; nothing leaves the machine.
 const ORIGIN = 'https://resume.local';
 
-interface BuildJob {
-  variant: ResumeVariant;
-  outFile: string;
-}
-
-const LOCAL_FILES: ReadonlyArray<{ name: string; variant: ResumeVariant }> = [
-  { name: 'Michael_Gavrilov_Resume_2026_Executive.pdf', variant: 'hls' },
-  { name: 'Michael_Gavrilov_Resume_2026_Executive_Enterprise.pdf', variant: 'enterprise' },
-];
-
-function requireEnv(name: string): string {
-  const value = process.env[name]?.trim();
-  if (!value) throw new Error(`${name} is not set. Add it to .env.local (see .env.example).`);
-  return value;
-}
-
 /** Last commit touching the résumé sources, so rebuilding unchanged content gives identical bytes. */
 function sourceDate(): Date {
   try {
@@ -57,20 +40,6 @@ function sourceDate(): Date {
     // Not a git checkout; fall through.
   }
   return new Date();
-}
-
-function planJobs(args: readonly string[]): BuildJob[] {
-  const unknown = args.filter((arg) => arg !== '--local');
-  if (unknown.length > 0) throw new Error(`Unknown option(s): ${unknown.join(' ')}`);
-
-  if (!args.includes('--local')) {
-    return [{ variant: 'enterprise', outFile: PUBLIC_PDF_PATH }];
-  }
-
-  const envFile = join(ROOT, '.env.local');
-  if (existsSync(envFile)) process.loadEnvFile(envFile);
-  const outputDir = requireEnv('RESUME_OUTPUT_DIR');
-  return LOCAL_FILES.map(({ name, variant }) => ({ variant, outFile: join(outputDir, name) }));
 }
 
 async function serveFromDisk(page: Page, getHtml: () => string): Promise<void> {
@@ -100,15 +69,14 @@ async function measureHeight(page: Page): Promise<number> {
   return page.evaluate(() => document.fonts.ready.then(() => document.body.scrollHeight));
 }
 
-async function buildOne(
+async function buildPdf(
   page: Page,
   template: string,
-  job: BuildJob,
   date: Date,
   setHtml: (html: string) => void
 ): Promise<{ pdf: Uint8Array; setting: FitSetting }> {
   for (const setting of FIT_SETTINGS) {
-    setHtml(renderResume(template, { variant: job.variant, ...setting }));
+    setHtml(renderResume(template, { variant: 'enterprise', ...setting }));
     if ((await measureHeight(page)) > LETTER_HEIGHT_PX) continue;
 
     const pdf = await page.pdf({
@@ -119,29 +87,10 @@ async function buildOne(
     });
     if (countPdfPages(pdf) === 1) return { pdf: normalizePdf(pdf, date), setting };
   }
-  throw new Error(
-    `${job.outFile}: does not fit on one page even at the smallest setting. Shorten the content.`
-  );
-}
-
-function writePdf(outFile: string, pdf: Uint8Array): string {
-  mkdirSync(dirname(outFile), { recursive: true });
-  try {
-    writeFileSync(outFile, pdf);
-    return outFile;
-  } catch (error) {
-    const code = (error as NodeJS.ErrnoException).code;
-    if (code !== 'EBUSY' && code !== 'EPERM') throw error;
-    // The file is usually locked because it is open in a PDF viewer.
-    const fallback = outFile.replace(/\.pdf$/i, '_new.pdf');
-    writeFileSync(fallback, pdf);
-    console.warn(`${outFile} is locked; wrote ${fallback} instead.`);
-    return fallback;
-  }
+  throw new Error('The résumé does not fit on one page even at the smallest setting. Shorten it.');
 }
 
 async function main(): Promise<void> {
-  const jobs = planJobs(process.argv.slice(2));
   const template = readFileSync(TEMPLATE_PATH, 'utf8');
   const { ok, errors } = validateResumeHtml(template);
   if (!ok) throw new Error(`content/resume.html is invalid:\n  ${errors.join('\n  ')}`);
@@ -159,13 +108,11 @@ async function main(): Promise<void> {
     let html = '';
     await serveFromDisk(page, () => html);
 
-    for (const job of jobs) {
-      const { pdf, setting } = await buildOne(page, template, job, date, (next) => {
-        html = next;
-      });
-      const written = writePdf(job.outFile, pdf);
-      console.log(`${written}: 1 page at ${setting.fontSizePt}pt, gap ${setting.gap}`);
-    }
+    const { pdf, setting } = await buildPdf(page, template, date, (next) => {
+      html = next;
+    });
+    writeFileSync(PUBLIC_PDF_PATH, pdf);
+    console.log(`${PUBLIC_PDF_PATH}: 1 page at ${setting.fontSizePt}pt, gap ${setting.gap}`);
   } finally {
     await browser.close();
   }

@@ -281,7 +281,11 @@ export const AWARDS: AwardItem[] = [
     issuer: 'Microsoft',
     description: 'Consistent quota attainment across multiple fiscal years.',
     color: 'green',
-    badges: [{ src: '/Awards/100Attainment__2026.png', alt: '100% Attainment 2026 badge' }],
+    badges: [
+      { src: '/Awards/100Attainmentretired_7Time.png', alt: '100% Attainment 7-time winner badge' },
+      { src: '/Awards/100Attainment_2025.png', alt: '100% Attainment 2025 badge' },
+      { src: '/Awards/100Attainment__2026.png', alt: '100% Attainment 2026 badge' },
+    ],
   },
 ];
 

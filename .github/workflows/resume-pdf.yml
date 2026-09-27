@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'content/**'
+      - 'content/*.html'
       - 'resume/**'
       - 'public/fonts/**'
       - scripts/build-resume.ts

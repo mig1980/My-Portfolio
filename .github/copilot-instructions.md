@@ -86,7 +86,8 @@ AboutMe/
 │   └── components/         # HtmlEditor (CodeMirror), PreviewFrame, ValidationPanel, PublishDialog, BuildStatus
 ├── content/
 │   ├── resume.html         # Executive résumé (exactly 1 page) → public/CV/MGavrilovCV.pdf (linked from the site)
-│   └── resume-ats.html     # ATS résumé (exactly 2 pages) → public/CV/MGavrilovCV-ATS.pdf (not linked)
+│   ├── resume-ats.html     # ATS résumé (exactly 2 pages) → public/CV/MGavrilovCV-ATS.pdf (not linked)
+│   └── resume-facts.md     # Fact register: the only facts the résumés may use
 ├── resume/                 # Shared by the editor, the Functions and the PDF build
 │   ├── render.ts           # Fills {{TITLE}}, applies --fs/--gap overrides
 │   ├── validate.ts         # Template contract + safety checks (DOM-free, authoritative on the server)
@@ -100,7 +101,8 @@ AboutMe/
 │   └── test-gemini-models.ts  # Manual model check
 ├── docs/resume-admin-plan.md  # Design, decisions and manual setup for the résumé editor
 ├── styles/globals.css      # Tailwind v4 + custom utilities
-├── tests/                  # Vitest tests (336 tests, 23 files)
+├── tests/                  # Vitest tests (337 tests, 23 files)
+├── .github/prompts/        # /resume-update, /resume-review, /resume-tailor
 ├── .github/workflows/
 │   ├── ci.yml              # Lint, format, type-check, tests, build
 │   └── resume-pdf.yml      # Rebuilds and commits the résumé PDF on main
@@ -185,6 +187,19 @@ Flow: `/admin/` editor → `PUT /api/admin/resume` (validates, commits `content/
 - Never import `admin/` code from the public site (keeps CodeMirror out of the main bundle).
 - Cloudflare Pages settings (Production and Preview): `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`, `GITHUB_TOKEN` (fine-grained PAT, this repo only, Contents RW + Actions R), `GITHUB_REPO`.
 
+## Résumé Content Standards
+
+Reusable prompts: `/resume-update`, `/resume-review`, `/resume-tailor` (`.github/prompts/`).
+
+- **Sources of truth:** `content/resume.html` (executive, exactly 1 page) and `content/resume-ats.html` (ATS, exactly 2 pages). Apply every fact change to **both**. Shared facts change in `utils/careerFacts.ts` first.
+- **Facts:** use only facts listed in `content/resume-facts.md`. Never invent metrics, titles, dates or awards. Don't expand or reword items marked **[CONFIRM]**. If a change needs a new fact, ask the owner and add it to the register first.
+- **Customer:** never name the customer anywhere in this public repo, including tests and the register. Always write "a top-five global pharmaceutical company". The résumés use "top-five"; the website and assistant keep the owner's LinkedIn wording "top-5".
+- **Bullets:** outcome first (result → action → context). Where a bullet has a metric, put it in the first 8 words. Never add a metric just to fit the pattern.
+- **Tense:** present tense for ongoing responsibilities in the current role ("Own", "Lead"); past tense for completed results in any role ("Grew", "Structured") and for everything in prior roles.
+- **Voice:** no first person ("I", "my", "we") in the ATS version. The executive summary may use it.
+- **Typography:** heading `letter-spacing` ≤ 1px. ATS: ligatures off and no decorative glyphs ("5x" not "5×", "approximately"/"about" not "~", "|" separators, real `<li>` bullets).
+- **After any change:** run `npm run resume:build` and `npm run resume:check`; both page targets must hold. Run `npm run test:run` (facts test). Then discard the locally built PDFs (`git checkout --` if tracked, delete if new): the Resume PDF Action builds the official ones.
+
 ## Testing
 
 - **Framework:** Vitest + React Testing Library
@@ -221,7 +236,7 @@ GitHub Actions runs on every PR:
 
 **All must pass before merge.**
 
-`resume-pdf.yml` runs on pushes to `main` that touch `content/**`, `resume/**`, `public/fonts/**` or `scripts/build-resume.ts` (and manually). It builds every document in `resume/documents.ts`, runs `resume:check`, and commits the PDFs only if they changed (dates are pinned, so rebuilds are deterministic). Only the final push step gets the write token. Admin API calls take `?doc=<id>`; never accept a path from the client.
+`resume-pdf.yml` runs on pushes to `main` that touch `content/*.html`, `resume/**`, `public/fonts/**` or `scripts/build-resume.ts` (and manually; editing `content/resume-facts.md` doesn't rebuild). It builds every document in `resume/documents.ts`, runs `resume:check`, and commits the PDFs only if they changed (dates are pinned, so rebuilds are deterministic). Only the final push step gets the write token. Admin API calls take `?doc=<id>`; never accept a path from the client.
 
 ---
 

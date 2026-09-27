@@ -37,7 +37,7 @@ function sourceDate(): Date {
   try {
     const iso = execFileSync(
       'git',
-      ['log', '-1', '--format=%cI', '--', 'content', 'resume', 'public/fonts'],
+      ['log', '-1', '--format=%cI', '--', 'content/*.html', 'resume', 'public/fonts'],
       { cwd: ROOT, encoding: 'utf8' }
     ).trim();
     if (iso) return new Date(iso);

@@ -16,12 +16,15 @@ const resumes = Object.values(RESUME_DOCUMENTS).map((doc) => ({
   text: readFileSync(resolve(process.cwd(), doc.src), 'utf8').replace(/&amp;/g, '&'),
 }));
 
+const factRegister = readFileSync(resolve(process.cwd(), 'content/resume-facts.md'), 'utf8');
+
 const { university, platinumClubCount, goldClubCount, quotaAttainment, quotaAttainmentRecent } =
   CAREER_FACTS;
 
-/** Every place a fact can appear: both résumés, the AI assistant and the website data. */
+/** Every place a fact can appear: both résumés, the fact register, the AI assistant and the website data. */
 const allSources = (): string[] => [
   ...resumes.map((resume) => resume.text),
+  factRegister,
   SYSTEM_CONTEXT,
   JSON.stringify({ EDUCATION, CERTIFICATIONS }),
 ];
@@ -66,6 +69,15 @@ describe('career facts stay consistent', () => {
       expect(text).toMatch(new RegExp(`Platinum Club \\(${platinumClubCount}[×x]\\)`));
       expect(text).toMatch(new RegExp(`Gold Club \\(${goldClubCount}[×x]\\)`));
       expect(text).toContain(quotaAttainment);
+    });
+  });
+
+  describe('fact register (content/resume-facts.md)', () => {
+    it('lists the same university and recognition', () => {
+      expect(factRegister).toContain(university);
+      expect(factRegister).toContain(`Platinum Club: ${platinumClubCount}×`);
+      expect(factRegister).toContain(`Gold Club: ${goldClubCount}×`);
+      expect(factRegister).toContain(`${quotaAttainment}, ${quotaAttainmentRecent}`);
     });
   });
 

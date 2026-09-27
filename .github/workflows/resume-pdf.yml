@@ -28,6 +28,8 @@ jobs:
         with:
           # Full history: the PDF date comes from the last commit touching the résumé sources.
           fetch-depth: 0
+          # Don't leave the write token in .git/config where npm packages could read it.
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -47,6 +49,9 @@ jobs:
       # Pushes made with GITHUB_TOKEN don't trigger workflows, and the PDF isn't in `paths`, so this can't loop.
       - name: Commit PDF if changed
         if: github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
           if git diff --quiet -- public/CV/MGavrilovCV.pdf; then
             echo "PDF unchanged."
@@ -56,5 +61,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/CV/MGavrilovCV.pdf
           git commit -m "chore(resume): regenerate PDF"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          remote="https://x-access-token:${GITHUB_TOKEN}@github.com/${REPO}.git"
+          git pull --rebase "$remote" main
+          git push "$remote" HEAD:main

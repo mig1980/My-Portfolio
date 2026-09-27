@@ -31,12 +31,8 @@ const FORBIDDEN_PATTERNS: readonly PatternRule[] = [
     message: () => 'Remove <meta http-equiv>. It is not allowed.',
   },
   {
-    pattern: /<[a-z][^>]*?\son[a-z]+\s*=/gi,
+    pattern: /<[a-z][^>]*?[\s/"']on[a-z]+\s*=/gi,
     message: () => 'Remove the event-handler attribute (on…=). Inline handlers are not allowed.',
-  },
-  {
-    pattern: /(?:j\s*a\s*v\s*a|v\s*b)\s*s\s*c\s*r\s*i\s*p\s*t\s*:/gi,
-    message: () => 'Remove the script URL (javascript: / vbscript:).',
   },
   {
     pattern: /@import\b/gi,
@@ -44,10 +40,30 @@ const FORBIDDEN_PATTERNS: readonly PatternRule[] = [
   },
   {
     pattern:
-      /\s(?:src|srcset|poster|data|background|action|formaction)\s*=\s*["']?\s*(?:https?:)?\/\//gi,
+      /[\s/"'](?:src|srcset|poster|data|background|action|formaction)\s*=\s*["']?\s*(?:https?:)?\/\//gi,
     message: () => 'Remove the external resource. Images and fonts must be local files.',
   },
+  {
+    // Only <a> may link out; href on anything else (e.g. SVG <image>, <use>) loads a resource.
+    pattern: /<(?!a[\s>/])[a-z][^>]*?[\s/"'](?:xlink:)?href\s*=\s*["']?\s*(?:https?:)?\/\//gi,
+    message: () => 'Remove the external resource. Only <a> links may point to other sites.',
+  },
 ];
+
+const SCRIPT_URL_PATTERN = /(?:j\s*a\s*v\s*a|v\s*b)\s*s\s*c\s*r\s*i\s*p\s*t\s*:/gi;
+const CSS_SOURCES = [/<style\b[^>]*>([\s\S]*?)<\/style>/gi, /\sstyle\s*=\s*("[^"]*"|'[^']*')/gi];
+const EXTERNAL_URL_PATTERN = /(?:https?:)?\/\/[a-z0-9]/i;
+
+/** Decodes the entities browsers accept inside attributes, so `&#106;avascript:` can't hide. */
+function decodeEntities(html: string): string {
+  const fromCode = (code: number): string => (code <= 0x10ffff ? String.fromCodePoint(code) : '');
+  return html
+    .replace(/&#x([0-9a-f]+);?/gi, (_m, hex: string) => fromCode(parseInt(hex, 16)))
+    .replace(/&#(\d+);?/g, (_m, dec: string) => fromCode(Number(dec)))
+    .replace(/&colon;/gi, ':')
+    .replace(/&tab;/gi, '\t')
+    .replace(/&newline;/gi, '\n');
+}
 
 function lineOf(text: string, index: number): number {
   let line = 1;
@@ -114,6 +130,31 @@ function checkForbidden(html: string, errors: string[]): void {
       errors.push(`Line ${lineOf(html, match.index)}: ${rule.message(match)}`);
     }
   }
+
+  const decoded = decodeEntities(html);
+  for (const match of decoded.matchAll(SCRIPT_URL_PATTERN)) {
+    errors.push(
+      `Line ${lineOf(decoded, match.index)}: Remove the script URL (javascript: / vbscript:).`
+    );
+  }
+}
+
+/** Catches external URLs in CSS that don't use url(), e.g. image-set("https://…"). */
+function checkCss(html: string, errors: string[]): void {
+  for (const source of CSS_SOURCES) {
+    for (const match of html.matchAll(source)) {
+      const css = match[1] ?? '';
+      // url(...) is already checked by checkUrls; blank it out without shifting offsets.
+      const rest = css.replace(/url\([^)]*\)/gi, (m) => ' '.repeat(m.length));
+      const external = EXTERNAL_URL_PATTERN.exec(rest);
+      if (external) {
+        const offset = match.index + match[0].indexOf(css) + external.index;
+        errors.push(
+          `Line ${lineOf(html, offset)}: Remove the external URL from the CSS. Fonts and images must be local files.`
+        );
+      }
+    }
+  }
 }
 
 /** Returns every contract violation as a readable message; `ok` is true when there are none. */
@@ -131,6 +172,7 @@ export function validateResumeHtml(html: string): ResumeValidationResult {
   const errors: string[] = [];
   checkStructure(html, errors);
   checkUrls(html, errors);
+  checkCss(html, errors);
   checkForbidden(html, errors);
   return { ok: errors.length === 0, errors };
 }

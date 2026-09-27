@@ -42,7 +42,7 @@ Key design decisions:
 4. **Python `build.py` is retired.** `npm run resume:build` replaces it and writes only `public/CV/MGavrilovCV.pdf` in the repo (no OneDrive output). Michael never runs it: the GitHub Action does, and all editing happens in the browser at gavrilov.ai/admin.
 5. **Auth = Cloudflare Access at the edge + JWT verification in the Function** (defense in depth). No passwords in the app.
 6. **Admin is a separate Vite entry** (`admin/index.html`), so none of its code ends up in the public bundle.
-7. **Raw HTML is allowed, but it's contained.** The preview is an `iframe srcdoc` with `sandbox=""` (no scripts, no same-origin access), and it's never injected into the admin React tree. The server rejects `<script>`, `on*=` handlers, `javascript:` URLs, `<iframe>/<object>/<embed>`, and external `http(s)` resources, because fonts and images must be local.
+7. **Raw HTML is allowed, but it's contained.** The preview is an `iframe srcdoc` with `sandbox="allow-same-origin"` (scripts never run; same-origin only so the fit meter can measure the page and the fonts load), and it's never injected into the admin React tree. `allow-scripts` must never be added: together with `allow-same-origin` it would let the HTML escape the sandbox. The server rejects `<script>`, `on*=` handlers, `javascript:` URLs, `<iframe>/<object>/<embed>`, and external `http(s)` resources, because fonts and images must be local.
 
 ## Target file layout
 
@@ -84,7 +84,6 @@ export interface RenderOptions {
   variant: 'hls' | 'enterprise';
   fontSizePt?: number;   // overrides --fs
   gap?: number;          // overrides --gap
-  fontBase?: string;     // replaces '/fonts/' in url(); omit in browser, file:// folder in CI
 }
 export const TITLES = { hls: 'Strategic Account Director, Healthcare & Life Sciences',
                         enterprise: 'Strategic Account Director, Global Enterprise' } as const;
@@ -149,7 +148,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 ### Phase 4: Admin API (GitHub-backed)
 
 - `GET /api/admin/resume` calls the GitHub Contents API `GET /repos/mig1980/My-Portfolio/contents/content/resume.html?ref=main` and returns `{ html, sha }`.
-- `PUT /api/admin/resume` takes the body `{ html, sha, message? }`, runs `validateResumeHtml(html)` (422 with the error list if it fails), then `PUT contents` with base64 UTF-8 HTML (normalize to LF line endings), `sha`, `branch: main`, and message `content(resume): <message or 'update via admin'>` (must pass commitlint). GitHub returns 409 when the sha is stale; pass that through so the UI can show "changed elsewhere, reload."
+- `PUT /api/admin/resume` takes the body `{ html, sha, message? }`, runs `validateResumeHtml(html)` (422 with the error list if it fails), then `PUT contents` with base64 UTF-8 HTML (normalize to LF line endings), `sha`, `branch: main`, and message `docs(resume): <message or 'update via admin'>` (`content` isn't an allowed commitlint type). GitHub returns 409 when the sha is stale; pass that through so the UI can show "changed elsewhere, reload."
 - `GET /api/admin/status` returns the latest run of `resume-pdf.yml` (`status`, `conclusion`, `html_url`, `updated_at`) plus the last commit touching `public/CV/MGavrilovCV.pdf`.
 - Secret: `GITHUB_TOKEN`, a **fine-grained PAT** limited to `mig1980/My-Portfolio` with Contents: read/write and Actions: read. Also set `GITHUB_REPO=mig1980/My-Portfolio`.
 - Reject bodies over 128 KB. Allow only `GET` and `PUT`. Require `Content-Type: application/json`. Same-origin only (check `Origin` against the allowed list in `chat.ts`).
@@ -160,7 +159,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - Vite multi-page: `build.rollupOptions.input = { main: 'index.html', admin: 'admin/index.html' }`. Cloudflare serves `/admin/` from `dist/admin/index.html`. Check that `App.tsx`'s 404 logic doesn't catch it; it won't, because it's a different HTML file.
 - `ResumeEditor.tsx`, a split-screen layout:
   - **Left: HTML code editor.** Use **CodeMirror 6** (`@codemirror/lang-html`, `@uiw/react-codemirror` or a thin wrapper) with syntax highlighting, autoclose tags, search/replace (Ctrl+F/Ctrl+H), line numbers, fold and word-wrap toggle. Loaded only in the admin bundle. Monaco is too heavy.
-  - **Right: live preview.** `<iframe sandbox="" srcdoc={renderResume(html, {variant})}>`, updated with a ~300 ms debounce and scaled to fit the pane at Letter proportions. Toolbar: variant toggle (HLS / Enterprise), zoom (fit / 100%) and a "show page boundary" line at 11in.
+  - **Right: live preview.** `<iframe sandbox="allow-same-origin" srcdoc={renderResume(html, {variant})}>`, updated with a ~300 ms debounce and scaled to fit the pane at Letter proportions. Toolbar: variant toggle (HLS / Enterprise), zoom (fit / 100%) and a "show page boundary" line at 11in.
   - **Fit meter:** after load, render at the smallest fit settings and compare `contentDocument.body.scrollHeight` with 1056 px. Show "Fits at 9.4pt ✓", or "Over by ~N lines ✗" in red.
   - **Validation panel:** live `validateResumeHtml` errors under the editor. Clicking an error jumps to its line. Publish is disabled while errors exist.
   - Draft autosaved to `localStorage`, with a "Restore unsaved draft?" prompt on load. `beforeunload` guard.
@@ -201,7 +200,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - [ ] `/admin*` and `/api/admin/*` are behind Access on **every** hostname, including `*.pages.dev`
 - [ ] The Function verifies the JWT itself (doesn't rely on Access alone)
 - [ ] The PAT is fine-grained, limited to one repo, with minimal scopes, and stored only as a Cloudflare secret
-- [ ] User HTML is only rendered inside `iframe sandbox=""` (no `allow-scripts`, no `allow-same-origin`), and never via `dangerouslySetInnerHTML`. The validator blocks scripts, event handlers and external URLs on both client and server
+- [ ] User HTML is only rendered inside `iframe sandbox="allow-same-origin"` (never `allow-scripts`), and never via `dangerouslySetInnerHTML`. The validator blocks scripts, event handlers and external URLs on both client and server
 - [ ] Server-side validation (authoritative), 128 KB limit and sha-based concurrency on PUT
 - [ ] `noindex` + `no-store` on admin routes. Nothing from admin is in the public bundle
 

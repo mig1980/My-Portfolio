@@ -47,8 +47,32 @@ describe('validateResumeHtml', () => {
       ['<style>@import "x.css";</style>', '@import'],
       ['<div style="background:url(https://example.com/a.png)"></div>', 'url(https://'],
       ["<style>@font-face{src:url('../secret')}</style>", 'url(../secret)'],
+      ['<svg/onload=alert(1)>', 'event-handler'],
+      ['<div class="x"onclick="y()">x</div>', 'event-handler'],
+      ['<svg><image href="https://example.com/x.png"/></svg>', 'Only <a> links'],
+      ['<svg><use xlink:href="//example.com/s.svg#i"/></svg>', 'Only <a> links'],
+      ['<img/src="https://example.com/a.png">', 'external resource'],
+      ['<a href="&#106;avascript:alert(1)">x</a>', 'script URL'],
+      ['<a href="&#x6A;avascript&colon;alert(1)">x</a>', 'script URL'],
+      [
+        `<div style="background:image-set('https://example.com/a.png' 1x)"></div>`,
+        'external URL from the CSS',
+      ],
+      [
+        '<style>.x{background:image-set("//example.com/a.png" 1x)}</style>',
+        'external URL from the CSS',
+      ],
     ])('rejects %s', (snippet, messagePart) => {
       expectRejected(withBody(snippet), messagePart);
+    });
+
+    it('reports a CSS url() problem only once', () => {
+      const html = withBody('<div style="background:url(https://example.com/a.png)"></div>');
+      expect(validateResumeHtml(html).errors).toHaveLength(1);
+    });
+
+    it('survives out-of-range character references', () => {
+      expect(validateResumeHtml(withBody('<p>&#99999999; &#x110000;</p>')).ok).toBe(true);
     });
 
     it('reports the line of the problem', () => {

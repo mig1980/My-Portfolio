@@ -60,25 +60,4 @@ describe('renderResume', () => {
       expect(() => renderResume(template, { variant: 'enterprise', gap: 0 })).toThrow(RangeError);
     });
   });
-
-  describe('font base', () => {
-    it('rewrites /fonts/ URLs to the given base', () => {
-      const html = renderResume(template, { variant: 'enterprise', fontBase: 'file:///ci/fonts/' });
-      expect(html).not.toContain("url('/fonts/");
-      expect(html).toContain("url('file:///ci/fonts/inter-regular.woff2')");
-    });
-
-    it('handles unquoted and double-quoted URLs', () => {
-      const html = renderResume('url(/fonts/a.woff2) url("/fonts/b.woff2")', {
-        variant: 'enterprise',
-        fontBase: '/x/',
-      });
-      expect(html).toBe('url(/x/a.woff2) url("/x/b.woff2")');
-    });
-
-    it('keeps URLs as-is for the default base', () => {
-      const html = renderResume(template, { variant: 'enterprise', fontBase: '/fonts/' });
-      expect(html).toContain("url('/fonts/inter-regular.woff2')");
-    });
-  });
 });

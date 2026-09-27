@@ -24,8 +24,18 @@ Personal site for Michael Gavrilov (gavrilov.ai): a light, editorial single-page
 | "How I think" principles and statement | `components/MyApproach.tsx` |
 | Facts the AI assistant may use | `functions/api/chat.ts` → `SYSTEM_CONTEXT` |
 | Page title, description, social cards | `index.html` |
+| Résumé (PDF at `/CV/MGavrilovCV.pdf`) | `content/resume.html` (see [Résumé](#résumé)) |
 
 > The AI assistant does **not** read `constants.tsx`. When a fact changes on the page, update `SYSTEM_CONTEXT` too.
+
+## Résumé
+
+The résumé PDF is generated, never edited by hand.
+
+- **Source:** `content/resume.html` — one HTML file with its CSS. `{{TITLE}}` is filled with the Enterprise title; everything else, including the contact line, is plain HTML.
+- **Build:** when `content/resume.html`, `resume/**`, `public/fonts/**` or `scripts/build-resume.ts` changes on `main`, the **Resume PDF** GitHub Action (`.github/workflows/resume-pdf.yml`) prints it with Chromium, shrinking font size and spacing until it fits on one Letter page, and commits `public/CV/MGavrilovCV.pdf`. Cloudflare Pages then redeploys. The build fails rather than produce a 2-page PDF.
+- **Rules** (enforced by `resume/validate.ts`): full HTML document; `{{TITLE}}` exactly once; `--fs` and `--gap` defined in `:root` and used; `@page { size: Letter; margin: 0; }`; fonts only from `/fonts/`; no scripts, event handlers, embeds or external resources; ≤ 100 KB.
+- **Editing in the browser** at `gavrilov.ai/admin` is in progress (see `docs/resume-admin-plan.md`). The admin API is protected by Cloudflare Access plus JWT verification in `functions/api/admin/_middleware.ts`.
 
 ## Tech Stack
 
@@ -66,13 +76,16 @@ My-Portfolio/
 ├── components/          # React components
 │   ├── ui/             # Reusable primitives (Section, SectionHeading, PageWrapper, etc.)
 │   └── [Feature].tsx   # Feature components
+├── content/             # resume.html (source of the résumé PDF)
+├── resume/              # Résumé render, validation and PDF helpers (shared by build + admin)
+├── docs/                # Plans (résumé admin)
 ├── public/              # Static assets, _headers/_redirects, sitemap/robots
 ├── hooks/              # Custom hooks (useChat, useInView, useScrollPosition, etc.)
 ├── tests/              # Vitest tests
 ├── utils/              # Shared utilities (analytics, chat events/limits, string, dom, logo)
 ├── styles/             # Global styles + CSS utilities
-├── functions/          # Cloudflare Pages Functions (server-side)
-├── scripts/            # Maintenance scripts
+├── functions/          # Cloudflare Pages Functions (chat API, admin auth middleware)
+├── scripts/            # Maintenance scripts (build-resume.ts runs in the Resume PDF Action)
 ├── types.ts            # TypeScript interfaces
 └── constants.tsx       # Application data
 ```
@@ -109,6 +122,8 @@ My-Portfolio/
 - ✅ CORS whitelist on chat API (production domains + localhost)
 - ✅ Input sanitization and message/history length limits on the server-side chat endpoint
 - ✅ 0 known vulnerabilities in production dependencies (`npm audit --omit=dev`)
+- ✅ Admin API (`/api/admin/*`): Cloudflare Access at the edge plus RS256 JWT verification (audience, issuer, expiry, admin email) in the Function; fails closed when not configured; `no-store` + `noindex`
+- ✅ Résumé PDF build runs with JavaScript disabled and all network requests blocked except the local fonts; its GitHub token is only exposed to the final push step
 
 ## Available Scripts
 
@@ -122,16 +137,18 @@ My-Portfolio/
 | `npm run test` | Run tests in watch mode |
 | `npm run test:run` | Run tests once (CI) |
 | `npm run preview` | Preview production build locally |
+| `npm run resume:build` | Rebuild `public/CV/MGavrilovCV.pdf` (normally done by the Resume PDF Action) |
 
 ## Configuration
 
 - Client-side environment variables use the `VITE_` prefix. See `.env.example`.
 - Local secrets belong in `.env.local` (ignored by git).
 - The chat API runs as a Cloudflare Pages Function and requires a server-side `GEMINI_API_KEY` secret (set in Cloudflare, not in the repo).
+- The admin API needs `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD` and `ADMIN_EMAIL` in Cloudflare Pages (Production and Preview). Without them it returns 500 and serves nothing.
 
 ## Deployment
 
-Deployed on Cloudflare Pages with security headers configured in `public/_headers`. CI runs lint, type-check, test, and build on every PR via GitHub Actions (all jobs have explicit timeouts).
+Deployed on Cloudflare Pages with security headers configured in `public/_headers`. CI runs lint, type-check, test, and build on every PR via GitHub Actions (all jobs have explicit timeouts). The Resume PDF Action regenerates the résumé PDF on `main` when its sources change.
 
 ## SEO / Indexing
 

@@ -11,16 +11,12 @@ export interface RenderOptions {
   fontSizePt?: number;
   /** Overrides the template's `--gap` multiplier. */
   gap?: number;
-  /** Replaces the template's `/fonts/` prefix inside `url()`, e.g. a file:// folder for CI. */
-  fontBase?: string;
 }
 
 export const TITLES = {
   hls: 'Strategic Account Director, Healthcare & Life Sciences',
   enterprise: 'Strategic Account Director, Global Enterprise',
 } as const satisfies Record<ResumeVariant, string>;
-
-export const TEMPLATE_FONT_BASE = '/fonts/';
 
 function escapeHtml(value: string): string {
   return value
@@ -38,20 +34,12 @@ function assertPositive(name: string, value: number): void {
 }
 
 /**
- * Replaces `{{TITLE}}`, optionally rewrites font URLs, and appends a `:root` override
- * for `--fs` / `--gap`. The rest of the markup is left untouched.
+ * Replaces `{{TITLE}}` and appends a `:root` override for `--fs` / `--gap`.
+ * The rest of the markup is left untouched.
  */
 export function renderResume(html: string, opts: RenderOptions): string {
   // A function replacer stops `$&`-style patterns in the title from being interpreted.
   let out = html.replace('{{TITLE}}', () => escapeHtml(TITLES[opts.variant]));
-
-  const { fontBase } = opts;
-  if (fontBase !== undefined && fontBase !== TEMPLATE_FONT_BASE) {
-    out = out.replace(
-      /url\(\s*(['"]?)\/fonts\//g,
-      (_match, quote: string) => `url(${quote}${fontBase}`
-    );
-  }
 
   const overrides: string[] = [];
   if (opts.fontSizePt !== undefined) {

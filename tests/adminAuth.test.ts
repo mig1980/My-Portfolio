@@ -201,6 +201,14 @@ describe('/api/admin/* middleware', () => {
     expect(mockFetch).toHaveBeenCalledTimes(2);
   });
 
+  it('limits unknown-kid refetches to one per 30 seconds', async () => {
+    mockFetch.mockImplementation(() => jwksResponse('old-key'));
+    await run(await signToken());
+    await run(await signToken());
+    await run(await signToken());
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
+
   it('returns 503 when the signing keys cannot be fetched', async () => {
     mockFetch.mockResolvedValue(new Response('down', { status: 500 }));
     const { response, next } = await run(await signToken());

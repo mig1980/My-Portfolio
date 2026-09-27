@@ -40,6 +40,8 @@ type Verification =
   | { ok: false; status: 401 | 403 | 503; error: string };
 
 const JWKS_TTL_MS = 10 * 60 * 1000;
+/** Unknown-kid refetches are limited so forged tokens can't hammer the certs endpoint. */
+const JWKS_FORCED_REFRESH_MS = 30 * 1000;
 const CLOCK_SKEW_S = 60;
 const TEAM_DOMAIN_PATTERN = /^[a-z0-9-]+\.cloudflareaccess\.com$/;
 const SECURITY_HEADERS: Readonly<Record<string, string>> = {
@@ -48,6 +50,7 @@ const SECURITY_HEADERS: Readonly<Record<string, string>> = {
 };
 
 let jwksCache: { url: string; keys: AccessJwk[]; expiresAt: number } | null = null;
+let lastForcedRefreshAt = 0;
 
 function jsonError(status: number, error: string): Response {
   return new Response(JSON.stringify({ error }), {
@@ -105,7 +108,10 @@ async function findKey(url: string, kid: string): Promise<AccessJwk | null | 'un
   if (cached === null) return 'unavailable';
   const hit = cached.find((key) => key.kid === kid);
   if (hit) return hit;
-  // Unknown kid usually means Access rotated its keys; refetch once.
+  // Unknown kid usually means Access rotated its keys; refetch, at most every 30 s.
+  const now = Date.now();
+  if (now - lastForcedRefreshAt < JWKS_FORCED_REFRESH_MS) return null;
+  lastForcedRefreshAt = now;
   const fresh = await fetchJwks(url, true);
   if (fresh === null) return 'unavailable';
   return fresh.find((key) => key.kid === kid) ?? null;

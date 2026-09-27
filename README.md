@@ -22,11 +22,12 @@ Personal site for Michael Gavrilov (gavrilov.ai): a light, editorial single-page
 | Awards (badges in `public/Awards/`) | `constants.tsx` → `AWARDS` |
 | Suggested chat questions | `constants.tsx` → `SUGGESTED_QUESTIONS` (shown in the hero and the chat welcome) |
 | "How I think" principles and statement | `components/MyApproach.tsx` |
+| Shared career facts (university, club counts, quota attainment) | `utils/careerFacts.ts` → `CAREER_FACTS` (used by the site and the assistant) |
 | Facts the AI assistant may use | `functions/api/chat.ts` → `SYSTEM_CONTEXT` |
 | Page title, description, social cards | `index.html` |
 | Résumé (PDF at `/CV/MGavrilovCV.pdf`) | `content/resume.html` (see [Résumé](#résumé)) |
 
-> The AI assistant does **not** read `constants.tsx`. When a fact changes on the page, update `SYSTEM_CONTEXT` too.
+> The AI assistant does **not** read `constants.tsx`. When a fact changes on the page, update `SYSTEM_CONTEXT` too. Facts in `utils/careerFacts.ts` flow to both automatically; `tests/careerFacts.test.ts` fails if the site, the assistant and the résumés disagree.
 
 ## Résumé
 
@@ -34,8 +35,8 @@ The résumé PDF is generated, never edited by hand.
 
 - **Sources:** `content/resume.html` (executive version, exactly 1 page, linked from the site) and `content/resume-ats.html` (plain ATS version for job applications, exactly 2 pages, not linked). `{{TITLE}}` is filled with the Enterprise title; everything else, including the contact line, is plain HTML. `resume/documents.ts` lists both documents and their targets.
 - **Build:** when anything under `content/`, `resume/`, `public/fonts/` or `scripts/build-resume.ts` changes on `main`, the **Resume PDF** GitHub Action (`.github/workflows/resume-pdf.yml`) prints each document with Chromium, adjusting font size and spacing until it has exactly its target page count, checks the extracted text reads cleanly (`npm run resume:check`), and commits `public/CV/MGavrilovCV.pdf` and `public/CV/MGavrilovCV-ATS.pdf`. Cloudflare Pages then redeploys. The build fails rather than produce a PDF with the wrong page count.
-- **Rules** (enforced by `resume/validate.ts`): full HTML document; `{{TITLE}}` exactly once; `--fs` and `--gap` defined in `:root` and used; `@page { size: Letter; margin: 0; }`; fonts only from `/fonts/`; no scripts, event handlers, embeds or external resources; ≤ 100 KB.
-- **Editing in the browser:** `gavrilov.ai/admin/` (source in `admin/`, a separate Vite entry that the public site never loads). HTML editor on the left, live preview with a one-page check on the right, unpublished edits kept in the browser, and **Publish** shows a diff, commits to `main` and tracks the PDF build. Protected by Cloudflare Access plus JWT verification in `functions/api/admin/_middleware.ts`; the API lives in `functions/api/admin/resume.ts` and `status.ts`. See `docs/resume-admin-plan.md` for the one-time Cloudflare/GitHub setup.
+- **Rules** (enforced by `resume/validate.ts`): full HTML document; `{{TITLE}}` exactly once; `--fs` and `--gap` defined in `:root` and used; `@page { size: Letter; margin: 0; }` (the multi-page ATS version may set print margins); fonts only from `/fonts/`; no scripts, event handlers, embeds or external resources; ≤ 100 KB.
+- **Editing in the browser:** `gavrilov.ai/admin/` (source in `admin/`, a separate Vite entry that the public site never loads). Executive | ATS switcher, HTML editor on the left, live preview with a page-count check on the right, unpublished edits kept in the browser, and **Publish** shows a diff, commits to `main` and tracks the PDF build. Protected by Cloudflare Access plus JWT verification in `functions/api/admin/_middleware.ts`; the API lives in `functions/api/admin/resume.ts` and `status.ts`. See `docs/resume-admin-plan.md` for the one-time Cloudflare/GitHub setup.
 
 ## Tech Stack
 

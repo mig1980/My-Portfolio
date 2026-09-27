@@ -69,6 +69,7 @@ AboutMe/
 │   ├── analytics.ts        # GA4 tracking
 │   ├── chatEvents.ts       # askChat() bridge from the page to ChatWidget
 │   ├── chatLimits.ts       # Limits shared with functions/api/chat.ts (no DOM imports)
+│   ├── careerFacts.ts      # CAREER_FACTS shared by constants.tsx and chat.ts; tests check the résumés match
 │   ├── string.ts           # String helpers (getInitials)
 │   ├── dom.ts              # DOM helpers
 │   └── logo.ts             # Logo URL generation
@@ -94,11 +95,12 @@ AboutMe/
 │   ├── textCheck.ts        # ATS text rules used by scripts/check-resume-text.ts
 │   └── github.ts           # GitHub REST helpers for the admin Functions
 ├── scripts/
-│   ├── build-resume.ts     # Playwright: fit-to-one-page loop → public/CV/MGavrilovCV.pdf
+│   ├── build-resume.ts     # Playwright: fits each document to its exact page count → both PDFs
+│   ├── check-resume-text.ts  # pdf.js text check of the built PDFs (npm run resume:check)
 │   └── test-gemini-models.ts  # Manual model check
 ├── docs/resume-admin-plan.md  # Design, decisions and manual setup for the résumé editor
 ├── styles/globals.css      # Tailwind v4 + custom utilities
-├── tests/                  # Vitest tests (314 tests, 22 files)
+├── tests/                  # Vitest tests (336 tests, 23 files)
 ├── .github/workflows/
 │   ├── ci.yml              # Lint, format, type-check, tests, build
 │   └── resume-pdf.yml      # Rebuilds and commits the résumé PDF on main
@@ -178,7 +180,8 @@ Flow: `/admin/` editor → `PUT /api/admin/resume` (validates, commits `content/
 - Server-side validation in `functions/api/admin/resume.ts` is authoritative; client validation is for feedback only. Keep both using `validateResumeHtml`.
 - Admin Functions fail closed (500) when config is missing; `PUT` requires same-origin `Origin`, JSON content type, ≤ 128 KB body and a 40-char `sha`.
 - Admin commits use `docs(resume): …` (commitlint has no `content` type).
-- The PDF build (`scripts/build-resume.ts`) serves the page from a fake origin via `page.route`, blocks every other request and disables JavaScript. Don't loosen this. It refuses to write a PDF that isn't exactly one page.
+- The PDF build (`scripts/build-resume.ts`) serves the page from a fake origin via `page.route`, blocks every other request and disables JavaScript. Don't loosen this. It writes nothing unless every document hits its exact page target.
+- Career facts (university, club counts, quota attainment) live in `utils/careerFacts.ts`. Change them there, then update both résumé HTML files; `tests/careerFacts.test.ts` fails if the site, the assistant and the résumés disagree. The owner removed "Moscow" and the Azure Solutions Architect certification everywhere; the test keeps them out.
 - Never import `admin/` code from the public site (keeps CodeMirror out of the main bundle).
 - Cloudflare Pages settings (Production and Preview): `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`, `GITHUB_TOKEN` (fine-grained PAT, this repo only, Contents RW + Actions R), `GITHUB_REPO`.
 

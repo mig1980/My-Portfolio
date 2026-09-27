@@ -184,6 +184,18 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - **C. ATS-readability check:** `npm run resume:check` (`scripts/check-resume-text.ts`, pdf.js) fails on a wrong page count, split words ("E XECUTIVE" or "E X E C U T I V E"), ligature characters, or missing/out-of-order phrases (name → title → summary → experience → Microsoft → current role → Education). Runs in `resume-pdf.yml` after the build, before committing. Verified: the old committed PDF fails it; both new PDFs pass.
 - **D. Validation:** type-check, lint, 314 tests, build, `resume:build`, `resume:check` all pass.
 
+### Follow-ups before the first push (done Sept 27, 2026)
+
+- **Validator decodes first:** HTML entities and CSS escapes are decoded before any check; URL attributes use an allow-list (relative, `data:`, `#`; only `<a href>` may link out; every `srcset` candidate is checked).
+- **One source for career facts:** `utils/careerFacts.ts` feeds the website and the AI assistant; `tests/careerFacts.test.ts` checks both résumés match. Quota attainment reads "100% quota attainment in 9 fiscal years, including FY25 and FY26".
+- **Employer headings:** Instrument Serif 16pt, larger than role titles; margins trimmed so the executive page still fits at 9.4pt.
+- **Content removals:** "Moscow" and the Azure Solutions Architect certification are gone from the site, the assistant and both résumés (the test keeps them out).
+- **Validation:** type-check, lint, 336 tests (23 files), build, `resume:build` (executive 1 page at 9.4pt, ATS 2 pages at 10.5pt) and `resume:check` all pass.
+
+### Status
+
+All code is committed on `design/editorial-hero` and **not pushed yet**. The editor works live only after the push and the Manual setup below.
+
 ---
 
 ## Manual setup Michael must do (Copilot can't)

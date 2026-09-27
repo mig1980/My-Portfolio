@@ -28,33 +28,29 @@ import { getLogoUrl } from './utils/logo';
 export const PERSONAL_INFO = {
   name: 'Michael Gavrilov',
   tagline: 'Engineer at heart.',
-  taglineHighlight: 'Dealmaker by instinct.',
+  taglineHighlight: 'Strategic account leader by experience.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
   focus: 'Technology · AI · Strategy',
   intro: 'I turn ambitious AI ideas into business reality.',
   resumeUrl: '/CV/Michael-Gavrilov-Resume.pdf',
-  summary: `I started my career building and operating technology. I became an architect, strategist and eventually a dealmaker.
-
-The mindset never really changed: understand the problem, challenge assumptions, design a solution and make it work.`,
+  summary:
+    'I started my career building and operating technology. I became an architect, strategist, and eventually a strategic account leader. The mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work.',
   summaryEmphasis: 'Today, the systems are just bigger.',
 };
 
 /**
- * Suggested questions: the hero shows the first three, the chat welcome shows the rest
- * (starting from the third, so the two lists overlap by one).
+ * Suggested questions, shown both in the hero and in the chat welcome.
  */
 export const SUGGESTED_QUESTIONS: readonly string[] = [
   'How does Michael approach complex problems?',
-  "What's the biggest deal Michael has structured?",
-  'How did Michael go from engineer to dealmaker?',
-  "What's his philosophy on enterprise AI?",
-  'What does he believe about complex deals?',
+  'How has Michael led strategic enterprise relationships?',
+  'How did Michael move from engineer to strategic account leader?',
 ];
 
-export const HERO_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS.slice(0, 3);
+export const HERO_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS;
 
-export const CHAT_WELCOME_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS.slice(2);
+export const CHAT_WELCOME_QUESTIONS: readonly string[] = SUGGESTED_QUESTIONS;
 
 /**
  * Career progression, oldest first. Each role in EXPERIENCE maps to one stage.
@@ -63,7 +59,7 @@ export const CAREER_STAGES: readonly CareerStage[] = [
   { name: 'Engineer', summary: 'Building systems' },
   { name: 'Architect', summary: 'Architecting solutions' },
   { name: 'Strategist', summary: 'Shaping strategy' },
-  { name: 'Dealmaker', summary: 'Building businesses' },
+  { name: 'Strategic Account Leader', summary: 'Leading transformation' },
 ];
 
 export const EXPERIENCE: JobRole[] = [
@@ -73,14 +69,14 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'Jan 2017 - Present',
-    stage: 'Dealmaker',
+    stage: 'Account Leader',
     description: [
-      'Lead the AI agenda for a key pharmaceutical customer, aligning Microsoft’s advanced technologies with client priorities.',
-      'Lead a cross-functional virtual team across Azure, Microsoft 365 (including Copilot), and Security to deliver targeted business outcomes.',
-      'Navigate complex, multi-stakeholder negotiations with senior executives to unlock AI adoption.',
-      'Challenge legacy assumptions with data-driven, security-aware recommendations—accelerating adoption without increasing risk.',
-      'Architect novel deal structures involving product partnerships and multi-year revenue commitments totaling more than $500M.',
-      'Build and sustain trusted executive relationships across global accounts, unlocking new opportunities.',
+      'Lead the AI and technology agenda for a strategic global pharmaceutical customer, aligning Microsoft capabilities with business priorities and measurable outcomes.',
+      'Develop and execute multi-year account strategies spanning AI, cloud, data, security, modern work, and business applications.',
+      'Orchestrate a large cross-functional virtual team across sales, engineering, customer success, support, services, and partner organizations.',
+      'Build trusted relationships with senior business and technology executives, establishing governance and alignment around long-term transformation priorities.',
+      'Navigate complex global stakeholder environments and turn technical, organizational, and commercial challenges into actionable strategies.',
+      'Structure strategic partnerships and multi-year agreements exceeding $500M.',
     ],
   },
   {
@@ -89,7 +85,7 @@ export const EXPERIENCE: JobRole[] = [
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
     period: 'Apr 2011 - Jan 2017',
-    stage: 'Dealmaker',
+    stage: 'Account Leader',
     description: [
       'Managed robust sales pipelines and guided high-performing teams across Sales, Engineering, and Delivery.',
       'Consistently exceeded revenue targets, generating an average of $20M annually across Pharma, Transportation, and Manufacturing sectors.',
@@ -163,30 +159,30 @@ export const SKILLS: SkillGroup[] = [
     ],
   },
   {
-    category: 'Go-to-Market',
+    category: 'Strategy',
     skills: [
       'Strategic Accounts',
-      'Enterprise GTM',
-      'Competitive Strategy',
-      'Ecosystem Development',
+      'Multi-Year Account Strategy',
+      'Enterprise Transformation',
+      'Growth & Opportunity Development',
     ],
   },
   {
     category: 'Leadership',
     skills: [
       'Executive Partnerships',
-      'Cross-functional Leadership',
+      'Cross-Functional Orchestration',
       'Organizational Alignment',
       'Transformation at Scale',
     ],
   },
   {
-    category: 'Deals',
+    category: 'Commercial',
     skills: [
       'Complex Deal Structuring',
       'Value Negotiation',
       'Platform Economics',
-      'Multi-Year Partnerships',
+      'Strategic Partnerships',
     ],
   },
 ];
@@ -265,9 +261,9 @@ export const AWARDS: AwardItem[] = [
     id: 'platinum-gold-club',
     title: 'Platinum & Gold Club',
     issuer: 'Microsoft',
-    awardLevel: '2x Platinum · 3x Gold',
+    awardLevel: '2× Platinum · 3× Gold',
     description:
-      'Platinum Club for top-tier performance worldwide; Gold Club for revenue growth and customer impact.',
+      'Recognition for sustained customer impact, revenue growth, and top-tier performance.',
     color: 'platinum',
     badges: [
       // Platinum art is a wide 1200x627 canvas; Gold is square. Zooms equalize the badge size.
@@ -281,7 +277,7 @@ export const AWARDS: AwardItem[] = [
     id: 'attainment-100',
     title: '100% Attainment',
     issuer: 'Microsoft',
-    awardLevel: '7-time winner · 2025 · 2026',
+    awardLevel: '7× (through 2024) · 2025 · 2026',
     description: 'Achieved 100% cumulative tenured weighted attainment on a sales quota plan.',
     color: 'green',
     badges: [
@@ -316,7 +312,7 @@ export const OUTSIDE_WORK: OutsideWorkGroup[] = [
  * Displayed in the Stats section below Hero.
  */
 export const STATS: StatItem[] = [
-  { value: 20, suffix: '+', label: 'Years Experience' },
+  { value: 20, suffix: '+', label: 'Years across technology and business' },
   { value: 500, prefix: '$', suffix: 'M+', label: 'in multi-year agreements' },
   { value: 5, suffix: '×', label: 'Top-Performer Awards' },
 ];

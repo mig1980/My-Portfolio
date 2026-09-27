@@ -36,7 +36,7 @@ const APPROACH_STEPS: ApproachStep[] = [
   {
     icon: Hammer,
     title: 'Make it real',
-    description: 'Turn strategy into commitments, execution and measurable outcomes.',
+    description: 'Turn strategy into commitments, execution, and measurable outcomes.',
   },
 ];
 

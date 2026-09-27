@@ -18,7 +18,7 @@ export interface JobRole {
   company: string;
   logo?: string;
   period: string;
-  /** Career stage this role belongs to (matches a CAREER_STAGES name) */
+  /** Career stage badge shown on this role */
   stage: string;
   description: string[];
 }

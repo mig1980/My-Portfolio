@@ -45,7 +45,7 @@ const Timeline: React.FC = memo(() => {
               number="04"
               label="Experience"
               title="Professional journey"
-              intro="From hands-on engineering to enterprise dealmaking. Open any role to read the story."
+              intro="From hands-on engineering to strategic account leadership. Open any role to read the story."
             />
             <ol className="mt-10 max-w-md" aria-label="Career progression">
               {CAREER_STAGES.map((stage, idx) => (

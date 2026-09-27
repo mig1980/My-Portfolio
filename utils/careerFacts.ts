@@ -5,9 +5,7 @@
  */
 
 export const CAREER_FACTS = {
-  university: 'Bauman Moscow State Technical University',
-  /** Lapsed certification: always shown with its end date, never as current */
-  azureCertification: 'Azure Solutions Architect Expert (through 2025)',
+  university: 'Bauman State Technical University',
   platinumClubCount: 2,
   goldClubCount: 3,
   quotaAttainment: '100% quota attainment in 9 fiscal years',

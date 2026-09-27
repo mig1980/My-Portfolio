@@ -16,14 +16,15 @@ const resumes = Object.values(RESUME_DOCUMENTS).map((doc) => ({
   text: readFileSync(resolve(process.cwd(), doc.src), 'utf8').replace(/&amp;/g, '&'),
 }));
 
-const {
-  university,
-  azureCertification,
-  platinumClubCount,
-  goldClubCount,
-  quotaAttainment,
-  quotaAttainmentRecent,
-} = CAREER_FACTS;
+const { university, platinumClubCount, goldClubCount, quotaAttainment, quotaAttainmentRecent } =
+  CAREER_FACTS;
+
+/** Every place a fact can appear: both résumés, the AI assistant and the website data. */
+const allSources = (): string[] => [
+  ...resumes.map((resume) => resume.text),
+  SYSTEM_CONTEXT,
+  JSON.stringify({ EDUCATION, CERTIFICATIONS }),
+];
 
 describe('career facts stay consistent', () => {
   describe('website (constants.tsx)', () => {
@@ -31,13 +32,6 @@ describe('career facts stay consistent', () => {
       const bauman = EDUCATION.filter((item) => item.institution.includes('Bauman'));
       expect(bauman).toHaveLength(2);
       for (const item of bauman) expect(item.institution).toBe(university);
-    });
-
-    it('lists the Azure certification only with its end date', () => {
-      const azure = CERTIFICATIONS.filter((cert) => cert.name.includes('Solutions Architect'));
-      expect(azure.map((cert) => cert.name)).toEqual([
-        `Microsoft Certified: ${azureCertification}`,
-      ]);
     });
 
     it('shows the same recognition counts', () => {
@@ -51,24 +45,21 @@ describe('career facts stay consistent', () => {
   });
 
   describe('AI assistant (functions/api/chat.ts)', () => {
-    it('uses the same university, certification and recognition', () => {
+    it('uses the same university and recognition', () => {
       expect(SYSTEM_CONTEXT).toContain(university);
-      expect(SYSTEM_CONTEXT).toContain(`Microsoft Certified: ${azureCertification}`);
       expect(SYSTEM_CONTEXT).toContain(`${platinumClubCount}-time Microsoft Platinum Club`);
       expect(SYSTEM_CONTEXT).toContain(`${goldClubCount}-time Gold Club`);
       expect(SYSTEM_CONTEXT).toContain(`${quotaAttainment}, ${quotaAttainmentRecent}`);
     });
 
-    it('does not present the lapsed certification as current', () => {
-      expect(SYSTEM_CONTEXT).toMatch(/no longer current/);
+    it('states the attainment count', () => {
       expect(SYSTEM_CONTEXT).not.toContain('Do not state a specific number of attainment');
     });
   });
 
   describe.each(resumes)('résumé $src', ({ text }) => {
-    it('uses the same university and certification', () => {
+    it('uses the same university', () => {
       expect(text).toContain(university);
-      expect(text).toContain(azureCertification);
     });
 
     it('uses the same recognition counts', () => {
@@ -78,15 +69,10 @@ describe('career facts stay consistent', () => {
     });
   });
 
-  it('never uses the old university name or an undated Azure certification anywhere', () => {
-    const sources = [
-      ...resumes.map((resume) => resume.text),
-      SYSTEM_CONTEXT,
-      JSON.stringify({ EDUCATION, CERTIFICATIONS }),
-    ];
-    for (const source of sources) {
-      expect(source).not.toContain('Bauman State Technical University');
-      expect(source).not.toMatch(/Azure Solutions Architect Expert(?! \(through 2025\))/);
+  it('never mentions "Moscow" or the Azure Solutions Architect certification anywhere', () => {
+    for (const source of allSources()) {
+      expect(source).not.toMatch(/Moscow/i);
+      expect(source).not.toMatch(/Solutions Architect Expert/i);
     }
   });
 });

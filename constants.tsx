@@ -224,12 +224,6 @@ export const EDUCATION: EducationItem[] = [
  */
 export const CERTIFICATIONS: Certification[] = [
   {
-    id: 'azure-solutions-architect',
-    name: `Microsoft Certified: ${CAREER_FACTS.azureCertification}`,
-    issuer: 'Microsoft',
-    logo: getLogoUrl('microsoft.com'),
-  },
-  {
     id: 'wharton-csuite',
     name: 'Selling to the C-Suite',
     issuer: 'Wharton Executive Education',

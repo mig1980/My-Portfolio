@@ -229,7 +229,7 @@ Education.
 Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from ${CAREER_FACTS.university}.
 
 Certifications and executive education.
-Microsoft Certified: ${CAREER_FACTS.azureCertification}; this certification is no longer current, so never describe it as current. AWS Certified Cloud Practitioner. Selling to the C-Suite from Wharton Executive Education. Business Strategy and Financial Acumen from INSEAD Executive Education. Value Negotiation from INSEAD Executive Education.
+AWS Certified Cloud Practitioner. Selling to the C-Suite from Wharton Executive Education. Business Strategy and Financial Acumen from INSEAD Executive Education. Value Negotiation from INSEAD Executive Education.
 
 Contact methods.
 LinkedIn is linkedin.com/in/mgavrilov. Email is contact@gavrilov.ai. Resume is available at /CV/MGavrilovCV.pdf.

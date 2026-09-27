@@ -168,6 +168,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
   - After publishing, poll `/api/admin/status` every 10 s until the workflow completes. Then show ✓ with a link to `/CV/MGavrilovCV.pdf?v=<sha>`, or ✗ with a link to the failed Action log.
   - Resizable divider between panes. Mobile: tabs (Code / Preview) instead of split.
 - Tests: the debounce/render hook, fit-meter math, validation-panel rendering, and the publish flow with mocked fetch (200, 409 stale sha, 422 validation).
+- **Done (Sept 27, 2026)** (verified in a real browser with the API mocked; works live after the Manual setup). Deviations, all simplifications: Enterprise title only (no HLS toggle, since only the site PDF is produced); fixed 50/50 split instead of a resizable divider; fit-to-width zoom only. The fit meter changes `--fs`/`--gap` inside the same-origin preview and measures instantly (no reloads), then shows the page at the setting the PDF build will use. A non-JSON reply (e.g. an Access sign-in page) is shown as an error, never treated as data. The admin chunk (~600 kB, CodeMirror) is never loaded by the public site.
 ### Phase 6: Cleanup and docs
 
 - Update `README.md` and `.github/copilot-instructions.md` (new folders, commands, admin architecture and the Template contract).

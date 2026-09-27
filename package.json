@@ -24,6 +24,8 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@codemirror/lang-html": "^6.4.12",
+    "@uiw/react-codemirror": "^4.25.11",
     "lucide-react": "^0.556.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1"

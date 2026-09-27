@@ -1,7 +1,10 @@
 /**
- * @fileoverview Checks content/resume.html against the template contract.
+ * @fileoverview Checks a résumé template against the template contract.
  * Runs in the admin editor (live feedback) and in the admin Function (authoritative),
  * so it must stay DOM-free and rely on string/regex checks only.
+ *
+ * External-resource checks are decode-first: HTML entities and CSS escapes are decoded and "\" is
+ * treated as "/" (as browsers do) before any URL is judged, so encodings can't hide a URL.
  */
 
 export interface ResumeValidationResult {
@@ -22,6 +25,7 @@ interface PatternRule {
   message: (match: RegExpExecArray) => string;
 }
 
+/** Tag and attribute-name rules; names can't be entity- or CSS-encoded, so these run on the raw HTML. */
 const FORBIDDEN_PATTERNS: readonly PatternRule[] = [
   {
     pattern: /<\s*script\b/gi,
@@ -39,35 +43,125 @@ const FORBIDDEN_PATTERNS: readonly PatternRule[] = [
     pattern: /<[a-z][^>]*?[\s/"']on[a-z]+\s*=/gi,
     message: () => 'Remove the event-handler attribute (on…=). Inline handlers are not allowed.',
   },
-  {
-    pattern: /@import\b/gi,
-    message: () => 'Remove @import. Put all CSS in the single <style> block.',
-  },
-  {
-    pattern:
-      /[\s/"'](?:src|srcset|poster|data|background|action|formaction)\s*=\s*["']?\s*(?:https?:)?\/\//gi,
-    message: () => 'Remove the external resource. Images and fonts must be local files.',
-  },
-  {
-    // Only <a> may link out; href on anything else (e.g. SVG <image>, <use>) loads a resource.
-    pattern: /<(?!a[\s>/])[a-z][^>]*?[\s/"'](?:xlink:)?href\s*=\s*["']?\s*(?:https?:)?\/\//gi,
-    message: () => 'Remove the external resource. Only <a> links may point to other sites.',
-  },
 ];
 
-const SCRIPT_URL_PATTERN = /(?:j\s*a\s*v\s*a|v\s*b)\s*s\s*c\s*r\s*i\s*p\s*t\s*:/gi;
-const CSS_SOURCES = [/<style\b[^>]*>([\s\S]*?)<\/style>/gi, /\sstyle\s*=\s*("[^"]*"|'[^']*')/gi];
-const EXTERNAL_URL_PATTERN = /(?:https?:)?\/\/[a-z0-9]/i;
+/** Attributes whose value is fetched or navigated to. Values of the list kinds hold several URLs. */
+const URL_ATTRIBUTES: Readonly<Record<string, 'single' | 'srcset' | 'spaces'>> = {
+  src: 'single',
+  href: 'single',
+  'xlink:href': 'single',
+  poster: 'single',
+  data: 'single',
+  background: 'single',
+  action: 'single',
+  formaction: 'single',
+  cite: 'single',
+  longdesc: 'single',
+  lowsrc: 'single',
+  dynsrc: 'single',
+  manifest: 'single',
+  icon: 'single',
+  codebase: 'single',
+  profile: 'single',
+  usemap: 'single',
+  srcset: 'srcset',
+  imagesrcset: 'srcset',
+  ping: 'spaces',
+  archive: 'spaces',
+};
 
-/** Decodes the entities browsers accept inside attributes, so `&#106;avascript:` can't hide. */
-function decodeEntities(html: string): string {
-  const fromCode = (code: number): string => (code <= 0x10ffff ? String.fromCodePoint(code) : '');
-  return html
-    .replace(/&#x([0-9a-f]+);?/gi, (_m, hex: string) => fromCode(parseInt(hex, 16)))
-    .replace(/&#(\d+);?/g, (_m, dec: string) => fromCode(Number(dec)))
-    .replace(/&colon;/gi, ':')
-    .replace(/&tab;/gi, '\t')
-    .replace(/&newline;/gi, '\n');
+const LINK_TAGS = new Set(['a']);
+
+/** Named entities that can spell URL syntax; letters can only be hidden with numeric references. */
+const NAMED_ENTITIES: Readonly<Record<string, string>> = {
+  amp: '&',
+  quot: '"',
+  apos: "'",
+  lt: '<',
+  gt: '>',
+  nbsp: '\u00a0',
+  colon: ':',
+  sol: '/',
+  bsol: '\\',
+  period: '.',
+  comma: ',',
+  semi: ';',
+  excl: '!',
+  quest: '?',
+  num: '#',
+  percnt: '%',
+  equals: '=',
+  plus: '+',
+  commat: '@',
+  lpar: '(',
+  rpar: ')',
+  lsqb: '[',
+  rsqb: ']',
+  lcub: '{',
+  rcub: '}',
+  lowbar: '_',
+  verbar: '|',
+  grave: '`',
+  Tab: '\t',
+  NewLine: '\n',
+};
+
+// Quote-aware so a ">" inside an attribute value can't end the tag early and hide later attributes.
+const TAG_PATTERN = /<([a-z][\w:-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/gi;
+const ATTRIBUTE_PATTERN = /([^\s"'<>/=]+)(?:\s*=\s*("[^"]*"|'[^']*'|[^\s"'>]+))?/g;
+const STYLE_BLOCK_PATTERN = /<style\b[^>]*>([\s\S]*?)<\/style\s*>/gi;
+const CSS_URL_PATTERN = /url\(\s*(['"]?)([^'")]*)\1\s*\)/gi;
+/** Fetchable absolute URLs in CSS text, with or without slashes (e.g. "https:host"), or "//host". */
+const CSS_EXTERNAL_PATTERN = /\b(?:https?|ftp|wss?|file)\s*:|(?<![\w.:/-])\/\/\s*[a-z0-9]/i;
+
+function codePoint(code: number): string {
+  return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : '\ufffd';
+}
+
+/** Decodes numeric character references and the named entities that matter for URLs. */
+function decodeEntities(text: string): string {
+  return text
+    .replace(/&#x([0-9a-f]+);?/gi, (_m, hex: string) => codePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);?/g, (_m, dec: string) => codePoint(Number(dec)))
+    .replace(/&([a-z]+);/gi, (match, name: string) => NAMED_ENTITIES[name] ?? match);
+}
+
+/** Decodes CSS escapes: `\69` → "i", `\2f ` → "/", `\:` → ":". */
+function decodeCssEscapes(css: string): string {
+  return css.replace(
+    /\\([0-9a-f]{1,6})[ \t\n\r\f]?|\\([\s\S])/gi,
+    (_m, hex?: string, char?: string) => (hex ? codePoint(parseInt(hex, 16)) : (char ?? ''))
+  );
+}
+
+/** Trims C0 controls and spaces, as the URL parser does. */
+function trimControls(value: string): string {
+  let start = 0;
+  let end = value.length;
+  while (start < end && value.charCodeAt(start) <= 0x20) start++;
+  while (end > start && value.charCodeAt(end - 1) <= 0x20) end--;
+  return value.slice(start, end);
+}
+
+/** What a URL value resolves to, judged the way a browser parses it. */
+function classifyUrl(raw: string): 'ok' | 'external' | 'script' {
+  const value = trimControls(raw.replace(/\\/g, '/').replace(/[\t\n\r]/g, ''));
+  if (value === '' || value.startsWith('#')) return 'ok';
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(value)?.[1]?.toLowerCase();
+  if (scheme === 'javascript' || scheme === 'vbscript') return 'script';
+  if (scheme === 'data') return 'ok';
+  if (scheme || value.startsWith('//')) return 'external';
+  return 'ok';
+}
+
+function urlCandidates(value: string, kind: 'single' | 'srcset' | 'spaces'): string[] {
+  if (kind === 'single') return [value];
+  if (kind === 'spaces') return value.split(/\s+/).filter(Boolean);
+  // srcset: "url [descriptor], url [descriptor], …"; every candidate is fetchable.
+  return value
+    .split(',')
+    .map((candidate) => candidate.trim().split(/\s+/)[0] ?? '')
+    .filter(Boolean);
 }
 
 function lineOf(text: string, index: number): number {
@@ -120,18 +214,6 @@ function checkStructure(html: string, options: ValidateOptions, errors: string[]
   }
 }
 
-function checkUrls(html: string, errors: string[]): void {
-  const urlPattern = /url\(\s*(['"]?)([^'")]*)\1\s*\)/gi;
-  for (const match of html.matchAll(urlPattern)) {
-    const value = (match[2] ?? '').trim();
-    if (!value.startsWith(ALLOWED_FONT_PREFIX) || value.includes('..')) {
-      errors.push(
-        `Line ${lineOf(html, match.index)}: url(${value}) is not allowed. Use files under ${ALLOWED_FONT_PREFIX}.`
-      );
-    }
-  }
-}
-
 function checkForbidden(html: string, errors: string[]): void {
   for (const rule of FORBIDDEN_PATTERNS) {
     rule.pattern.lastIndex = 0;
@@ -140,28 +222,83 @@ function checkForbidden(html: string, errors: string[]): void {
       errors.push(`Line ${lineOf(html, match.index)}: ${rule.message(match)}`);
     }
   }
+}
 
-  const decoded = decodeEntities(html);
-  for (const match of decoded.matchAll(SCRIPT_URL_PATTERN)) {
+/**
+ * Checks CSS from a <style> block or style="" attribute. `line` is where the CSS starts in the
+ * file; line numbers inside it are approximate once escapes are decoded.
+ */
+function checkCss(rawCss: string, line: number, errors: string[]): void {
+  const css = decodeCssEscapes(decodeEntities(rawCss)).replace(/\\/g, '/');
+  const at = (index: number): string => `Line ${line + lineOf(css, index) - 1}`;
+
+  for (const match of css.matchAll(/@import\b/gi)) {
+    errors.push(`${at(match.index)}: Remove @import. Put all CSS in the single <style> block.`);
+  }
+
+  for (const match of css.matchAll(CSS_URL_PATTERN)) {
+    const value = (match[2] ?? '').trim();
+    const isFont = value.startsWith(ALLOWED_FONT_PREFIX) && !value.includes('..');
+    if (!isFont && !value.startsWith('#')) {
+      errors.push(
+        `${at(match.index)}: url(${value}) is not allowed. Use files under ${ALLOWED_FONT_PREFIX}.`
+      );
+    }
+  }
+
+  // url(...) was judged above; blank it out (same length) so it isn't reported twice.
+  const rest = css.replace(/url\([^)]*\)/gi, (m) => ' '.repeat(m.length));
+  const external = CSS_EXTERNAL_PATTERN.exec(rest);
+  if (external) {
     errors.push(
-      `Line ${lineOf(decoded, match.index)}: Remove the script URL (javascript: / vbscript:).`
+      `${at(external.index)}: Remove the external URL from the CSS. Fonts and images must be local files.`
     );
   }
 }
 
-/** Catches external URLs in CSS that don't use url(), e.g. image-set("https://…"). */
-function checkCss(html: string, errors: string[]): void {
-  for (const source of CSS_SOURCES) {
-    for (const match of html.matchAll(source)) {
-      const css = match[1] ?? '';
-      // url(...) is already checked by checkUrls; blank it out without shifting offsets.
-      const rest = css.replace(/url\([^)]*\)/gi, (m) => ' '.repeat(m.length));
-      const external = EXTERNAL_URL_PATTERN.exec(rest);
-      if (external) {
-        const offset = match.index + match[0].indexOf(css) + external.index;
-        errors.push(
-          `Line ${lineOf(html, offset)}: Remove the external URL from the CSS. Fonts and images must be local files.`
-        );
+function checkStyleBlocks(html: string, errors: string[]): void {
+  for (const match of html.matchAll(STYLE_BLOCK_PATTERN)) {
+    const css = match[1] ?? '';
+    checkCss(css, lineOf(html, match.index + match[0].indexOf(css)), errors);
+  }
+}
+
+/** Allow-list for every URL-bearing attribute: relative paths, data:, #fragments; <a> may link out. */
+function checkAttributes(html: string, errors: string[]): void {
+  for (const tag of html.matchAll(TAG_PATTERN)) {
+    const tagName = (tag[1] ?? '').toLowerCase();
+    const attributes = tag[2] ?? '';
+    const line = lineOf(html, tag.index);
+
+    for (const attribute of attributes.matchAll(ATTRIBUTE_PATTERN)) {
+      const name = (attribute[1] ?? '').toLowerCase();
+      const rawValue = attribute[2];
+      if (rawValue === undefined) continue;
+      const value = decodeEntities(rawValue.replace(/^(["'])([\s\S]*)\1$/, '$2'));
+
+      if (name === 'style') {
+        checkCss(value, line, errors);
+        continue;
+      }
+      // Presentation attributes such as fill="url(…)" load resources too.
+      if (/url\s*\(/i.test(decodeCssEscapes(value))) {
+        checkCss(value, line, errors);
+      }
+
+      const kind = URL_ATTRIBUTES[name];
+      if (!kind) continue;
+      const isLink = LINK_TAGS.has(tagName) && (name === 'href' || name === 'xlink:href');
+      for (const candidate of urlCandidates(value, kind)) {
+        const verdict = classifyUrl(candidate);
+        if (verdict === 'script') {
+          errors.push(`Line ${line}: Remove the script URL (javascript: / vbscript:).`);
+        } else if (verdict === 'external' && !isLink) {
+          errors.push(
+            name === 'href' || name === 'xlink:href'
+              ? `Line ${line}: Remove the external resource. Only <a> links may point to other sites.`
+              : `Line ${line}: Remove the external resource. Images and fonts must be local files.`
+          );
+        }
       }
     }
   }
@@ -184,8 +321,8 @@ export function validateResumeHtml(
 
   const errors: string[] = [];
   checkStructure(html, options, errors);
-  checkUrls(html, errors);
-  checkCss(html, errors);
+  checkStyleBlocks(html, errors);
+  checkAttributes(html, errors);
   checkForbidden(html, errors);
   return { ok: errors.length === 0, errors };
 }

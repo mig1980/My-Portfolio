@@ -71,6 +71,70 @@ describe('validateResumeHtml', () => {
       expectRejected(withBody(snippet), messagePart);
     });
 
+    describe('decode-first external-resource checks', () => {
+      it.each([
+        ['CSS-escaped @import', String.raw`<style>@\69mport "x.css";</style>`, '@import'],
+        [
+          'escaped slashes in image-set',
+          String.raw`<div style="background:image-set('https:\2f\2f example.com/a.png' 1x)"></div>`,
+          'external URL from the CSS',
+        ],
+        [
+          'a slash-less https: URL in image-set',
+          `<div style="background:image-set('https:example.com/a.png' 1x)"></div>`,
+          'external URL from the CSS',
+        ],
+        [
+          'backslashes in image-set',
+          String.raw`<div style="background:image-set('\\\\example.com/a.png' 1x)"></div>`,
+          'external URL from the CSS',
+        ],
+        [
+          'a CSS-escaped url()',
+          String.raw`<style>.x{background:\75rl(https://example.com/a.png)}</style>`,
+          'url(https://example.com/a.png)',
+        ],
+        [
+          'an entity-encoded scheme',
+          '<img src="&#104;ttps://example.com/a.png">',
+          'external resource',
+        ],
+        [
+          'named entities for ":" and "/"',
+          '<img src="https&colon;&sol;&sol;example.com/a.png">',
+          'external resource',
+        ],
+        ['https: without slashes', '<img src="https:example.com/a.png">', 'external resource'],
+        ['backslash "\\\\host"', String.raw`<img src="\\example.com\a.png">`, 'external resource'],
+        [
+          'the second srcset candidate',
+          '<img srcset="/a.png 1x, https://example.com/b.png 2x">',
+          'external resource',
+        ],
+        [
+          'a ">" inside an earlier attribute',
+          '<img alt=">" src="https://example.com/a.png">',
+          'external resource',
+        ],
+        [
+          'an SVG presentation attribute',
+          '<svg><rect fill="url(https://example.com/p.svg#x)"/></svg>',
+          'url(https://example.com/p.svg#x)',
+        ],
+      ])('rejects %s', (_label, snippet, messagePart) => {
+        expectRejected(withBody(snippet), messagePart);
+      });
+
+      it('allows relative paths, data: URLs, #fragments and outbound <a> links', () => {
+        const html = withBody(
+          '<img src="data:image/png;base64,AAAA" srcset="/a.png 1x, b.png 2x">' +
+            '<svg><use href="#icon"/><rect fill="url(#g)"/></svg>' +
+            '<a href="https://www.linkedin.com/in/mgavrilov">LinkedIn</a>'
+        );
+        expect(validateResumeHtml(html)).toEqual({ ok: true, errors: [] });
+      });
+    });
+
     it('reports a CSS url() problem only once', () => {
       const html = withBody('<div style="background:url(https://example.com/a.png)"></div>');
       expect(validateResumeHtml(html).errors).toHaveLength(1);

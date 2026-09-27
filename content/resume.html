@@ -24,10 +24,11 @@
   h2 { font-size: 9.8pt; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; color: var(--navy); break-after: avoid;
        margin-top: calc(9pt * var(--gap)); padding-bottom: 1.5pt; border-bottom: 1px solid var(--rule); margin-bottom: calc(3pt * var(--gap)); }
   .kv b { color: var(--navy); font-weight: 700; }
-  .employer { display: flex; justify-content: space-between; align-items: baseline; margin-top: calc(3pt * var(--gap)); break-after: avoid; }
-  .employer.later { margin-top: calc(6pt * var(--gap)); }
-  .employer .e { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: 13pt; color: var(--navy); letter-spacing: 0.2px; }
-  .employer .dates { font-weight: 600; color: var(--navy); font-size: 9.6pt; white-space: nowrap; }
+  .employer { display: flex; justify-content: space-between; align-items: baseline; margin-top: calc(1pt * var(--gap)); break-after: avoid; }
+  .employer.later { margin-top: calc(5pt * var(--gap)); }
+  /* Employer lines sit a level above role titles: display serif, clearly larger than the 10.2pt roles. */
+  .employer .e { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: 16pt; line-height: 1; color: var(--navy); letter-spacing: 0.2px; }
+  .employer .dates { font-weight: 600; color: var(--navy); font-size: 10pt; white-space: nowrap; }
   .employer-sub { font-style: italic; color: #5b6b85; font-size: 9.2pt; }
   .rec { margin-top: 1.5pt; color: #333; }
   .rec b { color: var(--navy); }

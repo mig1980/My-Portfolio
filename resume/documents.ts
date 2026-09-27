@@ -4,6 +4,7 @@
  */
 
 import { buildFitSettings, type FitSetting } from './pdf';
+import { TITLES } from './render';
 
 export type ResumeDocId = 'executive' | 'ats';
 
@@ -22,7 +23,11 @@ export interface ResumeDocument {
   pageMargin: 'zero' | 'any';
   /** Conventional-commit scope for edits published from the admin editor */
   commitScope: string;
+  /** Must appear in this order in the PDF's extracted text (scripts/check-resume-text.ts) */
+  requiredText: readonly string[];
 }
+
+const CURRENT_ROLE = 'Strategic Account Director, Healthcare & Life Sciences';
 
 export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
   executive: {
@@ -34,6 +39,15 @@ export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
     fit: buildFitSettings([9.6, 9.5, 9.4, 9.3, 9.2], [1, 0.85, 0.7]),
     pageMargin: 'zero',
     commitScope: 'resume',
+    requiredText: [
+      'Michael Gavrilov',
+      TITLES.enterprise,
+      'Executive Summary',
+      'Professional Experience',
+      'Microsoft',
+      CURRENT_ROLE,
+      'Education',
+    ],
   },
   ats: {
     id: 'ats',
@@ -44,6 +58,15 @@ export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
     fit: buildFitSettings([11, 10.75, 10.5, 10.25], [1, 0.85, 0.7]),
     pageMargin: 'any',
     commitScope: 'resume-ats',
+    requiredText: [
+      'Michael Gavrilov',
+      TITLES.enterprise,
+      'Professional Summary',
+      'Professional Experience',
+      'Microsoft',
+      CURRENT_ROLE,
+      'Education',
+    ],
   },
 };
 

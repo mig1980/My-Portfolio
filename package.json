@@ -21,6 +21,7 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "resume:build": "tsx scripts/build-resume.ts",
+    "resume:check": "tsx scripts/check-resume-text.ts",
     "prepare": "husky"
   },
   "dependencies": {
@@ -53,6 +54,7 @@
     "husky": "^9.1.7",
     "jsdom": "^27.3.0",
     "lint-staged": "^16.2.7",
+    "pdfjs-dist": "^6.3.289",
     "playwright": "^1.63.0",
     "postcss": "^8.5.6",
     "prettier": "^3.7.4",

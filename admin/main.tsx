@@ -6,7 +6,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import ErrorBoundary from '../components/ErrorBoundary';
-import ResumeEditor from './ResumeEditor';
+import AdminApp from './AdminApp';
 import '../styles/globals.css';
 
 const rootElement = document.getElementById('root');
@@ -17,7 +17,7 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <ResumeEditor />
+      <AdminApp />
     </ErrorBoundary>
   </React.StrictMode>
 );

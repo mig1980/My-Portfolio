@@ -18,6 +18,9 @@
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store
 
+/CV/MGavrilovCV-ATS.pdf
+  X-Robots-Tag: noindex
+
 /*.js
   Cache-Control: public, max-age=31536000, immutable
 

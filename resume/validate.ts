@@ -9,6 +9,11 @@ export interface ResumeValidationResult {
   errors: string[];
 }
 
+export interface ValidateOptions {
+  /** 'zero' (default) requires `@page { margin: 0 }`; 'any' allows print margins (multi-page documents). */
+  pageMargin?: 'zero' | 'any';
+}
+
 export const MAX_RESUME_BYTES = 100 * 1024;
 export const ALLOWED_FONT_PREFIX = '/fonts/';
 
@@ -77,7 +82,7 @@ function countOccurrences(text: string, needle: string): number {
   return text.split(needle).length - 1;
 }
 
-function checkStructure(html: string, errors: string[]): void {
+function checkStructure(html: string, options: ValidateOptions, errors: string[]): void {
   if (!/^\s*<!doctype html>/i.test(html)) {
     errors.push('Start the file with <!DOCTYPE html>.');
   }
@@ -93,20 +98,25 @@ function checkStructure(html: string, errors: string[]): void {
   const rootBlock = /:root\s*\{([^}]*)\}/i.exec(html)?.[1] ?? '';
   for (const variable of ['--fs', '--gap']) {
     if (!new RegExp(`${variable}\\s*:`).test(rootBlock)) {
-      errors.push(`Define ${variable} inside :root { … }. The one-page fit uses it.`);
+      errors.push(`Define ${variable} inside :root { … }. The page fit uses it.`);
     }
     if (!html.includes(`var(${variable})`)) {
-      errors.push(`Use var(${variable}) in the CSS. The one-page fit relies on it.`);
+      errors.push(`Use var(${variable}) in the CSS. The page fit relies on it.`);
     }
   }
 
   const pageBlock = /@page\s*\{([^}]*)\}/i.exec(html)?.[1];
+  const zeroMargin = options.pageMargin !== 'any';
   if (
     pageBlock === undefined ||
     !/\bsize\s*:\s*letter\b/i.test(pageBlock) ||
-    !/\bmargin\s*:\s*0(?:in|pt|px|mm|cm)?\s*(?:;|$)/i.test(pageBlock)
+    (zeroMargin && !/\bmargin\s*:\s*0(?:in|pt|px|mm|cm)?\s*(?:;|$)/i.test(pageBlock))
   ) {
-    errors.push('Keep @page { size: Letter; margin: 0; } in the CSS.');
+    errors.push(
+      zeroMargin
+        ? 'Keep @page { size: Letter; margin: 0; } in the CSS.'
+        : 'Keep @page { size: Letter; … } in the CSS.'
+    );
   }
 }
 
@@ -158,7 +168,10 @@ function checkCss(html: string, errors: string[]): void {
 }
 
 /** Returns every contract violation as a readable message; `ok` is true when there are none. */
-export function validateResumeHtml(html: string): ResumeValidationResult {
+export function validateResumeHtml(
+  html: string,
+  options: ValidateOptions = {}
+): ResumeValidationResult {
   const bytes = new TextEncoder().encode(html).length;
   if (bytes > MAX_RESUME_BYTES) {
     return {
@@ -170,7 +183,7 @@ export function validateResumeHtml(html: string): ResumeValidationResult {
   }
 
   const errors: string[] = [];
-  checkStructure(html, errors);
+  checkStructure(html, options, errors);
   checkUrls(html, errors);
   checkCss(html, errors);
   checkForbidden(html, errors);

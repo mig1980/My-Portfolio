@@ -17,6 +17,7 @@ const SHA = 'a'.repeat(40);
 const CONTENTS_URL =
   'https://api.github.com/repos/mig1980/My-Portfolio/contents/content/resume.html';
 const template = readFileSync(resolve(process.cwd(), 'content', 'resume.html'), 'utf8');
+const atsTemplate = readFileSync(resolve(process.cwd(), 'content', 'resume-ats.html'), 'utf8');
 
 const mockFetch = vi.fn() as Mock;
 
@@ -32,8 +33,12 @@ function context(
   } as unknown as Context;
 }
 
-function putContext(body: unknown, headers: Record<string, string> = {}): Context {
-  return context('/api/admin/resume', {
+function putContext(
+  body: unknown,
+  headers: Record<string, string> = {},
+  path = '/api/admin/resume'
+): Context {
+  return context(path, {
     method: 'PUT',
     headers: { Origin: ORIGIN, 'Content-Type': 'application/json', ...headers },
     body: typeof body === 'string' ? body : JSON.stringify(body),
@@ -211,6 +216,47 @@ describe('/api/admin/resume', () => {
     expect(response.status).toBe(500);
     expect(mockFetch).not.toHaveBeenCalled();
   });
+
+  describe('?doc selection', () => {
+    it('reads the ATS source for ?doc=ats', async () => {
+      mockFetch.mockResolvedValue(
+        githubJson({ content: encodeBase64Utf8(atsTemplate), sha: SHA, encoding: 'base64' })
+      );
+      const response = await resumeHandler(context('/api/admin/resume?doc=ats'));
+      expect(response.status).toBe(200);
+      expect(String(mockFetch.mock.calls[0]?.[0])).toBe(
+        'https://api.github.com/repos/mig1980/My-Portfolio/contents/content/resume-ats.html?ref=main'
+      );
+    });
+
+    it('commits the ATS file with its own scope and print margins allowed', async () => {
+      mockFetch.mockResolvedValue(githubJson({ content: {}, commit: {} }));
+      const response = await resumeHandler(
+        putContext({ html: atsTemplate, sha: SHA }, {}, '/api/admin/resume?doc=ats')
+      );
+      expect(response.status).toBe(200);
+      expect(String(mockFetch.mock.calls[0]?.[0])).toMatch(/contents\/content\/resume-ats\.html$/);
+      expect(sentBody().message).toBe('docs(resume-ats): update via admin');
+    });
+
+    it('keeps the zero-margin rule for the executive document', async () => {
+      const response = await resumeHandler(putContext({ html: atsTemplate, sha: SHA }));
+      expect(response.status).toBe(422);
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it.each(['../secret', 'content/resume.html', '__proto__', 'EXECUTIVE'])(
+      'rejects ?doc=%s without calling GitHub',
+      async (doc) => {
+        const path = `/api/admin/resume?doc=${encodeURIComponent(doc)}`;
+        expect((await resumeHandler(context(path))).status).toBe(400);
+        expect(
+          (await resumeHandler(putContext({ html: template, sha: SHA }, {}, path))).status
+        ).toBe(400);
+        expect(mockFetch).not.toHaveBeenCalled();
+      }
+    );
+  });
 });
 
 describe('/api/admin/status', () => {
@@ -297,6 +343,17 @@ describe('/api/admin/status', () => {
   it('fails closed with 500 without configuration', async () => {
     const response = await statusHandler(context('/api/admin/status', {}, {}));
     expect(response.status).toBe(500);
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('reports the ATS PDF commit for ?doc=ats and rejects unknown documents', async () => {
+    respond(githubJson({ workflow_runs: [] }), githubJson([]));
+    await statusHandler(context('/api/admin/status?doc=ats'));
+    expect(mockFetch.mock.calls.map(([url]) => String(url))).toContain(
+      'https://api.github.com/repos/mig1980/My-Portfolio/commits?path=public%2FCV%2FMGavrilovCV-ATS.pdf&sha=main&per_page=1'
+    );
+    mockFetch.mockClear();
+    expect((await statusHandler(context('/api/admin/status?doc=../x'))).status).toBe(400);
     expect(mockFetch).not.toHaveBeenCalled();
   });
 });

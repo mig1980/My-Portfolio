@@ -1,13 +1,13 @@
 /**
- * @fileoverview Admin API: status of the latest résumé PDF build and the last PDF commit on main.
- * Auth is enforced by ./_middleware.ts.
+ * @fileoverview Admin API: latest résumé PDF build run and the last commit of one document's PDF
+ * (?doc=executive|ats) on main. Auth is enforced by ./_middleware.ts.
  */
 
 /// <reference types="@cloudflare/workers-types" />
 
+import { DEFAULT_DOC_ID, getResumeDocument } from '../../../resume/documents';
 import {
   BRANCH,
-  PDF_PATH,
   PDF_WORKFLOW,
   githubFetch,
   readGitHubConfig,
@@ -43,6 +43,8 @@ export const onRequest: PagesFunction<GitHubEnv> = async ({ request, env }) => {
   if (request.method !== 'GET') {
     return json(405, { error: 'Method not allowed' }, { Allow: 'GET' });
   }
+  const doc = getResumeDocument(new URL(request.url).searchParams.get('doc') ?? DEFAULT_DOC_ID);
+  if (!doc) return json(400, { error: 'Unknown document' });
   const config = readGitHubConfig(env);
   if (!config) {
     console.error('Admin GitHub access is not configured (GITHUB_TOKEN, GITHUB_REPO)');
@@ -52,7 +54,7 @@ export const onRequest: PagesFunction<GitHubEnv> = async ({ request, env }) => {
   try {
     const [runsResponse, commitsResponse] = await Promise.all([
       githubFetch(config, `/actions/workflows/${PDF_WORKFLOW}/runs?branch=${BRANCH}&per_page=1`),
-      githubFetch(config, `/commits?path=${encodeURIComponent(PDF_PATH)}&sha=${BRANCH}&per_page=1`),
+      githubFetch(config, `/commits?path=${encodeURIComponent(doc.out)}&sha=${BRANCH}&per_page=1`),
     ]);
     // 404 = the workflow file isn't on main yet; report "no runs" rather than an error.
     if ((!runsResponse.ok && runsResponse.status !== 404) || !commitsResponse.ok) {

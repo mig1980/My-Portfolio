@@ -3,6 +3,7 @@
  */
 
 import type { AdminBuildStatus, AdminPublishResult, AdminResumeFile } from '../types';
+import type { ResumeDocId } from '../resume/documents';
 
 export class AdminApiError extends Error {
   readonly status: number;
@@ -47,8 +48,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return body as T;
 }
 
-export async function loadResume(): Promise<AdminResumeFile> {
-  const file = await request<Partial<AdminResumeFile>>('/api/admin/resume');
+export async function loadResume(docId: ResumeDocId): Promise<AdminResumeFile> {
+  const file = await request<Partial<AdminResumeFile>>(`/api/admin/resume?doc=${docId}`);
   if (typeof file.html !== 'string' || typeof file.sha !== 'string') {
     throw new AdminApiError(200, 'Unexpected response from the server.');
   }
@@ -56,17 +57,18 @@ export async function loadResume(): Promise<AdminResumeFile> {
 }
 
 export function publishResume(
+  docId: ResumeDocId,
   html: string,
   sha: string,
   message: string
 ): Promise<AdminPublishResult> {
-  return request<AdminPublishResult>('/api/admin/resume', {
+  return request<AdminPublishResult>(`/api/admin/resume?doc=${docId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ html, sha, message }),
   });
 }
 
-export function loadBuildStatus(): Promise<AdminBuildStatus> {
-  return request<AdminBuildStatus>('/api/admin/status');
+export function loadBuildStatus(docId: ResumeDocId): Promise<AdminBuildStatus> {
+  return request<AdminBuildStatus>(`/api/admin/status?doc=${docId}`);
 }

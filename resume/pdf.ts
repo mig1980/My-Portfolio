@@ -8,14 +8,48 @@ export interface FitSetting {
   gap: number;
 }
 
-/** Tried in order until the résumé fits: largest font first, tightening spacing before shrinking text. */
-export const FIT_SETTINGS: readonly FitSetting[] = [9.6, 9.5, 9.4, 9.3, 9.2].flatMap((fontSizePt) =>
-  [1, 0.85, 0.7].map((gap) => ({ fontSizePt, gap }))
-);
+/** Largest font first; at each size, spacing is tightened before the text shrinks. */
+export function buildFitSettings(
+  fontSizesPt: readonly number[],
+  gaps: readonly number[]
+): FitSetting[] {
+  return fontSizesPt.flatMap((fontSizePt) => gaps.map((gap) => ({ fontSizePt, gap })));
+}
 
 /** US Letter at 96 CSS px per inch. */
 export const LETTER_WIDTH_PX = 816;
 export const LETTER_HEIGHT_PX = 1056;
+
+export interface PageMarginsPx {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+const PX_PER_UNIT: Readonly<Record<string, number>> = {
+  in: 96,
+  pt: 96 / 72,
+  px: 1,
+  mm: 96 / 25.4,
+  cm: 96 / 2.54,
+};
+
+/** Reads the `@page { margin: … }` shorthand (1-4 lengths); unknown or missing values count as 0. */
+export function parsePageMarginsPx(html: string): PageMarginsPx {
+  const block = /@page\s*\{([^}]*)\}/i.exec(html)?.[1] ?? '';
+  const value = /(?:^|;|\s)margin\s*:\s*([^;]+)/i.exec(block)?.[1] ?? '0';
+  const lengths = value
+    .trim()
+    .split(/\s+/)
+    .map((part) => {
+      const match = /^(\d*\.?\d+)(in|pt|px|mm|cm)?$/i.exec(part);
+      const unit = match?.[2]?.toLowerCase() ?? 'px';
+      return match ? Number(match[1]) * (PX_PER_UNIT[unit] ?? 0) : 0;
+    });
+  const [top = 0, right = top, bottom = top, left = right] = lengths;
+  return { top, right, bottom, left };
+}
 
 // One char per byte (0-255). TextDecoder('latin1') is windows-1252 in browsers, so it isn't 1:1.
 function bytesToLatin1(bytes: Uint8Array): string {

@@ -24,6 +24,11 @@ describe('validateResumeHtml', () => {
     expect(validateResumeHtml(template)).toEqual({ ok: true, errors: [] });
   });
 
+  it('accepts the ATS template with print margins', () => {
+    const ats = readFileSync(resolve(process.cwd(), 'content', 'resume-ats.html'), 'utf8');
+    expect(validateResumeHtml(ats, { pageMargin: 'any' })).toEqual({ ok: true, errors: [] });
+  });
+
   it('allows ordinary external links', () => {
     expect(validateResumeHtml(withBody('<a href="https://gavrilov.ai">site</a>')).ok).toBe(true);
   });
@@ -107,6 +112,14 @@ describe('validateResumeHtml', () => {
     it('requires a Letter @page with zero margin', () => {
       expectRejected(template.replace('size: Letter;', 'size: A4;'), '@page');
       expectRejected(template.replace('@page { size: Letter; margin: 0; }', ''), '@page');
+    });
+
+    it('allows print margins only when asked (multi-page documents)', () => {
+      const withMargins = template.replace('margin: 0; }', 'margin: 0.6in 0.7in; }');
+      expectRejected(withMargins, 'margin: 0');
+      expect(validateResumeHtml(withMargins, { pageMargin: 'any' }).ok).toBe(true);
+      const a4 = withMargins.replace('size: Letter;', 'size: A4;');
+      expect(validateResumeHtml(a4, { pageMargin: 'any' }).ok).toBe(false);
     });
 
     it('requires a full HTML document', () => {

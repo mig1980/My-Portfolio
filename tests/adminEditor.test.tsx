@@ -28,8 +28,8 @@ vi.mock('../admin/components/PreviewFrame', () => ({
     useEffect(() => {
       onFit(
         fitState.fits
-          ? { setting: { fontSizePt: 9.4, gap: 0.7 }, heightPx: 1040, overflowLines: 0 }
-          : { setting: null, heightPx: 1100, overflowLines: 4 },
+          ? { setting: { fontSizePt: 9.4, gap: 0.7 }, pages: 1, target: 1, overflowLines: 0 }
+          : { setting: null, pages: 2, target: 1, overflowLines: 4 },
         srcDoc
       );
     }, [srcDoc, onFit]);
@@ -37,7 +37,11 @@ vi.mock('../admin/components/PreviewFrame', () => ({
   },
 }));
 
-import ResumeEditor, { DRAFT_KEY } from '../admin/ResumeEditor';
+import ResumeEditor, { draftKey } from '../admin/ResumeEditor';
+import AdminApp from '../admin/AdminApp';
+
+const DRAFT_KEY = draftKey('executive');
+const noop = (): void => {};
 
 const template = readFileSync(resolve(process.cwd(), 'content', 'resume.html'), 'utf8');
 const SHA = 'a'.repeat(40);
@@ -56,7 +60,7 @@ function publishButton(): HTMLButtonElement {
 }
 
 async function renderLoaded(): Promise<void> {
-  render(<ResumeEditor />);
+  render(<ResumeEditor docId="executive" onSwitchDoc={noop} />);
   await waitFor(() => expect(editor().value).toBe(template));
 }
 
@@ -88,7 +92,7 @@ describe('ResumeEditor', () => {
 
   it('loads the résumé and keeps Publish disabled until something changes', async () => {
     await renderLoaded();
-    expect(mockFetch).toHaveBeenCalledWith('/api/admin/resume', expect.anything());
+    expect(mockFetch).toHaveBeenCalledWith('/api/admin/resume?doc=executive', expect.anything());
     expect(await screen.findByText(/Fits on one page \(9\.4pt\)/)).toBeInTheDocument();
     expect(publishButton().disabled).toBe(true);
   });
@@ -108,7 +112,7 @@ describe('ResumeEditor', () => {
     fireEvent.change(editor(), {
       target: { value: template.replace('Executive Summary', 'Summary') },
     });
-    expect(await screen.findByText(/Too long: cut about 4 lines/)).toBeInTheDocument();
+    expect(await screen.findByText(/Too long for 1 page: cut about 4 lines/)).toBeInTheDocument();
     expect(publishButton().disabled).toBe(true);
   });
 
@@ -174,13 +178,33 @@ describe('ResumeEditor', () => {
 
   it('shows an error when the résumé cannot be loaded', async () => {
     mockFetch.mockResolvedValue(jsonResponse({ error: 'Not signed in' }, 401));
-    render(<ResumeEditor />);
+    render(<ResumeEditor docId="executive" onSwitchDoc={noop} />);
     expect(await screen.findByText(/Could not load the résumé: Not signed in/)).toBeInTheDocument();
   });
 
   it('treats a web page instead of data (e.g. sign-in screen) as an error', async () => {
     mockFetch.mockResolvedValue(new Response('<!doctype html><p>Sign in</p>', { status: 200 }));
-    render(<ResumeEditor />);
+    render(<ResumeEditor docId="executive" onSwitchDoc={noop} />);
     expect(await screen.findByText(/Unexpected response from the server/)).toBeInTheDocument();
+  });
+
+  it('switches to the ATS document and keeps unpublished executive edits as a draft', async () => {
+    window.history.replaceState(null, '', '/admin/');
+    render(<AdminApp />);
+    await waitFor(() => expect(editor().value).toBe(template));
+    const edited = template.replace('Executive Summary', 'Summary');
+    fireEvent.change(editor(), { target: { value: edited } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'ATS (2 p.)' }));
+
+    await waitFor(() =>
+      expect(mockFetch).toHaveBeenCalledWith('/api/admin/resume?doc=ats', expect.anything())
+    );
+    expect(window.location.search).toBe('?doc=ats');
+    expect(localStorage.getItem(DRAFT_KEY)).toBe(edited);
+    expect(screen.getByRole('button', { name: 'ATS (2 p.)' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
   });
 });

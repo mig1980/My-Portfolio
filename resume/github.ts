@@ -3,8 +3,6 @@
  * Uses only Workers-compatible APIs (fetch, atob/btoa, TextEncoder/TextDecoder).
  */
 
-export const RESUME_PATH = 'content/resume.html';
-export const PDF_PATH = 'public/CV/MGavrilovCV.pdf';
 export const PDF_WORKFLOW = 'resume-pdf.yml';
 export const BRANCH = 'main';
 

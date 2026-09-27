@@ -1,6 +1,7 @@
 /**
- * @fileoverview Private résumé editor: HTML on the left, live one-page preview on the right,
- * Publish commits to GitHub and the Resume PDF Action rebuilds /CV/MGavrilovCV.pdf.
+ * @fileoverview Private résumé editor for one document (Executive or ATS): HTML on the left, live
+ * preview with a page-fit estimate on the right. Publish commits to GitHub and the Resume PDF
+ * Action rebuilds that document's PDF.
  */
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -8,6 +9,7 @@ import type { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import type { AdminResumeFile } from '../types';
 import { renderResume } from '../resume/render';
 import { validateResumeHtml } from '../resume/validate';
+import { RESUME_DOCUMENTS, RESUME_DOC_IDS, pdfUrl, type ResumeDocId } from '../resume/documents';
 import { AdminApiError, loadBuildStatus, loadResume, publishResume } from './api';
 import type { FitResult } from './fit';
 import { useDebouncedValue } from './useDebouncedValue';
@@ -17,27 +19,35 @@ import ValidationPanel from './components/ValidationPanel';
 import PublishDialog from './components/PublishDialog';
 import BuildStatus, { type BuildState } from './components/BuildStatus';
 
-export const DRAFT_KEY = 'resume-admin-draft';
 const PREVIEW_DEBOUNCE_MS = 300;
 const POLL_INTERVAL_MS = 10_000;
 const POLL_TIMEOUT_MS = 10 * 60_000;
-const LIVE_PDF_URL = '/CV/MGavrilovCV.pdf';
 
 type LoadState = { status: 'loading' } | { status: 'ready' } | { status: 'error'; message: string };
 type Notice = { tone: 'error' | 'info'; text: string; errors?: string[] };
 
-function readDraft(): string | null {
+interface ResumeEditorProps {
+  docId: ResumeDocId;
+  onSwitchDoc: (docId: ResumeDocId) => void;
+}
+
+/** Unpublished edits are kept per document in localStorage. */
+export function draftKey(docId: ResumeDocId): string {
+  return `resume-admin-draft:${docId}`;
+}
+
+function readDraft(key: string): string | null {
   try {
-    return localStorage.getItem(DRAFT_KEY);
+    return localStorage.getItem(key);
   } catch {
     return null;
   }
 }
 
-function writeDraft(html: string | null): void {
+function writeDraft(key: string, html: string | null): void {
   try {
-    if (html === null) localStorage.removeItem(DRAFT_KEY);
-    else localStorage.setItem(DRAFT_KEY, html);
+    if (html === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, html);
   } catch {
     // Storage full or blocked: the draft just isn't kept.
   }
@@ -52,23 +62,78 @@ const buttonClass =
 
 const FitBadge = memo(({ fit }: { fit: FitResult | null }) => {
   if (!fit) return <span className="text-sm text-stone-500">Checking page fit…</span>;
+  const target = `${fit.target} page${fit.target === 1 ? '' : 's'}`;
   if (fit.setting) {
     return (
       <span className="text-sm font-medium text-emerald-700">
-        ✓ Fits on one page ({fit.setting.fontSizePt}pt)
+        ✓ {fit.target === 1 ? 'Fits on one page' : `Fills ${target}`} ({fit.setting.fontSizePt}pt)
+      </span>
+    );
+  }
+  if (fit.pages < fit.target) {
+    return (
+      <span className="text-sm font-semibold text-red-700">
+        ✗ Too short: fills {fit.pages} page{fit.pages === 1 ? '' : 's'}, needs {target}
       </span>
     );
   }
   return (
     <span className="text-sm font-semibold text-red-700">
-      ✗ Too long: cut about {fit.overflowLines} line{fit.overflowLines === 1 ? '' : 's'}
+      ✗ Too long for {target}: cut about {fit.overflowLines} line
+      {fit.overflowLines === 1 ? '' : 's'}
     </span>
   );
 });
 
 FitBadge.displayName = 'FitBadge';
 
-const ResumeEditor = () => {
+const DocSwitcher = memo(
+  ({ docId, onSwitch }: { docId: ResumeDocId; onSwitch: (id: ResumeDocId) => void }) => (
+    <div
+      role="group"
+      aria-label="Document"
+      className="flex overflow-hidden rounded border border-stone-300"
+    >
+      {RESUME_DOC_IDS.map((id) => (
+        <DocSwitchButton key={id} id={id} isActive={id === docId} onSwitch={onSwitch} />
+      ))}
+    </div>
+  )
+);
+
+DocSwitcher.displayName = 'DocSwitcher';
+
+const DocSwitchButton = memo(
+  ({
+    id,
+    isActive,
+    onSwitch,
+  }: {
+    id: ResumeDocId;
+    isActive: boolean;
+    onSwitch: (id: ResumeDocId) => void;
+  }) => {
+    const handleClick = useCallback(() => onSwitch(id), [id, onSwitch]);
+    const doc = RESUME_DOCUMENTS[id];
+    return (
+      <button
+        type="button"
+        aria-pressed={isActive}
+        onClick={handleClick}
+        className={`px-3 py-1 text-sm focus-ring-inset ${isActive ? 'bg-primary-700 font-semibold text-white' : 'bg-white hover:bg-stone-100'}`}
+      >
+        {doc.label} ({doc.pages} p.)
+      </button>
+    );
+  }
+);
+
+DocSwitchButton.displayName = 'DocSwitchButton';
+
+const ResumeEditor = ({ docId, onSwitchDoc }: ResumeEditorProps) => {
+  const doc = RESUME_DOCUMENTS[docId];
+  const key = draftKey(docId);
+  const liveUrl = pdfUrl(doc);
   const [load, setLoad] = useState<LoadState>({ status: 'loading' });
   const [base, setBase] = useState<AdminResumeFile | null>(null);
   const [html, setHtml] = useState('');
@@ -84,7 +149,10 @@ const ResumeEditor = () => {
 
   const debouncedHtml = useDebouncedValue(html, PREVIEW_DEBOUNCE_MS);
   const isChecking = debouncedHtml !== html;
-  const validation = useMemo(() => validateResumeHtml(debouncedHtml), [debouncedHtml]);
+  const validation = useMemo(
+    () => validateResumeHtml(debouncedHtml, { pageMargin: doc.pageMargin }),
+    [debouncedHtml, doc.pageMargin]
+  );
   const srcDoc = useMemo(
     () => renderResume(debouncedHtml, { variant: 'enterprise' }),
     [debouncedHtml]
@@ -95,19 +163,22 @@ const ResumeEditor = () => {
   const canPublish =
     isDirty && !isChecking && validation.ok && fit?.setting != null && !isPublishing;
 
-  const fetchResume = useCallback(async (offerDraft: boolean) => {
-    setLoad({ status: 'loading' });
-    try {
-      const file = await loadResume();
-      setBase(file);
-      setHtml(file.html);
-      setLoad({ status: 'ready' });
-      const saved = offerDraft ? readDraft() : null;
-      setDraftOffer(saved !== null && saved !== file.html ? saved : null);
-    } catch (error) {
-      setLoad({ status: 'error', message: errorText(error) });
-    }
-  }, []);
+  const fetchResume = useCallback(
+    async (offerDraft: boolean) => {
+      setLoad({ status: 'loading' });
+      try {
+        const file = await loadResume(docId);
+        setBase(file);
+        setHtml(file.html);
+        setLoad({ status: 'ready' });
+        const saved = offerDraft ? readDraft(draftKey(docId)) : null;
+        setDraftOffer(saved !== null && saved !== file.html ? saved : null);
+      } catch (error) {
+        setLoad({ status: 'error', message: errorText(error) });
+      }
+    },
+    [docId]
+  );
 
   useEffect(() => {
     void fetchResume(true);
@@ -116,8 +187,23 @@ const ResumeEditor = () => {
   // Autosave unpublished edits, but never overwrite a draft the user hasn't decided on yet.
   useEffect(() => {
     if (!base || draftOffer !== null || isChecking) return;
-    writeDraft(debouncedHtml === base.html ? null : debouncedHtml);
-  }, [base, debouncedHtml, draftOffer, isChecking]);
+    writeDraft(key, debouncedHtml === base.html ? null : debouncedHtml);
+  }, [base, debouncedHtml, draftOffer, isChecking, key]);
+
+  // Switching documents unmounts the editor; keep keystrokes the debounce hasn't saved yet.
+  const latestRef = useRef({ html, base, draftOffer });
+  useEffect(() => {
+    latestRef.current = { html, base, draftOffer };
+  });
+  useEffect(
+    () => () => {
+      const latest = latestRef.current;
+      if (latest.base && latest.draftOffer === null && latest.html !== latest.base.html) {
+        writeDraft(key, latest.html);
+      }
+    },
+    [key]
+  );
 
   useEffect(() => {
     if (!isDirty) return;
@@ -131,13 +217,13 @@ const ResumeEditor = () => {
     let cancelled = false;
     const poll = async () => {
       try {
-        const status = await loadBuildStatus();
+        const status = await loadBuildStatus(docId);
         const run = status.run;
         if (cancelled) return;
         if (run && run.headSha === build.commitSha && run.status === 'completed') {
           setBuild(
             run.conclusion === 'success'
-              ? { phase: 'done', pdfUrl: `${LIVE_PDF_URL}?v=${status.pdf?.sha ?? build.commitSha}` }
+              ? { phase: 'done', pdfUrl: `${liveUrl}?v=${status.pdf?.sha ?? build.commitSha}` }
               : { phase: 'failed', runUrl: run.url }
           );
           return;
@@ -153,7 +239,7 @@ const ResumeEditor = () => {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [build]);
+  }, [build, docId, liveUrl]);
 
   const handleRestoreDraft = useCallback(() => {
     if (draftOffer !== null) setHtml(draftOffer);
@@ -161,26 +247,26 @@ const ResumeEditor = () => {
   }, [draftOffer]);
 
   const handleDiscardDraft = useCallback(() => {
-    writeDraft(null);
+    writeDraft(key, null);
     setDraftOffer(null);
-  }, []);
+  }, [key]);
 
   const handleRevert = useCallback(() => {
     if (isDirty && !window.confirm('Discard your unpublished changes and reload from GitHub?'))
       return;
-    writeDraft(null);
+    writeDraft(key, null);
     setNotice(null);
     void fetchResume(false);
-  }, [fetchResume, isDirty]);
+  }, [fetchResume, isDirty, key]);
 
   const handleDownload = useCallback(() => {
     const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'resume.html';
+    link.download = doc.src.split('/').pop() ?? 'resume.html';
     link.click();
     URL.revokeObjectURL(url);
-  }, [html]);
+  }, [doc.src, html]);
 
   const handleJump = useCallback((line: number) => {
     setTab('code');
@@ -208,9 +294,9 @@ const ResumeEditor = () => {
       setIsPublishing(true);
       setNotice(null);
       try {
-        const result = await publishResume(html, base.sha, message);
+        const result = await publishResume(docId, html, base.sha, message);
         setBase({ html, sha: result.sha });
-        writeDraft(null);
+        writeDraft(key, null);
         setIsDialogOpen(false);
         setBuild({ phase: 'building', commitSha: result.commitSha, startedAt: Date.now() });
       } catch (error) {
@@ -229,7 +315,7 @@ const ResumeEditor = () => {
         setIsPublishing(false);
       }
     },
-    [base, html]
+    [base, docId, html, key]
   );
 
   const handleConfirmPublish = useCallback(
@@ -259,10 +345,11 @@ const ResumeEditor = () => {
     <div className="flex h-screen flex-col bg-paper text-ink">
       <header className="flex flex-wrap items-center gap-3 border-b border-stone-200 bg-white px-4 py-2">
         <h1 className="font-display text-2xl">Résumé editor</h1>
+        <DocSwitcher docId={docId} onSwitch={onSwitchDoc} />
         <FitBadge fit={fit} />
         <div className="ml-auto flex flex-wrap items-center gap-2">
           <a
-            href={LIVE_PDF_URL}
+            href={liveUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="px-2 text-sm text-primary-700 underline underline-offset-2 focus-ring"
@@ -365,7 +452,7 @@ const ResumeEditor = () => {
           aria-label="Preview"
           className={`min-h-0 overflow-auto bg-stone-200 p-4 md:block ${tab === 'preview' ? 'block' : 'hidden'}`}
         >
-          <PreviewFrame srcDoc={srcDoc} onFit={handleFit} />
+          <PreviewFrame srcDoc={srcDoc} doc={doc} onFit={handleFit} />
         </section>
       </main>
 

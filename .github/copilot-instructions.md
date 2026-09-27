@@ -35,8 +35,9 @@ npm run test:run
 # Production build (includes type-check)
 npm run build
 
-# Rebuild public/CV/MGavrilovCV.pdf from content/resume.html (normally only the Resume PDF Action runs this)
+# Rebuild both résumé PDFs from content/*.html, then check their text (normally only the Resume PDF Action runs these)
 npm run resume:build
+npm run resume:check
 
 # Full validation sequence
 npm run type-check && npm run lint && npm run test:run && npm run build
@@ -82,18 +83,22 @@ AboutMe/
 │   ├── ResumeEditor.tsx    # Page: load, edit, draft autosave, publish, build polling
 │   ├── api.ts, fit.ts, lineDiff.ts, useDebouncedValue.ts
 │   └── components/         # HtmlEditor (CodeMirror), PreviewFrame, ValidationPanel, PublishDialog, BuildStatus
-├── content/resume.html     # THE résumé source (HTML + CSS); the PDF is generated from it
+├── content/
+│   ├── resume.html         # Executive résumé (exactly 1 page) → public/CV/MGavrilovCV.pdf (linked from the site)
+│   └── resume-ats.html     # ATS résumé (exactly 2 pages) → public/CV/MGavrilovCV-ATS.pdf (not linked)
 ├── resume/                 # Shared by the editor, the Functions and the PDF build
 │   ├── render.ts           # Fills {{TITLE}}, applies --fs/--gap overrides
 │   ├── validate.ts         # Template contract + safety checks (DOM-free, authoritative on the server)
-│   ├── pdf.ts              # FIT_SETTINGS, page constants, PDF page count/date pinning (isomorphic)
+│   ├── documents.ts        # Registry: id → src, out, exact page target, fit settings, required text order
+│   ├── pdf.ts              # Fit-setting builder, page constants, @page margin parser, page count/date pinning (isomorphic)
+│   ├── textCheck.ts        # ATS text rules used by scripts/check-resume-text.ts
 │   └── github.ts           # GitHub REST helpers for the admin Functions
 ├── scripts/
 │   ├── build-resume.ts     # Playwright: fit-to-one-page loop → public/CV/MGavrilovCV.pdf
 │   └── test-gemini-models.ts  # Manual model check
 ├── docs/resume-admin-plan.md  # Design, decisions and manual setup for the résumé editor
 ├── styles/globals.css      # Tailwind v4 + custom utilities
-├── tests/                  # Vitest tests (280 tests, 21 files)
+├── tests/                  # Vitest tests (314 tests, 22 files)
 ├── .github/workflows/
 │   ├── ci.yml              # Lint, format, type-check, tests, build
 │   └── resume-pdf.yml      # Rebuilds and commits the résumé PDF on main
@@ -165,7 +170,7 @@ const Component = memo(() => {
 
 Flow: `/admin/` editor → `PUT /api/admin/resume` (validates, commits `content/resume.html` to `main`) → `resume-pdf.yml` runs `npm run resume:build` and commits `public/CV/MGavrilovCV.pdf` → Cloudflare Pages redeploys. The site links to the PDF via `PERSONAL_INFO.resumeUrl`.
 
-**Template contract** (enforced by `resume/validate.ts`): full HTML document; `{{TITLE}}` exactly once (Enterprise title); `--fs` and `--gap` defined in `:root` and used; `@page { size: Letter; margin: 0; }`; fonts only via `url('/fonts/…')`; no scripts, `on*=` handlers, `javascript:` URLs, embeds/frames/`<link>`, or external resources (only `<a>` may link out); ≤ 100 KB. The contact line (incl. phone) is plain HTML in the template by the owner's choice.
+**Template contract** (enforced by `resume/validate.ts`): full HTML document; `{{TITLE}}` exactly once (Enterprise title); `--fs` and `--gap` defined in `:root` and used; `@page { size: Letter; margin: 0; }` (multi-page documents with `pageMargin: 'any'` may set print margins); fonts only via `url('/fonts/…')`; no scripts, `on*=` handlers, `javascript:` URLs, embeds/frames/`<link>`, or external resources (only `<a>` may link out); ≤ 100 KB. The contact line (incl. phone) is plain HTML in the template by the owner's choice. Keep heading `letter-spacing` ≤ 1px and ligatures off in the ATS version, or `resume:check` fails.
 
 **Rules:**
 - Keep `resume/*.ts` free of DOM-only and Node-only APIs (no `document`, no `Buffer`/`fs`): they run in the browser, Workers and Node.
@@ -213,7 +218,7 @@ GitHub Actions runs on every PR:
 
 **All must pass before merge.**
 
-`resume-pdf.yml` runs on pushes to `main` that touch `content/resume.html`, `resume/**`, `public/fonts/**` or `scripts/build-resume.ts` (and manually). It commits the PDF only if the bytes changed (dates are pinned, so rebuilds are deterministic), and only the final push step gets the write token.
+`resume-pdf.yml` runs on pushes to `main` that touch `content/**`, `resume/**`, `public/fonts/**` or `scripts/build-resume.ts` (and manually). It builds every document in `resume/documents.ts`, runs `resume:check`, and commits the PDFs only if they changed (dates are pinned, so rebuilds are deterministic). Only the final push step gets the write token. Admin API calls take `?doc=<id>`; never accept a path from the client.
 
 ---
 

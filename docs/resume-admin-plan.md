@@ -175,6 +175,14 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - Optional: extract plain text from `content/resume.html` at build time for `functions/api/chat.ts`'s system prompt, so the AI assistant stays in sync.
 - Optional: add a Split/Code/Preview layout toggle, and snippets for common blocks (new role, new bullet).
 - Delete `OneDrive\Documents\CV\source\build.py` once `npm run resume:build` is confirmed working.
+- **Done (Sept 27, 2026)**: README and project guide updated.
+
+### Phase 7: Résumé content & ATS upgrade (done Sept 27, 2026)
+
+- **A. Executive (1 page):** content ported from the owner's updated `resume_template.html`: one "Microsoft — 2006 – Present" employer block with a single Recognition line, metric-first summary and bullets, keyword variants in Core Expertise, "(through 2025)" on the Azure architect certification. Section headings use `letter-spacing: 1px` (was 2.4px, which pdf.js read as "E X E C U T I V E"). Fits at 9.4pt / gap 0.7.
+- **B. ATS version (exactly 2 pages):** `content/resume-ats.html` (single column, plain UPPERCASE headings, real bullets, "5x", Inter with ligatures off, `@page` print margins). `resume/documents.ts` is the registry (`id → src, out, pages, fit, pageMargin, commitScope, requiredText`). The build prints every candidate and needs exactly `pages` pages; it writes nothing unless every document hits its target. Lands at 10.5pt / gap 0.7. The validator allows `@page` margins only for documents with `pageMargin: 'any'`. Admin: Executive | ATS switcher (`?doc=`, allow-listed server-side), per-document drafts, sha, status and page-target badge (the multi-page preview is an estimate; the build is exact). `/CV/MGavrilovCV-ATS.pdf` is `noindex` and not linked from the site.
+- **C. ATS-readability check:** `npm run resume:check` (`scripts/check-resume-text.ts`, pdf.js) fails on a wrong page count, split words ("E XECUTIVE" or "E X E C U T I V E"), ligature characters, or missing/out-of-order phrases (name → title → summary → experience → Microsoft → current role → Education). Runs in `resume-pdf.yml` after the build, before committing. Verified: the old committed PDF fails it; both new PDFs pass.
+- **D. Validation:** type-check, lint, 314 tests, build, `resume:build`, `resume:check` all pass.
 
 ---
 

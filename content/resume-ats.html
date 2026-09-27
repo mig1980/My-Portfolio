@@ -27,6 +27,8 @@
   .employer { font-size: 11.5pt; font-weight: 700; margin-top: calc(4pt * var(--gap)); break-after: avoid; }
   .role { margin-top: calc(9pt * var(--gap)); }
   .role-head { font-weight: 700; break-after: avoid; }
+  /* Inter's "|" is taller than a 1.2 line; without room it can bleed across a page break. */
+  .role-head, .employer { line-height: 1.4; }
   .role-sub { font-style: italic; break-after: avoid; }
   ul { margin: calc(2pt * var(--gap)) 0 0 18px; }
   li { margin-top: calc(2.5pt * var(--gap)); break-inside: avoid; }

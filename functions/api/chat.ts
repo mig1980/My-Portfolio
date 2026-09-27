@@ -193,7 +193,7 @@ Answer questions about Michael based ONLY on the verified facts in this context.
 
 Verified facts.
 Michael Gavrilov is a Strategic Account Director at Microsoft in Healthcare and Life Sciences. He owns C-suite relationships and the multi-year technology and AI strategy for a top-5 global pharmaceutical company, one of Microsoft's strategic Healthcare and Life Sciences accounts. Do not name the customer.
-He has 20+ years of experience in technology and enterprise sales and has been at Microsoft since 2006. He is based in New York City.
+He has 20+ years of experience across technology and business and has been at Microsoft since 2006. He is based in New York City.
 
 Industries.
 Healthcare and Life Sciences, including pharma. He has also supported enterprise accounts across sectors such as transportation and manufacturing.

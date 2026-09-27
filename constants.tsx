@@ -71,12 +71,13 @@ export const EXPERIENCE: JobRole[] = [
     period: 'Jan 2017 - Present',
     stage: 'Account Leader',
     description: [
-      'Lead the AI and technology agenda for a strategic global pharmaceutical customer, aligning Microsoft capabilities with business priorities and measurable outcomes.',
-      'Develop and execute multi-year account strategies spanning AI, cloud, data, security, modern work, and business applications.',
-      'Orchestrate a large cross-functional virtual team across sales, engineering, customer success, support, services, and partner organizations.',
-      'Build trusted relationships with senior business and technology executives, establishing governance and alignment around long-term transformation priorities.',
-      'Navigate complex global stakeholder environments and turn technical, organizational, and commercial challenges into actionable strategies.',
-      'Structure strategic partnerships and multi-year agreements exceeding $500M.',
+      'Own the C-suite relationship and multi-year technology and AI strategy for a top-5 global pharmaceutical company, one of Microsoft’s strategic Healthcare & Life Sciences accounts.',
+      'Structure strategic agreements exceeding $500M in total contract value, expanding the partnership across AI, Azure, Data, Security, Modern Work and Business Applications.',
+      'Grew Azure consumption and helped move generative and agentic AI from pilots into production within regulated environments.',
+      'Lead a 30+ person virtual team spanning specialist sales, engineering, customer success, support, services and global system integrator partners.',
+      'Established executive governance and quarterly business reviews with CIO, CDO and business leadership, aligning Microsoft roadmaps with priorities across R&D, manufacturing and commercial functions.',
+      'Lead complex, multi-stakeholder negotiations, balancing customer outcomes, transformation investments, risk and long-term partnership economics.',
+      'Recognition: Microsoft Platinum Club | 100% attainment',
     ],
   },
   {
@@ -87,9 +88,11 @@ export const EXPERIENCE: JobRole[] = [
     period: 'Apr 2011 - Jan 2017',
     stage: 'Account Leader',
     description: [
-      'Managed robust sales pipelines and guided high-performing teams across Sales, Engineering, and Delivery.',
-      'Consistently exceeded revenue targets, generating an average of $20M annually across Pharma, Transportation, and Manufacturing sectors.',
-      'Developed trusted relationships with executive stakeholders across multiple industries.',
+      'Owned executive relationships, account strategy and commercial execution for multinational enterprise customers across multiple industries.',
+      'Delivered average annual revenue exceeding $20M.',
+      'Led complex enterprise agreement renewals and expansions spanning Office 365, Azure, Dynamics and Microsoft cloud services.',
+      'Orchestrated sales, technical, services and partner teams around customer priorities, technology adoption and long-term account growth.',
+      'Recognition: Microsoft Gold Club | 100% attainment',
     ],
   },
   {
@@ -100,9 +103,10 @@ export const EXPERIENCE: JobRole[] = [
     period: 'July 2008 - Mar 2011',
     stage: 'Strategist',
     description: [
-      'Advised senior executives on technology transformation strategies aligning with business goals.',
-      'Drove adoption strategies, ensuring sustained momentum and value realization.',
-      'Executed tailored sales strategies, consistently exceeding targets and securing contract renewals.',
+      'Served as technology strategist and trusted advisor to CIOs and IT leadership across multinational enterprise accounts in multiple industries.',
+      'Developed multi-year technology roadmaps spanning infrastructure modernization, virtualization, collaboration and emerging cloud technologies.',
+      'Drove technology adoption and value-realization programs supporting enterprise agreement renewals and expansion.',
+      'Partnered with account executives on customer strategy, connecting technical architecture with business priorities and investment decisions.',
     ],
   },
   {
@@ -113,9 +117,9 @@ export const EXPERIENCE: JobRole[] = [
     period: 'Oct 2006 - July 2008',
     stage: 'Strategist',
     description: [
-      'Structured platform partnerships and joint go-to-market strategies driving partner growth and revenue.',
-      'Led programs resulting in a 150% increase in partner-influenced revenue.',
-      'Cultivated technical relationships with CTOs/CIOs to understand their business challenges.',
+      'Built go-to-market strategies with systems integrators and ISV partners, increasing partner-influenced revenue by 150%.',
+      'Developed strategic technical relationships with partner and customer CTOs and CIOs to shape joint solutions and customer opportunities.',
+      'Enabled partner technical teams on the Microsoft platform, accelerating solution readiness and enterprise deployments.',
     ],
   },
   {
@@ -126,8 +130,9 @@ export const EXPERIENCE: JobRole[] = [
     period: 'July 2005 - Oct 2006',
     stage: 'Architect',
     description: [
-      'Led architectural design and technical strategy for complex IT solutions in pre-sales engagements.',
-      'Collaborated with sales teams and enterprise clients to align technology with business objectives.',
+      'Led architecture and technical strategy for complex enterprise IT solutions in pre-sales engagements.',
+      'Translated customer business requirements into solution architectures spanning infrastructure, networking and application platforms.',
+      'Partnered with sales teams to shape strategic proposals and strengthen the technical position in competitive opportunities.',
     ],
   },
   {
@@ -138,8 +143,9 @@ export const EXPERIENCE: JobRole[] = [
     period: 'Apr 2002 - July 2005',
     stage: 'Engineer',
     description: [
-      'Led a team of systems engineers to deliver process improvements and automation, increasing operational efficiency by 25%.',
-      'Managed IT services and operations for virtual and physical environments.',
+      'Led a team of 8 systems engineers responsible for enterprise IT operations across physical and virtual environments.',
+      'Introduced process improvements and automation that increased operational efficiency by 25%.',
+      'Connected IT operations with business priorities while building an accountable, high-performing engineering team.',
     ],
   },
 ];

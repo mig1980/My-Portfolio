@@ -183,7 +183,7 @@ export const SKILLS: SkillGroup[] = [
     skills: [
       'Complex Deal Structuring',
       'Value Negotiation',
-      'Platform Economics',
+      'Revenue & Forecast Management',
       'Strategic Partnerships',
     ],
   },

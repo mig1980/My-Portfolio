@@ -57,7 +57,7 @@ describe('career facts stay consistent', () => {
   it('warns about a fact that no longer matches', () => {
     const executive = resumes[0]?.text ?? '';
     expect(
-      findFactWarnings(executive.replace(`Gold Club (${goldClubCount}×)`, 'Gold Club (4×)'))
+      findFactWarnings(executive.replace('three-time Gold Club', 'four-time Gold Club'))
     ).toEqual([
       `Gold Club should show ${goldClubCount}× to match the website and the AI assistant.`,
     ]);

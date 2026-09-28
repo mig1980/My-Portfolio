@@ -140,7 +140,7 @@ describe('ResumeEditor', () => {
 
   it('warns about a changed shared fact but still allows publishing', async () => {
     await renderLoaded();
-    await editAndOpenDialog(template.replace('Gold Club (3×)', 'Gold Club (4×)'));
+    await editAndOpenDialog(template.replace('three-time Gold Club', 'four-time Gold Club'));
     expect(screen.getAllByText(/Gold Club should show 3×/)).toHaveLength(2);
     expect(screen.getByRole('dialog')).toHaveTextContent(/You can still publish/);
   });

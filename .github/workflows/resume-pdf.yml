@@ -50,6 +50,14 @@ jobs:
       - name: Check PDF text (ATS readability)
         run: npm run resume:check
 
+      - name: Upload PDFs for inspection
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resume-pdfs
+          path: public/CV/*.pdf
+          retention-days: 7
+
       # Pushes made with GITHUB_TOKEN don't trigger workflows, and the PDF isn't in `paths`, so this can't loop.
       - name: Commit PDFs if changed
         if: github.ref == 'refs/heads/main'

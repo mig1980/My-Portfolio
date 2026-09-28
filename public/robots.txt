@@ -3,9 +3,9 @@
 
 User-agent: *
 Allow: /
+# Private admin area (also behind Cloudflare Access)
+Disallow: /admin/
+Disallow: /api/admin/
 
 # Sitemap location
 Sitemap: https://gavrilov.ai/sitemap.xml
-
-# Disallow admin/private paths (none currently)
-# Disallow: /admin/

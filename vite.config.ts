@@ -16,6 +16,11 @@ export default defineConfig({
   build: {
     sourcemap: false,
     rollupOptions: {
+      // Separate entry for the private résumé editor, so none of its code ships in the public bundle.
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        admin: path.resolve(__dirname, 'admin/index.html'),
+      },
       output: {
         manualChunks: {
           lucide: ['lucide-react'],
@@ -23,6 +28,8 @@ export default defineConfig({
       },
     },
     cssCodeSplit: true,
+    // The admin editor chunk (CodeMirror) is ~600 kB; the public site never loads it.
+    chunkSizeWarningLimit: 700,
     minify: 'esbuild',
     // es2020 for better Safari iOS compatibility (esnext can cause parse delays)
     target: 'es2020',

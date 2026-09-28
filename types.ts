@@ -214,3 +214,33 @@ export type ChatApiResponse =
       reply?: never;
       suggestions?: never;
     };
+
+// ============================================================================
+// Résumé admin (/admin): shapes returned by functions/api/admin/*
+// ============================================================================
+
+/** GET /api/admin/resume */
+export interface AdminResumeFile {
+  html: string;
+  /** Blob sha of content/resume.html on main; required to save */
+  sha: string;
+}
+
+/** PUT /api/admin/resume success */
+export interface AdminPublishResult {
+  sha: string;
+  commitSha: string;
+  commitUrl: string;
+}
+
+/** GET /api/admin/status */
+export interface AdminBuildStatus {
+  run: {
+    status: string;
+    conclusion: string | null;
+    url: string;
+    updatedAt: string;
+    headSha: string;
+  } | null;
+  pdf: { sha: string; url: string; date: string } | null;
+}

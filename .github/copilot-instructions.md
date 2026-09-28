@@ -194,7 +194,7 @@ Reusable prompts: `/resume-update`, `/resume-review`, `/resume-tailor` (`.github
 
 - **Sources of truth:** `content/resume.html` (executive, exactly 1 page) and `content/resume-ats.html` (ATS, exactly 2 pages). Apply every fact change to **both**. Shared facts change in `utils/careerFacts.ts` first.
 - **Facts:** use only facts listed in `content/resume-facts.md`. Never invent metrics, titles, dates or awards. Don't expand or reword items marked **[CONFIRM]**. If a change needs a new fact, ask the owner and add it to the register first.
-- **Customer:** never name the customer anywhere in this public repo, including tests and the register. Always write "a top-five global pharmaceutical company". The résumés use "top-five"; the website and assistant keep the owner's LinkedIn wording "top-5".
+- **Customer:** never name the customer anywhere in this public repo, including tests and the register. Always write "a top-five global pharmaceutical company" (résumés, website and assistant).
 - **Bullets:** outcome first (result → action → context). Where a bullet has a metric, put it in the first 8 words. Never add a metric just to fit the pattern.
 - **Tense:** present tense for ongoing responsibilities in the current role ("Own", "Lead"); past tense for completed results in any role ("Grew", "Structured") and for everything in prior roles.
 - **Voice:** no first person ("I", "my", "we") in either version.

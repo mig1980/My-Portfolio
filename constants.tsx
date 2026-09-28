@@ -328,8 +328,7 @@ export const STATS: StatItem[] = [
   { value: 500, prefix: '$', suffix: 'M+', label: 'in multi-year agreements' },
   {
     value: CAREER_FACTS.platinumClubCount + CAREER_FACTS.goldClubCount,
-    suffix: '×',
-    label: 'Microsoft Platinum & Gold Club recognition',
+    label: 'Microsoft Platinum & Gold Club awards',
   },
 ];
 

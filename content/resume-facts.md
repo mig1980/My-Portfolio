@@ -46,15 +46,15 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 - Microsoft Platinum Club: 2× (résumés: "Two-time Platinum Club")
 - Microsoft Gold Club: 3× (résumés: "three-time Gold Club")
 - Quota attainment: 100%+ quota attainment in 9 fiscal years, including FY25 and FY26 (both résumés leave out "including FY25 and FY26")
-- The website's "5× Microsoft Platinum & Gold Club recognition" stat is 2 + 3 awards. It is not the account-growth "5×".
+- The website's "5 Microsoft Platinum & Gold Club awards" stat is 2 + 3 awards. It is not the account-growth "5×".
 
 ## Certifications and executive education
 
 | Item | Status |
 |---|---|
-| Microsoft Certified: Azure AI Fundamentals | On both résumés, not on the website. **[CONFIRM: date earned; Fundamentals certifications don't expire]** |
+| Microsoft Certified: Azure AI Fundamentals | Everywhere. **[CONFIRM: date earned; Fundamentals certifications don't expire]** |
 | AWS Certified Cloud Practitioner | Everywhere. **[CONFIRM: date earned and expiry; AWS certifications last 3 years]** |
-| Challenger Insight Selling | Training, on both résumés, not on the website |
+| Challenger Insight Selling | Training, everywhere |
 | Wharton Executive Education: Selling to the C-Suite | Everywhere |
 | INSEAD Executive Education: Business Strategy and Financial Acumen; Value Negotiation | Everywhere |
 

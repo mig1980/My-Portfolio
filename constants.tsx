@@ -77,7 +77,7 @@ export const EXPERIENCE: JobRole[] = [
       'Own relationships with the CIO, CDO and senior business leaders, with CEO-level engagement, setting the multi-year technology and AI strategy and running executive business reviews aligned to R&D, manufacturing and commercial priorities.',
       'Scale generative AI and AI agents from pilots to governed enterprise deployment in GxP-regulated environments, aligning architecture, data, security, compliance and adoption.',
       'Lead a 30+ person matrixed virtual team spanning specialist sales, engineering, customer success, support, services and global systems integrator partners, accountable for revenue, cloud consumption, forecast accuracy and customer satisfaction.',
-      `Recognition: Platinum Club (${CAREER_FACTS.platinumClubCount}×) · Gold Club (${CAREER_FACTS.goldClubCount}×) · 100%+ quota attainment in ${CAREER_FACTS.quotaAttainmentYears} fiscal years`,
+      `Recognition: Two-time Platinum Club · Three-time Gold Club · 100%+ quota attainment in ${CAREER_FACTS.quotaAttainmentYears} fiscal years`,
     ],
   },
   {

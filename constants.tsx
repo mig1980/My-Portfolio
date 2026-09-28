@@ -281,6 +281,7 @@ export const AWARDS: AwardItem[] = [
     color: 'green',
     badges: [
       { src: '/Awards/100Attainmentretired_7Time.png', alt: '100% Attainment 7-time winner badge' },
+      { src: '/Awards/Champion.png', alt: 'Champion Award FY23 Q4 badge' },
       { src: '/Awards/100Attainment_2025.png', alt: '100% Attainment 2025 badge' },
       { src: '/Awards/100Attainment__2026.png', alt: '100% Attainment 2026 badge' },
     ],

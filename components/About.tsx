@@ -102,7 +102,7 @@ const About: React.FC = memo(() => {
                     )}
 
                     {award.badges && award.badges.length > 0 && (
-                      <div className="mb-3 flex gap-2">
+                      <div className="mb-3 flex flex-wrap gap-2">
                         {award.badges.map((badge) => (
                           <div
                             key={badge.src}

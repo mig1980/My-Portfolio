@@ -4,7 +4,7 @@
  */
 
 import React, { lazy, memo, Suspense, useCallback, useRef, useState } from 'react';
-import { ArrowRight, ArrowUp, Briefcase, Download, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowUp, Download, Sparkles } from 'lucide-react';
 import { PERSONAL_INFO, SUGGESTED_QUESTIONS } from '../constants';
 import { askChat } from '../utils/chatEvents';
 import { trackEvent } from '../utils/analytics';
@@ -160,16 +160,27 @@ const Hero: React.FC = memo(() => {
                 </button>
               ))}
             </div>
-            <button
-              ref={fitCheckButtonRef}
-              type="button"
-              onClick={handleFitCheckOpen}
-              aria-haspopup="dialog"
-              className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary-700 hover:text-primary-800 underline-offset-4 hover:underline rounded-sm focus-ring focus-visible:ring-offset-paper"
-            >
-              <Briefcase className="w-4 h-4" aria-hidden="true" />
-              Hiring? Check my fit for your role
-            </button>
+            <div className="mt-8 flex flex-col gap-4 rounded-lg border border-stone-200 border-l-2 border-l-primary-700 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="mb-1.5 font-mono text-xs uppercase tracking-[0.2em] text-stone-600">
+                  For recruiters
+                </p>
+                <p className="text-sm text-stone-700 leading-relaxed">
+                  Paste a job description to see where my experience fits, with evidence from my
+                  résumé.
+                </p>
+              </div>
+              <button
+                ref={fitCheckButtonRef}
+                type="button"
+                onClick={handleFitCheckOpen}
+                aria-haspopup="dialog"
+                className="inline-flex shrink-0 items-center justify-center whitespace-nowrap px-5 py-2.5 border border-primary-700 text-primary-700 hover:bg-primary-50 rounded-full text-sm font-semibold transition-colors focus-ring focus-visible:ring-offset-white"
+              >
+                Check my fit
+                <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
+              </button>
+            </div>
             <Suspense fallback={null}>
               {isFitCheckOpen && <FitCheckDialog onClose={handleFitCheckClose} />}
             </Suspense>

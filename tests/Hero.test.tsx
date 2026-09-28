@@ -74,7 +74,7 @@ describe('Hero', () => {
 
   it('opens the fit check dialog and closes it again', async () => {
     render(<Hero />);
-    const button = screen.getByRole('button', { name: 'Hiring? Check my fit for your role' });
+    const button = screen.getByRole('button', { name: 'Check my fit' });
 
     fireEvent.click(button);
     expect(await screen.findByRole('dialog', { name: /check michael's fit/i })).toBeInTheDocument();

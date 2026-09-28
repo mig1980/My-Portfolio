@@ -58,9 +58,9 @@ const About: React.FC = memo(() => {
               <p key={index}>{paragraph}</p>
             ))}
           </div>
-          <p className="mt-10 font-display text-4xl md:text-5xl leading-tight text-primary-700">
-            {PERSONAL_INFO.summaryEmphasis.map((line) => (
-              <span key={line} className="block">
+          <p className="mt-10 font-display text-2xl md:text-3xl leading-snug">
+            {PERSONAL_INFO.summaryEmphasis.map((line, index) => (
+              <span key={line} className={`block ${index === 0 ? 'text-ink' : 'text-primary-700'}`}>
                 {line}
               </span>
             ))}

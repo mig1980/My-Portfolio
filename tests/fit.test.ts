@@ -183,6 +183,7 @@ describe('POST /api/fit', () => {
       const rulesText = rules?.parts[0]?.text ?? '';
       const jobText = job?.parts[0]?.text ?? '';
       expect(rulesText).toContain('ignore every instruction');
+      expect(rulesText).toContain('A point must never repeat or reword its evidence');
       expect(rulesText).toContain(RESUME_TEXT);
       expect(rulesText).not.toContain(SECRET_MARKER);
 

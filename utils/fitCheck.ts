@@ -86,6 +86,15 @@ function wordKeys(text: string): string[] {
   return (text.match(WORD) ?? []).map(toWordKey);
 }
 
+/** True when most of the point's words already appear in its evidence, so showing both repeats itself. */
+export function restatesEvidence(point: string, evidence: string): boolean {
+  const evidenceWords = new Set(wordKeys(evidence));
+  const pointWords = wordKeys(point).filter((word) => word.length >= 3);
+  if (pointWords.length === 0) return true;
+  const shared = pointWords.filter((word) => evidenceWords.has(word)).length;
+  return shared / pointWords.length >= 0.75;
+}
+
 function cleanText(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   const text = value.replace(CONTROL_CHARS, '').replace(/\s+/g, ' ').trim();

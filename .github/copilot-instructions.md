@@ -114,7 +114,7 @@ AboutMe/
 │   └── test-gemini-models.ts  # Manual model check
 ├── docs/resume-admin-plan.md  # Design, decisions and manual setup for the résumé editor
 ├── styles/globals.css      # Tailwind v4 + custom utilities
-├── tests/                  # Vitest tests (387 tests, 27 files)
+├── tests/                  # Vitest tests (390 tests, 27 files)
 ├── .github/prompts/        # /resume-update, /resume-review, /resume-tailor
 ├── .github/workflows/
 │   ├── ci.yml              # Lint, format, type-check, tests, build

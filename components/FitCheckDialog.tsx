@@ -10,6 +10,7 @@ import { useFitCheck } from '../hooks/useFitCheck';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { trackEvent } from '../utils/analytics';
 import { MAX_JOB_DESCRIPTION_LENGTH, MIN_JOB_DESCRIPTION_LENGTH } from '../utils/fitCheckLimits';
+import { restatesEvidence } from '../utils/fitCheck';
 import type { FitCheckPoint } from '../types';
 
 interface FitCheckDialogProps {
@@ -31,9 +32,11 @@ const PointSection = memo(({ title, items }: { title: string; items: FitCheckPoi
         {items.map((item, index) => (
           <li key={index}>
             <p className="text-sm text-ink leading-relaxed">{item.point}</p>
-            <q className="mt-1.5 block border-l-2 border-primary-200 pl-3 text-xs italic text-stone-600 leading-relaxed">
-              {item.evidence}
-            </q>
+            {!restatesEvidence(item.point, item.evidence) && (
+              <q className="mt-1.5 block border-l-2 border-primary-200 pl-3 text-xs italic text-stone-600 leading-relaxed">
+                {item.evidence}
+              </q>
+            )}
           </li>
         ))}
       </ul>

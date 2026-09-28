@@ -13,6 +13,7 @@ import {
   extractJson,
   normalizeForMatch,
   readJobDescription,
+  restatesEvidence,
 } from '../utils/fitCheck';
 import { MAX_JOB_DESCRIPTION_LENGTH, MIN_JOB_DESCRIPTION_LENGTH } from '../utils/fitCheckLimits';
 
@@ -194,5 +195,37 @@ describe('parseReply', () => {
       parseReply(reply({ fits: [{ point: 'Made up', evidence: 'nothing like the résumé' }] }))
     ).toBeNull();
     expect(parseReply(reply({}))).toBeNull();
+  });
+});
+
+describe('restatesEvidence', () => {
+  it('detects a point that repeats its quote', () => {
+    expect(
+      restatesEvidence(
+        '20+ years at Microsoft',
+        'Strategic account leader with 20+ years at Microsoft'
+      )
+    ).toBe(true);
+    expect(
+      restatesEvidence(
+        'Leads a 30+ person matrixed virtual team',
+        'leading C-suite strategy across cloud, data and AI, and a 30+ person matrixed virtual team'
+      )
+    ).toBe(true);
+  });
+
+  it('keeps a point that names a job requirement in its own words', () => {
+    expect(
+      restatesEvidence(
+        'Experience in healthcare and life sciences, a regulated industry',
+        'executive commercial leadership in healthcare and life sciences.'
+      )
+    ).toBe(false);
+    expect(
+      restatesEvidence(
+        'Owns C-suite relationships',
+        'Own relationships with the CIO, CDO and senior business leaders'
+      )
+    ).toBe(false);
   });
 });

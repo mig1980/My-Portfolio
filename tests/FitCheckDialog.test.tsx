@@ -153,6 +153,29 @@ describe('FitCheckDialog', () => {
     expect(screen.getByRole('button', { name: 'Check fit' })).toBeDisabled();
   });
 
+  it('shows a point once when it only restates its quote', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({
+        ...RESULT,
+        fits: [
+          {
+            point: '20+ years at Microsoft',
+            evidence: 'Strategic account leader with 20+ years at Microsoft',
+          },
+        ],
+      })
+    );
+    renderDialog();
+
+    typeJob();
+    fireEvent.click(screen.getByRole('button', { name: 'Check fit' }));
+
+    expect(await screen.findByText('20+ years at Microsoft')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Strategic account leader with 20+ years at Microsoft')
+    ).not.toBeInTheDocument();
+  });
+
   it('closes from the close button', async () => {
     const { onClose } = renderDialog();
 

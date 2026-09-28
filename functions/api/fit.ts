@@ -68,10 +68,11 @@ Rules:
 5. Refer to Michael's current customer only as "a top-five global pharmaceutical company". Never name or guess the customer, and never say Michael has worked with the hiring company unless the résumé names it.
 6. Write about Michael in the third person, in plain professional English, without markdown.
 7. "fits": requirements the résumé directly shows. "transferable": requirements the résumé supports only partly, through related experience. "gaps": requirements the résumé does not show. "questions": questions a hiring manager could ask Michael to explore the fit or the gaps.
-8. At most 6 items per list. Use an empty list when nothing applies.
+8. Each "point" names the job requirement it answers, in the job description's own words, in at most 15 words. The "evidence" is the résumé proof. A point must never repeat or reword its evidence.
+9. At most 6 items per list. Use an empty list when nothing applies.
 
 Reply with a single JSON object and nothing else, in exactly this shape:
-{"fits":[{"point":"...","evidence":"..."}],"transferable":[{"point":"...","evidence":"..."}],"gaps":["..."],"questions":["..."]}
+{"fits":[{"point":"<job requirement>","evidence":"<résumé quote>"}],"transferable":[{"point":"<job requirement>","evidence":"<résumé quote>"}],"gaps":["..."],"questions":["..."]}
 
 RESUME-${marker}
 ${RESUME_TEXT}

@@ -65,7 +65,7 @@ export const EXPERIENCE: JobRole[] = [
     title: 'Strategic Account Director | Healthcare & Life Sciences',
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
-    period: 'Jan 2017 - Present',
+    period: 'Feb 2017 - Present',
     stage: 'Account Leader',
     description: [
       'Own C-suite relationships and the multi-year technology and AI strategy for a top-5 global pharmaceutical company, one of Microsoft’s strategic Healthcare & Life Sciences accounts.',
@@ -82,7 +82,7 @@ export const EXPERIENCE: JobRole[] = [
     title: 'Senior Account Executive | Enterprise Accounts',
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
-    period: 'Apr 2011 - Jan 2017',
+    period: 'Apr 2011 - Dec 2016',
     stage: 'Account Leader',
     description: [
       'Owned executive relationships, account strategy and commercial execution for multinational enterprise customers across multiple industries.',
@@ -274,7 +274,7 @@ export const AWARDS: AwardItem[] = [
     id: 'attainment-100',
     title: '100% Attainment',
     issuer: 'Microsoft',
-    description: `Consistent ${CAREER_FACTS.quotaAttainment}.`,
+    description: `${CAREER_FACTS.quotaAttainment}.`,
     color: 'green',
     badges: [
       { src: '/Awards/100Attainmentretired_7Time.png', alt: '100% Attainment 7-time winner badge' },

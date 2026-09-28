@@ -17,10 +17,10 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 
 ## Roles and dates
 
-| Role | Employer | Dates (site) | Dates (résumés) |
+| Role | Employer | Dates (site, assistant, ATS; match LinkedIn) | Dates (executive) |
 |---|---|---|---|
-| Strategic Account Director, Healthcare & Life Sciences | Microsoft | Jan 2017 – Present | 2017 – Present |
-| Senior Account Executive, Enterprise Accounts | Microsoft | Apr 2011 – Jan 2017 | 2011 – 2017 |
+| Strategic Account Director, Healthcare & Life Sciences | Microsoft | Feb 2017 – Present | 2017 – Present |
+| Senior Account Executive, Enterprise Accounts | Microsoft | Apr 2011 – Dec 2016 | 2011 – 2017 |
 | Account Technology Strategist, Enterprise Accounts | Microsoft | Jul 2008 – Mar 2011 | 2008 – 2011 |
 | Partner Technology Strategist | Microsoft | Oct 2006 – Jul 2008 | 2006 – 2008 |
 | IT Solutions Architect | Systematica Group | Jul 2005 – Oct 2006 | 2005 – 2006 |
@@ -45,7 +45,7 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 
 - Microsoft Platinum Club: 2×
 - Microsoft Gold Club: 3×
-- Quota attainment: Consistent 100% quota attainment, including FY25 and FY26 (no count of years is published)
+- Quota attainment: 100%+ quota attainment in 9 fiscal years, including FY25 and FY26 (the executive résumé says "Consistent 100% quota attainment, including FY25 and FY26")
 - The website's "5× Microsoft Platinum & Gold Club recognition" stat is 2 + 3 awards. It is not the account-growth "5×".
 
 ## Certifications and executive education

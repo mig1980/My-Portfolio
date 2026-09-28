@@ -44,7 +44,7 @@ describe('career facts stay consistent', () => {
       expect(SYSTEM_CONTEXT).toContain(university);
       expect(SYSTEM_CONTEXT).toContain(`${platinumClubCount}-time Microsoft Platinum Club`);
       expect(SYSTEM_CONTEXT).toContain(`${goldClubCount}-time Gold Club`);
-      expect(SYSTEM_CONTEXT).toContain(`consistent ${quotaAttainment}`);
+      expect(SYSTEM_CONTEXT).toContain(quotaAttainment);
     });
   });
 
@@ -68,7 +68,7 @@ describe('career facts stay consistent', () => {
       expect(factRegister).toContain(university);
       expect(factRegister).toContain(`Platinum Club: ${platinumClubCount}×`);
       expect(factRegister).toContain(`Gold Club: ${goldClubCount}×`);
-      expect(factRegister).toContain(`Consistent ${quotaAttainment}`);
+      expect(factRegister).toContain(quotaAttainment);
     });
   });
 });

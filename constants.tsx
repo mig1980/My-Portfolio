@@ -37,7 +37,10 @@ export const PERSONAL_INFO = {
   resumeUrl: '/CV/MGavrilovCV.pdf',
   summary:
     'I started my career building and operating technology. I became an architect, a strategist, and eventually a strategic account leader. The mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work.',
-  summaryEmphasis: 'Today, the systems are bigger.',
+  summaryEmphasis: [
+    'Then: making servers work.',
+    "Now: making AI work for some of the world's largest companies.",
+  ],
 };
 
 /**

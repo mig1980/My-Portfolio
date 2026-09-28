@@ -59,7 +59,11 @@ const About: React.FC = memo(() => {
             ))}
           </div>
           <p className="mt-10 font-display text-4xl md:text-5xl leading-tight text-primary-700">
-            {PERSONAL_INFO.summaryEmphasis}
+            {PERSONAL_INFO.summaryEmphasis.map((line) => (
+              <span key={line} className="block">
+                {line}
+              </span>
+            ))}
           </p>
 
           {/* Awards & Recognition Subsection */}

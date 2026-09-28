@@ -82,7 +82,7 @@ export const EXPERIENCE: JobRole[] = [
     title: 'Senior Account Executive | Enterprise Accounts',
     company: 'Microsoft',
     logo: getLogoUrl('microsoft.com'),
-    period: 'Apr 2011 - Dec 2016',
+    period: 'Apr 2011 - Jan 2017',
     stage: 'Account Leader',
     description: [
       'Owned executive relationships, account strategy and commercial execution for multinational enterprise customers across multiple industries.',

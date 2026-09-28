@@ -237,7 +237,7 @@ GitHub Actions runs on every PR:
 
 **All must pass before merge.**
 
-`resume-pdf.yml` runs on pushes to `main` that touch `content/*.html`, `resume/**`, `public/fonts/**` or `scripts/build-resume.ts` (and manually; editing `content/resume-facts.md` doesn't rebuild). It builds every document in `resume/documents.ts`, runs `resume:check`, and commits the PDFs only if they changed (dates are pinned, so rebuilds are deterministic). Only the final push step gets the write token. Admin API calls take `?doc=<id>`; never accept a path from the client.
+`resume-pdf.yml` runs on pushes to `main` that touch `content/*.html`, `resume/**`, `public/fonts/**` or `scripts/build-resume.ts` (and manually; editing `content/resume-facts.md` doesn't rebuild). It runs on `windows-latest` with Edge and Node 22 (Linux Chromium PDFs fail `resume:check` with split words; pdfjs-dist v6 needs Node 22). It builds every document in `resume/documents.ts`, runs `resume:check`, and commits the PDFs only if they changed (dates are pinned, so rebuilds are deterministic). Only the final push step gets the write token. Admin API calls take `?doc=<id>`; never accept a path from the client.
 
 ---
 

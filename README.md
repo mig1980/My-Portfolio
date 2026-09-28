@@ -8,7 +8,7 @@ Personal site for Michael Gavrilov (gavrilov.ai): a light, editorial single-page
 
 - **Sections:** Hero with "Ask my AI assistant" box → Stats → 01 About → 02 How I think → 03 Where I operate → 04 Experience (Engineer → Architect → Strategist → Strategic Account Leader) → 05 Projects → 06 Education → 07 Contact
 - **AI assistant:** Gemini-backed chat (`functions/api/chat.ts`) with a 4-model fallback chain, suggested questions, follow-up suggestions, retry, offline and rate-limit states, and 24-hour history in `localStorage`
-- **Check my fit:** paste a job description and get fits, transferable experience, gaps and questions, each claim backed by a verbatim résumé quote (`functions/api/fit.ts`, Gemma only)
+- **Check my fit:** paste a job description and get fits, transferable experience, gaps and questions, each claim backed by a verbatim résumé quote (`functions/api/fit.ts`, Gemini 2.5 Flash with 3.1 Flash-Lite backup)
 - **Deep links:** `/#experience`, `/#projects`, etc. scroll to the section even though below-the-fold sections load lazily
 - **Design:** paper/ink palette with a blue accent; Instrument Serif for headlines, Inter for text (self-hosted in `public/fonts/`)
 

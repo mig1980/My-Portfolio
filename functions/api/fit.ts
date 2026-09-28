@@ -1,6 +1,6 @@
 /**
  * @fileoverview Cloudflare Pages Function for "Check my fit": compares a job description with the
- * ATS résumé using Gemma (open-weight). The résumé text is the only source of facts.
+ * ATS résumé using Gemini 2.5 Flash, with 3.1 Flash-Lite as backup. The résumé text is the only source of facts.
  * Never log or store the job description, and never log raw errors (they can quote it).
  */
 
@@ -21,10 +21,18 @@ interface Env {
   ALLOW_PAGES_DEV?: string;
 }
 
-/** Open-weight model only; listed twice so an unusable reply gets one retry. */
-const MODELS: readonly string[] = ['gemma-4-26b-a4b-it', 'gemma-4-26b-a4b-it'];
+/**
+ * Neither uses the chat's scarce 3.8 Flash quota. Gemma was dropped: it always thinks first and
+ * ran out of time (about 90 s) before answering.
+ */
+const MODELS: readonly string[] = ['gemini-2.5-flash', 'gemini-3.1-flash-lite'];
 
-const PER_MODEL_TIMEOUT_MS = 30000;
+/** Thinking isn't needed for this task and only adds latency. */
+const THINKING_OFF: Readonly<Record<string, object>> = {
+  'gemini-2.5-flash': { thinkingBudget: 0 },
+};
+
+const PER_MODEL_TIMEOUT_MS = 25000;
 /** Must stay below the client timeout in hooks/useFitCheck.ts */
 const TOTAL_BUDGET_MS = 55000;
 const MIN_ATTEMPT_MS = 5000;
@@ -72,7 +80,7 @@ END-RESUME-${marker}`;
 
 export function buildFitContents(jobDescription: string, marker: string): GeminiMessage[] {
   return [
-    // Gemma has no system instruction, so the rules go first as a user turn
+    // Rules first as a user turn, like the chat, so every model in the chain gets the same prompt
     { role: 'user', parts: [{ text: buildInstructions(marker) }] },
     {
       role: 'model',
@@ -144,7 +152,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     const grounding = createFitCheckGrounding(RESUME_TEXT, jobDescription);
     const payload = {
       contents: buildFitContents(jobDescription, randomMarker()),
-      generationConfig: { temperature: 0.2, topP: 0.9, maxOutputTokens: 4096 },
+      generationConfig: {
+        temperature: 0.2,
+        topP: 0.9,
+        maxOutputTokens: 4096,
+        responseMimeType: 'application/json',
+      },
       safetySettings: [
         { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
         { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
@@ -156,7 +169,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     const result = await generateWithFallback({
       apiKey,
       models: MODELS,
-      payloadFor: () => payload,
+      payloadFor: (modelName) => {
+        const thinkingConfig = THINKING_OFF[modelName];
+        return thinkingConfig
+          ? { ...payload, generationConfig: { ...payload.generationConfig, thinkingConfig } }
+          : payload;
+      },
       perModelTimeoutMs: PER_MODEL_TIMEOUT_MS,
       totalBudgetMs: TOTAL_BUDGET_MS,
       minAttemptMs: MIN_ATTEMPT_MS,

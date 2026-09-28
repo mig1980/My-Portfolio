@@ -83,7 +83,7 @@ AboutMe/
 │   └── logo.ts             # Logo URL generation
 ├── functions/api/          # Cloudflare Pages Functions
 │   ├── chat.ts             # Gemini API proxy with 4-model fallback; facts = résumé text + hand-written extras
-│   ├── fit.ts              # "Check my fit": Gemma only, grounded in the résumé text
+│   ├── fit.ts              # "Check my fit": Gemini 2.5 Flash (thinking off) → 3.1 Flash-Lite, grounded in the résumé text
 │   └── admin/
 │       ├── _middleware.ts  # Verifies the Cloudflare Access JWT for every /api/admin/*
 │       ├── resume.ts       # GET/PUT content/resume.html via the GitHub Contents API
@@ -114,7 +114,7 @@ AboutMe/
 │   └── test-gemini-models.ts  # Manual model check
 ├── docs/resume-admin-plan.md  # Design, decisions and manual setup for the résumé editor
 ├── styles/globals.css      # Tailwind v4 + custom utilities
-├── tests/                  # Vitest tests (386 tests, 27 files)
+├── tests/                  # Vitest tests (387 tests, 27 files)
 ├── .github/prompts/        # /resume-update, /resume-review, /resume-tailor
 ├── .github/workflows/
 │   ├── ci.yml              # Lint, format, type-check, tests, build
@@ -205,7 +205,7 @@ Flow: `/admin/` editor → `PUT /api/admin/resume?doc=<id>` (validates, commits 
 - **Facts:** both endpoints read `RESUME_TEXT` from `resume/atsText.generated.ts`, built from `content/resume-ats.html` by `resume/plainText.ts` (title filled in, contact line and phone removed). It is regenerated on every install and build, so a published résumé reaches the AI on the next deploy. The chat adds hand-written facts that aren't on the résumé (approach, projects, Champion Award, "including FY25 and FY26"); keep those out of the résumé text and never duplicate résumé facts there.
 - **Shared Gemini code:** `utils/gemini.ts` (`generateWithFallback`, `isAllowedAiHost`). Keep it DOM- and Node-free.
 - **Hosts:** both endpoints refuse `*.pages.dev` (the Cloudflare rate-limit rule only covers gavrilov.ai) unless `ALLOW_PAGES_DEV=true`, which belongs only in the Pages **Preview** environment.
-- **Fit check (`functions/api/fit.ts`):** Gemma only (open-weight), one retry on an unusable reply. Same-origin `Origin`, JSON content type, ≤ 40 KB body, exactly `{ jobDescription }` with 200–8,000 characters after trimming. The job description goes in its own turn between random markers and is treated as untrusted data.
+- **Fit check (`functions/api/fit.ts`):** Gemini 2.5 Flash with thinking off, then 3.1 Flash-Lite as backup; JSON output mode; never the chat's 3.8 Flash (20/day). Don't use Gemma: it always thinks and times out. Same-origin `Origin`, JSON content type, ≤ 40 KB body, exactly `{ jobDescription }` with 200–8,000 characters after trimming. The job description goes in its own turn between random markers and is treated as untrusted data.
 - **Grounding (`utils/fitCheck.ts`):** every evidence quote must be a verbatim résumé passage of ≥ 4 words; a fit or transferable point is dropped if its evidence fails or it names a tool/product/company from the job description that the résumé lacks. Nothing usable after filtering → 422.
 - **Privacy:** never log, store or send to analytics the job description, the model's reply or raw error messages (they can quote the request). Log status codes and model names only. The dialog keeps the text in memory only.
 

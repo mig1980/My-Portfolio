@@ -141,15 +141,37 @@ describe('POST /api/fit', () => {
       vi.spyOn(console, 'error').mockImplementation(() => {});
     });
 
-    it('returns the grounded result from the open-weight model', async () => {
+    it('returns the grounded result from Gemini 2.5 Flash with thinking off and JSON output', async () => {
       mockFetch.mockResolvedValueOnce(modelReply(GOOD_REPLY));
 
       const res = await send({ jobDescription: JOB });
 
       expect(res.status).toBe(200);
       expect(await res.json()).toEqual(GOOD_REPLY);
-      expect(String(mockFetch.mock.calls[0]?.[0])).toContain('/models/gemma-4-26b-a4b-it:');
+      expect(String(mockFetch.mock.calls[0]?.[0])).toContain('/models/gemini-2.5-flash:');
+      const init = mockFetch.mock.calls[0]?.[1] as RequestInit;
+      expect(JSON.parse(String(init.body))).toMatchObject({
+        generationConfig: {
+          responseMimeType: 'application/json',
+          thinkingConfig: { thinkingBudget: 0 },
+        },
+      });
       expect(res.headers.get('Cache-Control')).toBe('no-store');
+    });
+
+    it('falls back to 3.1 Flash-Lite, without a thinking setting, when 2.5 Flash is busy', async () => {
+      mockFetch
+        .mockResolvedValueOnce(new Response('{}', { status: 503 }))
+        .mockResolvedValueOnce(modelReply(GOOD_REPLY));
+
+      const res = await send({ jobDescription: JOB });
+
+      expect(res.status).toBe(200);
+      expect(String(mockFetch.mock.calls[1]?.[0])).toContain('/models/gemini-3.1-flash-lite:');
+      const init = mockFetch.mock.calls[1]?.[1] as RequestInit;
+      expect(
+        (JSON.parse(String(init.body)) as { generationConfig: object }).generationConfig
+      ).not.toHaveProperty('thinkingConfig');
     });
 
     it('sends the rules and résumé first, and the job description only once, as marked data', async () => {

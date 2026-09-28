@@ -18,7 +18,7 @@ export interface ValidateOptions {
 }
 
 export const MAX_RESUME_BYTES = 100 * 1024;
-export const ALLOWED_FONT_PREFIX = '/fonts/';
+const ALLOWED_FONT_PREFIX = '/fonts/';
 
 interface PatternRule {
   pattern: RegExp;

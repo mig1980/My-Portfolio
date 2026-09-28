@@ -173,7 +173,7 @@ const Component = memo(() => {
 
 ## Résumé Pipeline & Admin Editor
 
-Flow: `/admin/` editor → `PUT /api/admin/resume` (validates, commits `content/resume.html` to `main`) → `resume-pdf.yml` runs `npm run resume:build` and commits `public/CV/MGavrilovCV.pdf` → Cloudflare Pages redeploys. The site links to the PDF via `PERSONAL_INFO.resumeUrl`.
+Flow: `/admin/` editor → `PUT /api/admin/resume?doc=<id>` (validates, commits that document's HTML to `main`) → `resume-pdf.yml` runs `npm run resume:build` and commits both PDFs if they changed → Cloudflare Pages redeploys. The site links to the executive PDF via `PERSONAL_INFO.resumeUrl`; the ATS PDF is not linked.
 
 **Template contract** (enforced by `resume/validate.ts`): full HTML document; `{{TITLE}}` exactly once (Enterprise title); `--fs` and `--gap` defined in `:root` and used; `@page { size: Letter; margin: 0; }` (multi-page documents with `pageMargin: 'any'` may set print margins); fonts only via `url('/fonts/…')`; no scripts, `on*=` handlers, `javascript:` URLs, embeds/frames/`<link>`, or external resources (only `<a>` may link out); ≤ 100 KB. The contact line (incl. phone) is plain HTML in the template by the owner's choice. Keep heading `letter-spacing` ≤ 1px and ligatures off in the ATS version, or `resume:check` fails.
 
@@ -184,7 +184,7 @@ Flow: `/admin/` editor → `PUT /api/admin/resume` (validates, commits `content/
 - Admin Functions fail closed (500) when config is missing; `PUT` requires same-origin `Origin`, JSON content type, ≤ 128 KB body and a 40-char `sha`.
 - Admin commits use `docs(resume): …` (commitlint has no `content` type).
 - The PDF build (`scripts/build-resume.ts`) serves the page from a fake origin via `page.route`, blocks every other request and disables JavaScript. Don't loosen this. It writes nothing unless every document hits its exact page target.
-- Career facts (university, club counts, quota attainment) live in `utils/careerFacts.ts`. Change them there, then update both résumé HTML files. The editor warns (without blocking Publish) when a résumé no longer matches (`resume/facts.ts`), and `tests/careerFacts.test.ts` fails in CI if the site, the assistant, the résumés and the fact register disagree.
+- Career facts (university, club counts, quota attainment) live in `utils/careerFacts.ts`. Change them there, then update both résumé HTML files. The editor warns (without blocking Publish) when a résumé no longer matches (`resume/facts.ts`), and `tests/careerFacts.test.ts` fails in CI if the site, the assistant, the résumés and the fact register disagree. The check compares facts, not phrasing: "Platinum Club (2×)" and "Two-time Platinum Club" both pass, and a stated year count must match `quotaAttainmentYears`.
 - Never import `admin/` code from the public site (keeps CodeMirror out of the main bundle).
 - Cloudflare Pages settings (Production and Preview): `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`, `GITHUB_TOKEN` (fine-grained PAT, this repo only, Contents RW + Actions R), `GITHUB_REPO`.
 
@@ -197,7 +197,8 @@ Reusable prompts: `/resume-update`, `/resume-review`, `/resume-tailor` (`.github
 - **Customer:** never name the customer anywhere in this public repo, including tests and the register. Always write "a top-five global pharmaceutical company". The résumés use "top-five"; the website and assistant keep the owner's LinkedIn wording "top-5".
 - **Bullets:** outcome first (result → action → context). Where a bullet has a metric, put it in the first 8 words. Never add a metric just to fit the pattern.
 - **Tense:** present tense for ongoing responsibilities in the current role ("Own", "Lead"); past tense for completed results in any role ("Grew", "Structured") and for everything in prior roles.
-- **Voice:** no first person ("I", "my", "we") in the ATS version. The executive summary may use it.
+- **Voice:** no first person ("I", "my", "we") in either version.
+- **Layout:** the executive version groups Microsoft roles under one "Microsoft 2006 – Present" heading with year-only dates. The ATS version puts the company and LinkedIn month/year dates on every role line (`Title | Company | Mon YYYY – Mon YYYY`). The website and the assistant use the same month/year dates as the ATS version.
 - **Typography:** heading `letter-spacing` ≤ 1px. ATS: ligatures off and no decorative glyphs ("5x" not "5×", "approximately"/"about" not "~", "|" separators, real `<li>` bullets).
 - **After any change:** run `npm run resume:build` and `npm run resume:check`; both page targets must hold. Run `npm run test:run` (facts test). Then discard the locally built PDFs (`git checkout --` if tracked, delete if new): the Resume PDF Action builds the official ones.
 

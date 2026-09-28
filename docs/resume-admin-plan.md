@@ -181,7 +181,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 
 - **A. Executive (1 page):** content ported from the owner's updated `resume_template.html`: one "Microsoft — 2006 – Present" employer block with a single Recognition line, metric-first summary and bullets, keyword variants in Core Expertise. Section headings use `letter-spacing: 1px` (was 2.4px, which pdf.js read as "E X E C U T I V E"). Fits at 9.4pt / gap 0.7.
 - **B. ATS version (exactly 2 pages):** `content/resume-ats.html` (single column, plain UPPERCASE headings, real bullets, "5x", Inter with ligatures off, `@page` print margins). `resume/documents.ts` is the registry (`id → src, out, pages, fit, pageMargin, commitScope, requiredText`). The build prints every candidate and needs exactly `pages` pages; it writes nothing unless every document hits its target. Lands at 10.5pt / gap 0.7. The validator allows `@page` margins only for documents with `pageMargin: 'any'`. Admin: Executive | ATS switcher (`?doc=`, allow-listed server-side), per-document drafts, sha, status and page-target badge (the multi-page preview is an estimate; the build is exact). `/CV/MGavrilovCV-ATS.pdf` is `noindex` and not linked from the site.
-- **C. ATS-readability check:** `npm run resume:check` (`scripts/check-resume-text.ts`, pdf.js) fails on a wrong page count, split words ("E XECUTIVE" or "E X E C U T I V E"), ligature characters, or missing/out-of-order phrases (name → title → summary → experience → Microsoft → current role → Education). Runs in `resume-pdf.yml` after the build, before committing. Verified: the old committed PDF fails it; both new PDFs pass.
+- **C. ATS-readability check:** `npm run resume:check` (`scripts/check-resume-text.ts`, pdf.js) fails on a wrong page count, split words ("E XECUTIVE" or "E X E C U T I V E"), ligature characters, or missing/out-of-order phrases (name → title → summary → experience → Microsoft → current role → Education; the ATS version expects the current role before "Microsoft", since each role line ends with the company). Runs in `resume-pdf.yml` after the build, before committing. Verified: the old committed PDF fails it; both new PDFs pass.
 - **D. Validation:** type-check, lint, 314 tests, build, `resume:build`, `resume:check` all pass.
 
 ### Follow-ups before the first push (done Sept 27, 2026)
@@ -196,11 +196,21 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 
 ### Status
 
-All code is committed on `design/editorial-hero` and **not pushed yet**. The editor works live only after the push and the Manual setup below.
+Live on `main` since Sept 27, 2026. The Manual setup below is done, and the owner publishes from `gavrilov.ai/admin/`.
+
+### Changes after launch (Sept 27, 2026)
+
+- **ATS role lines:** `Title | Company | Mon YYYY – Mon YYYY` with LinkedIn dates; the grouped Microsoft block is gone. Lands at 11pt / gap 0.7.
+- **Executive:** no first person, "5×", recognition "Two-time Platinum Club and three-time Gold Club · 100%+ quota attainment in 9 fiscal years". Keeps the grouped Microsoft heading and year-only dates. Fits at 9.4pt / gap 0.7.
+- **Dates everywhere (site, assistant, both résumés):** Strategic Account Director Feb 2017 – Present; Senior Account Executive Apr 2011 – Jan 2017.
+- **Fact check compares facts, not phrasing:** "Platinum Club (2×)" and "Two-time Platinum Club" both pass; a stated year count must be 9.
+- **Validation:** 336 tests (23 files), build, `resume:build` and `resume:check` all pass.
 
 ---
 
-## Manual setup Michael must do (Copilot can't)
+## Manual setup (done Sept 27, 2026)
+
+Kept for reference: renew the GitHub token before it expires (1 year).
 
 1. **Cloudflare Zero Trust → Access → Applications → Self-hosted**
    - Domains: `gavrilov.ai/admin*`, `gavrilov.ai/api/admin/*`, **and** `my-portfolio-bu2.pages.dev/admin*`, `*.my-portfolio-bu2.pages.dev/admin*` and the matching `/api/admin/*` paths. Preview deployments would otherwise expose the admin page.

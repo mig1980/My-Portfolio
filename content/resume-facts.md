@@ -4,7 +4,7 @@ The only facts `content/resume.html` and `content/resume-ats.html` may use. Neve
 
 This repository is public. Keep every entry at the level the owner would say in an interview, and never name the customer (always "a top-five global pharmaceutical company").
 
-Items marked **[CONFIRM]** are published today but not yet verified by the owner. Don't expand or reword them until they are confirmed. Items marked **(shared)** come from `utils/careerFacts.ts`; change them there first. `tests/careerFacts.test.ts` fails if this file, the website, the AI assistant or either résumé disagrees.
+Items marked **[CONFIRM]** are published today but not yet verified by the owner. Don't expand or reword them until they are confirmed. Items marked **(shared)** come from `utils/careerFacts.ts`; change them there first. `tests/careerFacts.test.ts` fails if this file, the website, the AI assistant or either résumé disagrees on those facts (it compares the facts, not the exact phrasing).
 
 ## Identity and contact
 
@@ -27,13 +27,13 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 | IT Operations Manager / Team Lead | Allied Testing | Apr 2002 – Jul 2005 | 2002 – 2005 |
 
 - Microsoft tenure: 2006 – Present, stated as "20+ years at Microsoft"
-- Current scope: executive owner of Microsoft's relationship with a top-five global pharmaceutical company, one of Microsoft's strategic Healthcare & Life Sciences accounts; C-suite relationships with the CIO, CDO and senior business leaders
+- Current scope: executive owner of Microsoft's relationship with a top-five global pharmaceutical company, one of Microsoft's strategic Healthcare & Life Sciences accounts; relationships with the CIO, CDO and senior business leaders, with CEO-level engagement
 
 ## Metrics
 
 | Metric | Wording | Definition |
 |---|---|---|
-| Account growth | "~5× since 2017 (~20% revenue CAGR)"; ATS: "approximately 5x … (about 20% revenue CAGR)" | Growth of the current account since 2017. **[CONFIRM: revenue \| consumption \| TCV]**. The wording says "revenue", so change it if the answer isn't revenue |
+| Account growth | "5× since 2017 (~20% revenue CAGR)"; ATS: "5x since 2017 (about 20% revenue CAGR)" | Growth of the current account since 2017. **[CONFIRM: revenue \| consumption \| TCV]**. The wording says "revenue", so change it if the answer isn't revenue |
 | Strategic agreements | "exceeding $500M in total contract value" | Total contract value of multi-year agreements structured and negotiated in the current role |
 | Virtual team | "30+ person (matrixed) virtual team" | Specialist sales, engineering, customer success, support, services and global systems integrator partners |
 | Enterprise revenue | "$20M+ average annual revenue" | Senior Account Executive, 2011 – 2017 |
@@ -43,8 +43,8 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 
 ## Awards (shared)
 
-- Microsoft Platinum Club: 2×
-- Microsoft Gold Club: 3×
+- Microsoft Platinum Club: 2× (résumés: "Two-time Platinum Club")
+- Microsoft Gold Club: 3× (résumés: "three-time Gold Club")
 - Quota attainment: 100%+ quota attainment in 9 fiscal years, including FY25 and FY26 (both résumés leave out "including FY25 and FY26")
 - The website's "5× Microsoft Platinum & Gold Club recognition" stat is 2 + 3 awards. It is not the account-growth "5×".
 
@@ -68,5 +68,5 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 ## Projects and community
 
 - QuantumInvestor.net: creator of a generative-AI investment research experiment
-- gavrilov.ai: creator of an open-source personal site with an AI assistant built on large language models
+- gavrilov.ai: creator of an open-source personal site with an AI assistant built on Google Gemini models
 - Mentor, NYU Tandon Mastermind Mentorship program (ATS résumé only)

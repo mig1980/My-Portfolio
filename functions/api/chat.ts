@@ -200,7 +200,7 @@ Industries.
 Healthcare and Life Sciences, including pharma. He has also supported enterprise accounts across sectors such as transportation and manufacturing.
 
 Career path: engineer, architect, strategist, strategic account leader.
-He started his career building and operating technology, then became an architect, a strategist, and eventually a strategic account leader. His mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work. Today, the systems are bigger.
+He started his career building and operating technology, then became an architect, a strategist, and eventually a strategic account leader. His mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work. Then: making servers work. Now: making AI work for some of the world's largest companies.
 IT Operations Manager and Team Lead at Allied Testing (Apr 2002 to July 2005): led a team of 8 systems engineers responsible for enterprise IT operations across physical and virtual environments.
 IT Solutions Architect at Systematica Group (July 2005 to Oct 2006): led architecture and technical strategy for complex enterprise IT solutions in pre-sales engagements, translating business requirements into solution architectures.
 Partner Technology Strategist at Microsoft (Oct 2006 to July 2008): built go-to-market strategies with systems integrators and ISV partners and enabled partner technical teams. Then Account Technology Strategist (July 2008 to Mar 2011): trusted advisor to CIOs across multinational enterprise accounts, building multi-year technology roadmaps and driving adoption and value-realization programs.

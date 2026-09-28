@@ -65,9 +65,13 @@ const Legal: React.FC = memo(() => {
               <p>
                 This site uses Google Analytics (GA4) to understand visitor behavior. GA4 may
                 collect anonymized usage data such as pages visited and time on site. No personal
-                data is shared with third parties beyond Google. The hosting provider (Cloudflare)
-                may log standard request data (IP, user agent, timestamps) to operate the service.
-                If you contact me, I retain only what's needed to respond.
+                data is shared with third parties beyond Google. The AI assistant and the
+                &quot;Check my fit&quot; tool send the text you enter to Google&apos;s Gemini API to
+                generate answers. This site doesn&apos;t store that text, but Google may use it to
+                improve its services, so please don&apos;t enter confidential information. The
+                hosting provider (Cloudflare) may log standard request data (IP, user agent,
+                timestamps) to operate the service. If you contact me, I retain only what's needed
+                to respond.
               </p>
             </LegalSection>
           </div>

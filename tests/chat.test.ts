@@ -16,13 +16,17 @@ interface ChatResponseBody {
 
 const mockFetch = vi.fn() as Mock;
 
-function createContext(body: unknown): ChatContext {
+function createContext(
+  body: unknown,
+  { url = 'https://gavrilov.ai/api/chat', env = {} }: { url?: string; env?: object } = {}
+): ChatContext {
   return {
     request: {
+      url,
       headers: new Headers({ Origin: 'https://gavrilov.ai' }),
       json: () => Promise.resolve(body),
     },
-    env: { GEMINI_API_KEY: 'test-key' },
+    env: { GEMINI_API_KEY: 'test-key', ...env },
   } as unknown as ChatContext;
 }
 
@@ -57,6 +61,33 @@ describe('POST /api/chat', () => {
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
     vi.useRealTimers();
+  });
+
+  describe('host allow-list', () => {
+    it('refuses the pages.dev address, which the rate-limit rule does not cover', async () => {
+      const res = await onRequestPost(
+        createContext({ message: 'Hi' }, { url: 'https://my-portfolio-bu2.pages.dev/api/chat' })
+      );
+
+      expect(res.status).toBe(403);
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it('allows pages.dev previews when ALLOW_PAGES_DEV is "true"', async () => {
+      mockFetch.mockResolvedValueOnce(geminiReply('Hello'));
+
+      const res = await onRequestPost(
+        createContext(
+          { message: 'Hi' },
+          {
+            url: 'https://abc123.my-portfolio-bu2.pages.dev/api/chat',
+            env: { ALLOW_PAGES_DEV: 'true' },
+          }
+        )
+      );
+
+      expect(res.status).toBe(200);
+    });
   });
 
   describe('model fallback', () => {

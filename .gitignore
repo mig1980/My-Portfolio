@@ -13,6 +13,9 @@ dist-ssr
 coverage
 *.local
 
+# Built by `npm run resume:text` (runs after install and in the build)
+resume/*.generated.ts
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

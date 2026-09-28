@@ -216,6 +216,30 @@ export type ChatApiResponse =
     };
 
 // ============================================================================
+// Fit check: shapes returned by functions/api/fit.ts
+// ============================================================================
+
+/** One claim about Michael, backed by a verbatim quote from the ATS résumé */
+export interface FitCheckPoint {
+  point: string;
+  evidence: string;
+}
+
+/** POST /api/fit success */
+export interface FitCheckResult {
+  fits: FitCheckPoint[];
+  transferable: FitCheckPoint[];
+  gaps: string[];
+  questions: string[];
+}
+
+/** POST /api/fit error */
+export interface FitCheckError {
+  error: string;
+  retryAfterMs?: number;
+}
+
+// ============================================================================
 // Résumé admin (/admin): shapes returned by functions/api/admin/*
 // ============================================================================
 

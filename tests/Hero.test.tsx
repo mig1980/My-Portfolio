@@ -3,7 +3,7 @@
  * @author Michael Gavrilov
  */
 
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import Hero from '../components/Hero';
 import { CHAT_ASK_EVENT } from '../utils/chatEvents';
@@ -70,5 +70,17 @@ describe('Hero', () => {
 
     expect(questions).toEqual([firstQuestion]);
     stop();
+  });
+
+  it('opens the fit check dialog and closes it again', async () => {
+    render(<Hero />);
+    const button = screen.getByRole('button', { name: 'Hiring? Check my fit for your role' });
+
+    fireEvent.click(button);
+    expect(await screen.findByRole('dialog', { name: /check michael's fit/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(button).toHaveFocus();
   });
 });

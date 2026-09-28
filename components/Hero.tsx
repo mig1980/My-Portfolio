@@ -3,12 +3,14 @@
  * @description Editorial-style introduction with headline, CTAs, and an "Ask my AI assistant" box.
  */
 
-import React, { memo, useCallback, useState } from 'react';
-import { ArrowRight, ArrowUp, Download, Sparkles } from 'lucide-react';
+import React, { lazy, memo, Suspense, useCallback, useRef, useState } from 'react';
+import { ArrowRight, ArrowUp, Briefcase, Download, Sparkles } from 'lucide-react';
 import { PERSONAL_INFO, SUGGESTED_QUESTIONS } from '../constants';
 import { askChat } from '../utils/chatEvents';
 import { trackEvent } from '../utils/analytics';
 import { MAX_CHAT_MESSAGE_LENGTH } from '../utils/chatLimits';
+
+const FitCheckDialog = lazy(() => import('./FitCheckDialog'));
 
 /**
  * Hero section component for the portfolio landing area.
@@ -47,6 +49,18 @@ const Hero: React.FC = memo(() => {
 
   const handleResumeClick = useCallback((): void => {
     trackEvent('resume_download', { location: 'hero' });
+  }, []);
+
+  const [isFitCheckOpen, setIsFitCheckOpen] = useState<boolean>(false);
+  const fitCheckButtonRef = useRef<HTMLButtonElement>(null);
+
+  const handleFitCheckOpen = useCallback((): void => {
+    setIsFitCheckOpen(true);
+  }, []);
+
+  const handleFitCheckClose = useCallback((): void => {
+    setIsFitCheckOpen(false);
+    fitCheckButtonRef.current?.focus({ preventScroll: true });
   }, []);
 
   return (
@@ -146,6 +160,19 @@ const Hero: React.FC = memo(() => {
                 </button>
               ))}
             </div>
+            <button
+              ref={fitCheckButtonRef}
+              type="button"
+              onClick={handleFitCheckOpen}
+              aria-haspopup="dialog"
+              className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary-700 hover:text-primary-800 underline-offset-4 hover:underline rounded-sm focus-ring focus-visible:ring-offset-paper"
+            >
+              <Briefcase className="w-4 h-4" aria-hidden="true" />
+              Hiring? Check my fit for your role
+            </button>
+            <Suspense fallback={null}>
+              {isFitCheckOpen && <FitCheckDialog onClose={handleFitCheckClose} />}
+            </Suspense>
           </div>
         </div>
 

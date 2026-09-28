@@ -9,6 +9,8 @@
 
 import { MAX_CHAT_MESSAGE_LENGTH as MAX_MESSAGE_LENGTH } from '../../utils/chatLimits';
 import { CAREER_FACTS } from '../../utils/careerFacts';
+import { generateWithFallback, isAllowedAiHost } from '../../utils/gemini';
+import { RESUME_TEXT } from '../../resume/atsText.generated';
 
 // ============================================================================
 // Type Definitions
@@ -25,6 +27,7 @@ type PagesFunction<E = unknown> = (
 
 interface Env {
   GEMINI_API_KEY: string;
+  ALLOW_PAGES_DEV?: string;
 }
 
 interface ChatHistoryItem {
@@ -35,30 +38,6 @@ interface ChatHistoryItem {
 interface ChatRequest {
   message: string;
   history?: ChatHistoryItem[];
-}
-
-interface GeminiContentPart {
-  text?: string;
-  /** True for thinking-model reasoning parts, which must not be shown */
-  thought?: boolean;
-}
-
-interface GeminiContent {
-  parts?: GeminiContentPart[];
-}
-
-interface GeminiCandidate {
-  content?: GeminiContent;
-  finishReason?: string;
-}
-
-interface GeminiResponse {
-  candidates?: GeminiCandidate[];
-  error?: {
-    code?: number;
-    message?: string;
-    status?: string;
-  };
 }
 
 interface ApiSuccessResponse {
@@ -190,21 +169,20 @@ function sanitizeInput(input: string): string {
 // ============================================================================
 
 export const SYSTEM_CONTEXT = `You are an AI assistant for Michael Gavrilov's professional portfolio website.
-Answer questions about Michael based ONLY on the verified facts in this context.
+Answer questions about Michael based ONLY on the verified facts in this context: his résumé and the additional facts after it.
 
-Verified facts.
-Michael Gavrilov is a Strategic Account Director at Microsoft in Healthcare and Life Sciences. He is the executive owner of Microsoft's relationship with a top-five global pharmaceutical company, one of Microsoft's strategic Healthcare and Life Sciences accounts. He owns relationships with the CIO, CDO and senior business leaders, with CEO-level engagement, setting the multi-year technology and AI strategy. Do not name the customer.
-He has 20+ years of experience across technology and business and has been at Microsoft since 2006. He is based in New York City.
+Résumé (verified facts).
+${RESUME_TEXT}
+
+Additional verified facts (not on the résumé).
+Refer to his current customer only as "a top-five global pharmaceutical company", one of Microsoft's strategic Healthcare and Life Sciences accounts. Do not name the customer.
+He has been at Microsoft since 2006. He is based in New York City.
 
 Industries.
 Healthcare and Life Sciences, including pharma. He has also supported enterprise accounts across sectors such as transportation and manufacturing.
 
 Career path: engineer, architect, strategist, strategic account leader.
 He started his career building and operating technology, then became an architect, a strategist, and eventually a strategic account leader. His mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work. Then: making servers work. Now: making AI work for some of the world's largest companies.
-IT Operations Manager and Team Lead at Allied Testing (Apr 2002 to July 2005): led a team of 8 systems engineers responsible for enterprise IT operations across physical and virtual environments.
-IT Solutions Architect at Systematica Group (July 2005 to Oct 2006): led architecture and technical strategy for complex enterprise IT solutions in pre-sales engagements, translating business requirements into solution architectures.
-Partner Technology Strategist at Microsoft (Oct 2006 to July 2008): built go-to-market strategies with systems integrators and ISV partners and enabled partner technical teams. Then Account Technology Strategist (July 2008 to Mar 2011): trusted advisor to CIOs across multinational enterprise accounts, building multi-year technology roadmaps and driving adoption and value-realization programs.
-Senior Account Executive, Enterprise Accounts at Microsoft (Apr 2011 to Jan 2017): owned executive relationships, account strategy and commercial execution for multinational enterprise customers across multiple industries; led complex enterprise agreement renewals and expansions spanning Office 365, Azure, Dynamics and Microsoft cloud services; orchestrated sales, technical, services and partner teams around customer priorities, technology adoption and long-term account growth; recognized with Microsoft Gold Club and 100% attainment. Then Strategic Account Director, Healthcare and Life Sciences (Feb 2017 to present).
 
 How he thinks.
 Go deep: understand the technology well enough to challenge assumptions. Zoom out: find the business problem behind the technology conversation. Connect the room: create alignment across people with different priorities and incentives. Make it real: turn strategy into commitments, execution, and measurable outcomes.
@@ -216,23 +194,11 @@ QuantumInvestor.net is his personal, public experiment testing whether AI can im
 He also designed, built and open-sourced this portfolio website (github.com/mig1980/My-Portfolio).
 Earlier in his career he built and ran IT systems and led engineering teams, and he holds degrees in Computer Engineering and Information Systems Engineering.
 
-Operating model and portfolio breadth.
-He scales generative AI and AI agents from pilots to governed enterprise deployment in GxP-regulated environments, aligning architecture, data, security, compliance and adoption. He leads a 30+ person matrixed virtual team spanning specialist sales, engineering, customer success, support, services and global systems integrator partners, accountable for revenue, cloud consumption, forecast accuracy and customer satisfaction. He runs executive business reviews aligned to R&D, manufacturing and commercial priorities.
-
-Quantified outcomes.
-He grew the account 5x since 2017 (about 20% revenue CAGR), expanding Microsoft's share of the customer's technology spend across Azure, data, security, Microsoft 365 and Dynamics 365. He structured and negotiated strategic agreements exceeding $500M in total contract value, balancing customer outcomes, transformation investment and commercial risk. In prior enterprise roles, he delivered average annual revenue exceeding $20M. Earlier in his Microsoft career, he led partner programs that drove a 150% increase in partner-influenced revenue. In an IT operations leadership role, he delivered process improvements and automation that increased operational efficiency by 25%.
-
 Awards and recognition.
 He is a ${CAREER_FACTS.platinumClubCount}-time Microsoft Platinum Club recipient and a ${CAREER_FACTS.goldClubCount}-time Gold Club Award recipient. He received a Champion Award in FY23 Q4. He has achieved ${CAREER_FACTS.quotaAttainment}.
 
-Education.
-Master's degree in Management of Technology from NYU Tandon School of Engineering. Master's degree in Information Systems Engineering and Bachelor's degree in Computer Engineering from ${CAREER_FACTS.university}.
-
-Certifications and executive education.
-Microsoft Certified: Azure AI Fundamentals. AWS Certified Cloud Practitioner. Challenger Insight Selling. Selling to the C-Suite from Wharton Executive Education. Business Strategy and Financial Acumen from INSEAD Executive Education. Value Negotiation from INSEAD Executive Education.
-
 Contact methods.
-LinkedIn is linkedin.com/in/mgavrilov. Email is contact@gavrilov.ai. Resume is available at /CV/MGavrilovCV.pdf.
+LinkedIn is linkedin.com/in/mgavrilov. Email is contact@gavrilov.ai. Resume is available at /CV/MGavrilovCV.pdf. These are the only contact methods to share.
 
 Response rules.
 Write in plain text only. Do not use markdown, headings, bullets, or code formatting. Keep responses concise and professional. Aim for 100-200 words, but always complete your thoughts and lists fully rather than cutting off mid-sentence. Only answer questions related to Michael's professional background. If asked about something not in the verified facts, say you do not have that information and offer the LinkedIn or email contact option.
@@ -334,25 +300,6 @@ function jsonResponse(data: ApiResponse, status: number, origin: string): Respon
   });
 }
 
-/** Parses Retry-After header (seconds or HTTP date). Returns ms or null when absent/invalid. */
-function parseRetryAfterMs(response: Response): number | null {
-  const retryAfter = response.headers.get('retry-after');
-  if (!retryAfter) return null;
-
-  const seconds = Number(retryAfter);
-  if (!Number.isNaN(seconds)) {
-    return Math.max(0, Math.round(seconds * 1000));
-  }
-
-  const dateMs = Date.parse(retryAfter);
-  if (!Number.isNaN(dateMs)) {
-    const delta = dateMs - Date.now();
-    return delta > 0 ? delta : null;
-  }
-
-  return null;
-}
-
 // ============================================================================
 // Main Handler
 // ============================================================================
@@ -361,6 +308,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const origin = context.request.headers.get('Origin') ?? '';
 
   try {
+    if (!isAllowedAiHost(context.request.url, context.env.ALLOW_PAGES_DEV === 'true')) {
+      return jsonResponse({ error: 'The assistant is available at gavrilov.ai' }, 403, origin);
+    }
+
     // Parse and validate request body
     let body: unknown;
     try {
@@ -434,116 +385,37 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       ],
     } as const;
 
-    const attemptedModels: string[] = [];
-    let lastStatus: number | null = null;
-    let lastErrorMessage: string | null = null;
-    let sawRateLimit = false;
-    let bestRetryAfterMs: number | null = null;
-    const deadline = Date.now() + TOTAL_BUDGET_MS;
+    const result = await generateWithFallback({
+      apiKey,
+      models: MODEL_CHAIN,
+      payloadFor: (modelName) => {
+        const thinkingLevel = THINKING_LEVEL[modelName];
+        return thinkingLevel
+          ? {
+              ...requestPayload,
+              generationConfig: {
+                ...requestPayload.generationConfig,
+                thinkingConfig: { thinkingLevel },
+              },
+            }
+          : requestPayload;
+      },
+      perModelTimeoutMs: PER_MODEL_TIMEOUT_MS,
+      totalBudgetMs: TOTAL_BUDGET_MS,
+      minAttemptMs: MIN_ATTEMPT_MS,
+      parse: (text) => text.trim(),
+    });
 
-    for (const modelName of MODEL_CHAIN) {
-      const remainingMs = deadline - Date.now();
-      if (remainingMs < MIN_ATTEMPT_MS) {
-        break;
-      }
-
-      attemptedModels.push(modelName);
-
-      const thinkingLevel = THINKING_LEVEL[modelName];
-      const modelPayload = thinkingLevel
-        ? {
-            ...requestPayload,
-            generationConfig: {
-              ...requestPayload.generationConfig,
-              thinkingConfig: { thinkingLevel },
-            },
-          }
-        : requestPayload;
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(
-        () => controller.abort(),
-        Math.min(PER_MODEL_TIMEOUT_MS, remainingMs)
-      );
-
-      let geminiResponse: globalThis.Response;
-      try {
-        geminiResponse = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(modelPayload),
-            signal: controller.signal,
-          }
+    switch (result.kind) {
+      case 'ok': {
+        const suggestions = generateFollowUpSuggestions(
+          sanitizedMessage,
+          result.value,
+          recentHistory
         );
-      } catch (fetchError) {
-        clearTimeout(timeoutId);
-        lastStatus = 504;
-        lastErrorMessage = fetchError instanceof Error ? fetchError.message : 'Request failed';
-        // Timeout or network error: try next model
-        continue;
-      } finally {
-        clearTimeout(timeoutId);
+        return jsonResponse({ reply: result.value, suggestions }, 200, origin);
       }
-
-      if (!geminiResponse.ok) {
-        const errorText = await geminiResponse.text();
-        lastStatus = geminiResponse.status;
-        lastErrorMessage = errorText;
-
-        const retryAfterMs = parseRetryAfterMs(geminiResponse);
-        if (retryAfterMs !== null) {
-          bestRetryAfterMs = Math.max(bestRetryAfterMs ?? 0, retryAfterMs);
-        }
-
-        if (geminiResponse.status === 429) {
-          sawRateLimit = true;
-          // Try next model with remaining quota
-          continue;
-        }
-
-        if (geminiResponse.status === 401 || geminiResponse.status === 403) {
-          console.error('Gemini API authentication error');
-          return jsonResponse({ error: 'AI service authentication error' }, 503, origin);
-        }
-
-        // Other 4xx (e.g. 404 for a retired model) and 5xx are model-specific: try next model
-        continue;
-      }
-
-      let data: GeminiResponse;
-      try {
-        data = (await geminiResponse.json()) as GeminiResponse;
-      } catch {
-        lastStatus = 502;
-        lastErrorMessage = 'Invalid JSON from model';
-        // Try next model
-        continue;
-      }
-
-      if (data.error) {
-        lastStatus = geminiResponse.status || 502;
-        lastErrorMessage = data.error.message ?? 'Unknown model error';
-        // Try next model
-        continue;
-      }
-
-      const candidates = data.candidates;
-      if (!candidates || candidates.length === 0) {
-        lastStatus = geminiResponse.status || 502;
-        lastErrorMessage = 'No candidates in response';
-        continue;
-      }
-
-      const firstCandidate = candidates[0];
-      if (!firstCandidate) {
-        lastStatus = geminiResponse.status || 502;
-        lastErrorMessage = 'Empty candidate';
-        continue;
-      }
-
-      if (firstCandidate.finishReason === 'SAFETY') {
+      case 'safety':
         return jsonResponse(
           {
             reply:
@@ -552,42 +424,22 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           200,
           origin
         );
-      }
-
-      const parts = firstCandidate.content?.parts;
-      if (!parts || parts.length === 0) {
-        lastStatus = geminiResponse.status || 502;
-        lastErrorMessage = 'No content parts';
-        continue;
-      }
-
-      // Newer models may split the answer across several parts
-      const reply = parts
-        .filter((part) => !part.thought && typeof part.text === 'string')
-        .map((part) => part.text)
-        .join('');
-      if (reply.trim().length === 0) {
-        lastStatus = geminiResponse.status || 502;
-        lastErrorMessage = 'Empty text in AI response';
-        continue;
-      }
-
-      const suggestions = generateFollowUpSuggestions(sanitizedMessage, reply, recentHistory);
-      return jsonResponse({ reply: reply.trim(), suggestions }, 200, origin);
+      case 'auth':
+        console.error('Gemini API authentication error');
+        return jsonResponse({ error: 'AI service authentication error' }, 503, origin);
+      case 'rate_limited':
+        return jsonResponse(
+          {
+            error: 'Too many requests. Please wait a moment and try again.',
+            retryAfterMs: result.retryAfterMs ?? undefined,
+            attemptedModels: result.attemptedModels,
+          },
+          429,
+          origin
+        );
     }
 
-    if (sawRateLimit) {
-      return jsonResponse(
-        {
-          error: 'Too many requests. Please wait a moment and try again.',
-          retryAfterMs: bestRetryAfterMs ?? undefined,
-          attemptedModels,
-        },
-        429,
-        origin
-      );
-    }
-
+    const { lastStatus, lastErrorMessage, attemptedModels } = result;
     console.error('Gemini API fallback exhausted', {
       lastStatus,
       lastErrorMessage,

@@ -39,6 +39,9 @@ npm run build
 npm run resume:build
 npm run resume:check
 
+# Regenerate resume/atsText.generated.ts (gitignored; runs automatically after npm install and in npm run build)
+npm run resume:text
+
 # Full validation sequence
 npm run type-check && npm run lint && npm run test:run && npm run build
 ```
@@ -55,11 +58,13 @@ AboutMe/
 ├── constants.tsx           # Application data/content
 ├── components/
 │   ├── ChatWidget.tsx      # AI chat widget (complex, 1000+ lines)
+│   ├── FitCheckDialog.tsx  # "Check my fit" dialog, lazy-loaded from Hero
 │   ├── Navigation.tsx      # Responsive nav with scroll detection
 │   ├── [Section].tsx       # Page sections (Hero, About, Stats, etc.)
 │   └── ui/                 # Reusable primitives (Section, SectionHeading, etc.)
 ├── hooks/                  # Custom React hooks
 │   ├── useChat.ts          # Chat state management
+│   ├── useFitCheck.ts      # Fit check request, cooldown and cancel (job description stays in memory)
 │   ├── useScrollPosition.ts
 │   ├── useIsMobile.ts
 │   ├── useOnlineStatus.ts
@@ -69,12 +74,16 @@ AboutMe/
 │   ├── analytics.ts        # GA4 tracking
 │   ├── chatEvents.ts       # askChat() bridge from the page to ChatWidget
 │   ├── chatLimits.ts       # Limits shared with functions/api/chat.ts (no DOM imports)
+│   ├── fitCheckLimits.ts   # Job description length limits shared with functions/api/fit.ts
+│   ├── fitCheck.ts         # Fit check request validation + grounding checks (evidence filter, unsupported-name guard)
+│   ├── gemini.ts           # Model fallback + host allow-list shared by chat.ts and fit.ts
 │   ├── careerFacts.ts      # CAREER_FACTS shared by constants.tsx and chat.ts; tests check the résumés match
 │   ├── string.ts           # String helpers (getInitials)
 │   ├── dom.ts              # DOM helpers
 │   └── logo.ts             # Logo URL generation
 ├── functions/api/          # Cloudflare Pages Functions
-│   ├── chat.ts             # Gemini API proxy with 4-model fallback
+│   ├── chat.ts             # Gemini API proxy with 4-model fallback; facts = résumé text + hand-written extras
+│   ├── fit.ts              # "Check my fit": Gemma only, grounded in the résumé text
 │   └── admin/
 │       ├── _middleware.ts  # Verifies the Cloudflare Access JWT for every /api/admin/*
 │       ├── resume.ts       # GET/PUT content/resume.html via the GitHub Contents API
@@ -95,14 +104,17 @@ AboutMe/
 │   ├── pdf.ts              # Fit-setting builder, page constants, @page margin parser, page count/date pinning (isomorphic)
 │   ├── textCheck.ts        # ATS text rules used by scripts/check-resume-text.ts
 │   ├── facts.ts            # Shared-fact cross-check: editor warnings (never blocks Publish) + CI test
+│   ├── plainText.ts        # ATS HTML → plain text for the AI (title filled, contact line removed)
+│   ├── atsText.generated.ts  # Gitignored output of npm run resume:text; never edit
 │   └── github.ts           # GitHub REST helpers for the admin Functions
 ├── scripts/
 │   ├── build-resume.ts     # Playwright: fits each document to its exact page count → both PDFs
+│   ├── build-resume-text.ts  # Writes resume/atsText.generated.ts (npm run resume:text)
 │   ├── check-resume-text.ts  # pdf.js text check of the built PDFs (npm run resume:check)
 │   └── test-gemini-models.ts  # Manual model check
 ├── docs/resume-admin-plan.md  # Design, decisions and manual setup for the résumé editor
 ├── styles/globals.css      # Tailwind v4 + custom utilities
-├── tests/                  # Vitest tests (336 tests, 23 files)
+├── tests/                  # Vitest tests (386 tests, 27 files)
 ├── .github/prompts/        # /resume-update, /resume-review, /resume-tailor
 ├── .github/workflows/
 │   ├── ci.yml              # Lint, format, type-check, tests, build
@@ -187,6 +199,15 @@ Flow: `/admin/` editor → `PUT /api/admin/resume?doc=<id>` (validates, commits 
 - Career facts (university, club counts, quota attainment) live in `utils/careerFacts.ts`. Change them there, then update both résumé HTML files. The editor warns (without blocking Publish) when a résumé no longer matches (`resume/facts.ts`), and `tests/careerFacts.test.ts` fails in CI if the site, the assistant, the résumés and the fact register disagree. The check compares facts, not phrasing: "Platinum Club (2×)" and "Two-time Platinum Club" both pass, and a stated year count must match `quotaAttainmentYears`.
 - Never import `admin/` code from the public site (keeps CodeMirror out of the main bundle).
 - Cloudflare Pages settings (Production and Preview): `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ADMIN_EMAIL`, `GITHUB_TOKEN` (fine-grained PAT, this repo only, Contents RW + Actions R), `GITHUB_REPO`.
+
+## AI Endpoints (Chat and Fit Check)
+
+- **Facts:** both endpoints read `RESUME_TEXT` from `resume/atsText.generated.ts`, built from `content/resume-ats.html` by `resume/plainText.ts` (title filled in, contact line and phone removed). It is regenerated on every install and build, so a published résumé reaches the AI on the next deploy. The chat adds hand-written facts that aren't on the résumé (approach, projects, Champion Award, "including FY25 and FY26"); keep those out of the résumé text and never duplicate résumé facts there.
+- **Shared Gemini code:** `utils/gemini.ts` (`generateWithFallback`, `isAllowedAiHost`). Keep it DOM- and Node-free.
+- **Hosts:** both endpoints refuse `*.pages.dev` (the Cloudflare rate-limit rule only covers gavrilov.ai) unless `ALLOW_PAGES_DEV=true`, which belongs only in the Pages **Preview** environment.
+- **Fit check (`functions/api/fit.ts`):** Gemma only (open-weight), one retry on an unusable reply. Same-origin `Origin`, JSON content type, ≤ 40 KB body, exactly `{ jobDescription }` with 200–8,000 characters after trimming. The job description goes in its own turn between random markers and is treated as untrusted data.
+- **Grounding (`utils/fitCheck.ts`):** every evidence quote must be a verbatim résumé passage of ≥ 4 words; a fit or transferable point is dropped if its evidence fails or it names a tool/product/company from the job description that the résumé lacks. Nothing usable after filtering → 422.
+- **Privacy:** never log, store or send to analytics the job description, the model's reply or raw error messages (they can quote the request). Log status codes and model names only. The dialog keeps the text in memory only.
 
 ## Résumé Content Standards
 

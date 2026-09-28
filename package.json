@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run resume:text && tsc --noEmit && vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
@@ -22,6 +22,8 @@
     "test:coverage": "vitest run --coverage",
     "resume:build": "tsx scripts/build-resume.ts",
     "resume:check": "tsx scripts/check-resume-text.ts",
+    "resume:text": "tsx scripts/build-resume-text.ts",
+    "postinstall": "npm run resume:text",
     "prepare": "husky"
   },
   "dependencies": {

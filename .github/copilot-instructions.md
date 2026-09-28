@@ -82,7 +82,7 @@ AboutMe/
 │   ├── dom.ts              # DOM helpers
 │   └── logo.ts             # Logo URL generation
 ├── functions/api/          # Cloudflare Pages Functions
-│   ├── chat.ts             # Gemini API proxy with 4-model fallback; facts = résumé text + hand-written extras
+│   ├── chat.ts             # Gemini API proxy: 3.8 Flash → 2.5 Flash-Lite; facts = résumé text + hand-written extras
 │   ├── fit.ts              # "Check my fit": Gemini 2.5 Flash (thinking off) → 3.1 Flash-Lite, grounded in the résumé text
 │   └── admin/
 │       ├── _middleware.ts  # Verifies the Cloudflare Access JWT for every /api/admin/*

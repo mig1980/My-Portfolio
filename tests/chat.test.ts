@@ -102,7 +102,7 @@ describe('POST /api/chat', () => {
       expect(calledModels()).toEqual(['gemini-3.8-flash']);
     });
 
-    it('asks only Gemini 3.8 Flash for low thinking', async () => {
+    it('asks 3.8 Flash for low thinking and turns thinking off for 2.5 Flash-Lite', async () => {
       mockFetch.mockResolvedValueOnce(geminiError(429)).mockResolvedValueOnce(geminiReply('Hi'));
 
       await onRequestPost(createContext({ message: 'Hi' }));
@@ -113,7 +113,7 @@ describe('POST /api/chat', () => {
             .generationConfig
       );
       expect(configs[0]).toMatchObject({ thinkingConfig: { thinkingLevel: 'low' } });
-      expect(configs[1]).not.toHaveProperty('thinkingConfig');
+      expect(configs[1]).toMatchObject({ thinkingConfig: { thinkingBudget: 0 } });
     });
 
     it('joins multi-part replies and drops thought parts', async () => {
@@ -150,7 +150,7 @@ describe('POST /api/chat', () => {
 
       expect(res.status).toBe(200);
       expect(data.reply).toBe('Hi');
-      expect(calledModels()).toEqual(['gemini-3.8-flash', 'gemini-3.5-flash-lite']);
+      expect(calledModels()).toEqual(['gemini-3.8-flash', 'gemini-2.5-flash-lite']);
     });
 
     it('falls back to the next model on 400', async () => {
@@ -169,7 +169,7 @@ describe('POST /api/chat', () => {
       const data = (await res.json()) as ChatResponseBody;
 
       expect(res.status).toBe(502);
-      expect(data.attemptedModels).toHaveLength(4);
+      expect(data.attemptedModels).toHaveLength(2);
     });
 
     it('stops on authentication errors without trying other models', async () => {
@@ -187,7 +187,7 @@ describe('POST /api/chat', () => {
       const res = await onRequestPost(createContext({ message: 'Hi' }));
 
       expect(res.status).toBe(429);
-      expect(mockFetch).toHaveBeenCalledTimes(4);
+      expect(mockFetch).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -204,7 +204,7 @@ describe('POST /api/chat', () => {
       const res = await pending;
 
       expect(res.status).toBe(200);
-      expect(calledModels()).toEqual(['gemini-3.8-flash', 'gemini-3.5-flash-lite']);
+      expect(calledModels()).toEqual(['gemini-3.8-flash', 'gemini-2.5-flash-lite']);
     });
 
     it('returns 504 before the 30s client timeout when all models hang', async () => {
@@ -223,7 +223,7 @@ describe('POST /api/chat', () => {
       const res = await pending;
       const data = (await res.json()) as ChatResponseBody;
       expect(res.status).toBe(504);
-      expect(data.attemptedModels).toEqual(['gemini-3.8-flash', 'gemini-3.5-flash-lite']);
+      expect(data.attemptedModels).toEqual(['gemini-3.8-flash', 'gemini-2.5-flash-lite']);
     });
   });
 });

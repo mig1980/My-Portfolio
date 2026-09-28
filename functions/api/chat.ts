@@ -70,19 +70,18 @@ const TOTAL_BUDGET_MS = 25000;
 const MIN_ATTEMPT_MS = 3000;
 
 /**
- * Ordered model fallback chain (first = primary). Free-tier daily limits (Sept 2026):
- * 3.8 Flash 20/day, 3.5 & 3.1 Flash-Lite 500/day each, Gemma 4 26B 14,400/day.
+ * Ordered model fallback chain (first = primary). 3.8 Flash allows only 20 requests/day on the
+ * free tier; 2.5 Flash-Lite answers in seconds. Slower models let the chain run out of budget.
  */
 const MODEL_CHAIN: readonly string[] = [
   'gemini-3.8-flash', // Primary: best quality
-  'gemini-3.5-flash-lite', // Fallback: fast, high free quota
-  'gemini-3.1-flash-lite', // Fallback: separate high free quota
-  'gemma-4-26b-a4b-it', // Fallback: open model, largest free quota
+  'gemini-2.5-flash-lite', // Fallback: fast, separate quota from the fit check's 2.5 Flash
 ] as const;
 
-/** Thinking tokens count toward maxOutputTokens; short factual answers only need low. */
-const THINKING_LEVEL: Readonly<Record<string, string>> = {
-  'gemini-3.8-flash': 'low',
+/** Thinking tokens count toward maxOutputTokens and add latency; short answers need little or none. */
+const THINKING_CONFIG: Readonly<Record<string, object>> = {
+  'gemini-3.8-flash': { thinkingLevel: 'low' },
+  'gemini-2.5-flash-lite': { thinkingBudget: 0 },
 };
 
 /** Allowed production origins */
@@ -389,14 +388,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       apiKey,
       models: MODEL_CHAIN,
       payloadFor: (modelName) => {
-        const thinkingLevel = THINKING_LEVEL[modelName];
-        return thinkingLevel
+        const thinkingConfig = THINKING_CONFIG[modelName];
+        return thinkingConfig
           ? {
               ...requestPayload,
-              generationConfig: {
-                ...requestPayload.generationConfig,
-                thinkingConfig: { thinkingLevel },
-              },
+              generationConfig: { ...requestPayload.generationConfig, thinkingConfig },
             }
           : requestPayload;
       },

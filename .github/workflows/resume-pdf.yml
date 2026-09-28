@@ -20,9 +20,13 @@ concurrency:
 jobs:
   build:
     name: Build résumé PDF
-    runs-on: ubuntu-latest
+    # Linux Chromium positions glyphs so pdf.js reads "E X E C U T I V E"; Windows Edge reads cleanly.
+    runs-on: windows-latest
     timeout-minutes: 15
     steps:
+      - name: Keep LF line endings
+        run: git config --global core.autocrlf false
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -41,14 +45,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Chromium
-        run: npx playwright install --with-deps --only-shell chromium
-
+      # Prints with the runner's installed Edge (channel msedge), so no Playwright browser download.
       - name: Build PDFs
         run: npm run resume:build
 
       - name: Check PDF text (ATS readability)
         run: npm run resume:check
+
+      - name: Upload PDFs for inspection
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resume-pdfs
+          path: public/CV/*.pdf
+          retention-days: 7
 
       # Pushes made with GITHUB_TOKEN don't trigger workflows, and the PDF isn't in `paths`, so this can't loop.
       - name: Commit PDFs if changed
@@ -56,6 +66,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
+        shell: bash
         run: |
           # --porcelain also reports a brand-new (untracked) PDF, which git diff would miss.
           if [ -z "$(git status --porcelain -- public/CV/MGavrilovCV.pdf public/CV/MGavrilovCV-ATS.pdf)" ]; then

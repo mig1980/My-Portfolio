@@ -221,7 +221,7 @@ describe('ResumeEditor', () => {
     );
     expect(window.location.search).toBe('?doc=ats');
     expect(localStorage.getItem(DRAFT_KEY)).toBe(edited);
-    expect(screen.getByRole('button', { name: 'ATS (2 p.)' })).toHaveAttribute(
+    expect(await screen.findByRole('button', { name: 'ATS (2 p.)' })).toHaveAttribute(
       'aria-pressed',
       'true'
     );

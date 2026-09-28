@@ -126,7 +126,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
   - The page is served from a fake `https://resume.local` origin via `page.route` (HTML from memory, fonts from `public/fonts/`); every other request is blocked and page JavaScript is disabled.
   - Each candidate is also printed and page-counted; only a verified 1-page PDF is written.
   - PDF dates are pinned to the last commit touching the résumé sources (`resume/pdf.ts`), so rebuilding unchanged content gives identical bytes and the Action doesn't commit noise.
-  - Windows (incl. ARM64) prints with the installed Edge (`channel: 'msedge'`); CI uses Playwright's Chromium headless shell.
+  - Windows (incl. ARM64) prints with the installed Edge (`channel: 'msedge'`). **Update (Sept 27, 2026):** CI also runs on `windows-latest` with Edge on Node 22. Linux Chromium placed glyphs so that pdf.js read headings as "E X E C U T I V E" and failed `resume:check`, and pdfjs-dist v6 needs Node 22. If the check fails, the job uploads the PDFs as a `resume-pdfs` artifact.
   - Bullets are a CSS triangle instead of `▸`, which Inter doesn't include (it fell back to a system font that CI lacks).
   - The commit step runs only on `main`, so a manual run on another branch just validates.
 

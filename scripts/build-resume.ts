@@ -101,7 +101,7 @@ async function buildDocument(
 
 async function main(): Promise<void> {
   const date = sourceDate();
-  // Windows (incl. ARM64) uses the installed Edge; CI uses Playwright's bundled Chromium.
+  // Windows (local and CI) prints with the installed Edge; elsewhere Playwright's bundled Chromium.
   const browser = await chromium.launch(process.platform === 'win32' ? { channel: 'msedge' } : {});
   const built: BuiltPdf[] = [];
   try {

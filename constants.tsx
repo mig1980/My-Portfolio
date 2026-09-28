@@ -33,7 +33,7 @@ export const PERSONAL_INFO = {
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
   focus: 'Technology · AI · Strategy',
-  intro: 'I turn ambitious AI ideas into business reality.',
+  intro: 'I help large companies move AI from pilots to results.',
   resumeUrl: '/CV/MGavrilovCV.pdf',
   summary:
     'I started my career building and operating technology. I became an architect, a strategist, and eventually a strategic account leader. The mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work.',
@@ -71,13 +71,13 @@ export const EXPERIENCE: JobRole[] = [
     period: 'Feb 2017 - Present',
     stage: 'Account Leader',
     description: [
-      'Own C-suite relationships and the multi-year technology and AI strategy for a top-5 global pharmaceutical company, one of Microsoft’s strategic Healthcare & Life Sciences accounts.',
-      'Structure strategic agreements exceeding $500M in total contract value, expanding the partnership across AI, Azure, Data, Security, Modern Work and Business Applications.',
-      'Scale generative and agentic AI from experimentation to enterprise deployment, navigating the technical, governance, and organizational complexity of regulated environments.',
-      'Lead a 30+ person virtual team spanning specialist sales, engineering, customer success, support, services and global system integrator partners.',
-      'Establish executive governance and quarterly business reviews with CIO, CDO and business leadership, aligning Microsoft roadmaps with priorities across R&D, manufacturing and commercial functions.',
-      'Lead complex, multi-stakeholder negotiations, balancing customer outcomes, transformation investments, risk and long-term partnership economics.',
-      'Recognition: Microsoft Platinum Club | 100% attainment',
+      "Executive owner of Microsoft's relationship with a top-five global pharmaceutical company.",
+      "Grew the account 5x since 2017 (about 20% revenue CAGR), expanding Microsoft's share of the customer's technology spend across Azure, data, security, Microsoft 365 and Dynamics 365.",
+      'Structured and negotiated strategic agreements exceeding $500M in total contract value, balancing customer outcomes, transformation investment and commercial risk.',
+      'Own relationships with the CIO, CDO and senior business leaders, with CEO-level engagement, setting the multi-year technology and AI strategy and running executive business reviews aligned to R&D, manufacturing and commercial priorities.',
+      'Scale generative AI and AI agents from pilots to governed enterprise deployment in GxP-regulated environments, aligning architecture, data, security, compliance and adoption.',
+      'Lead a 30+ person matrixed virtual team spanning specialist sales, engineering, customer success, support, services and global systems integrator partners, accountable for revenue, cloud consumption, forecast accuracy and customer satisfaction.',
+      `Recognition: Platinum Club (${CAREER_FACTS.platinumClubCount}×) · Gold Club (${CAREER_FACTS.goldClubCount}×) · 100%+ quota attainment in ${CAREER_FACTS.quotaAttainmentYears} fiscal years`,
     ],
   },
   {
@@ -249,6 +249,18 @@ export const CERTIFICATIONS: Certification[] = [
     name: 'AWS Certified Cloud Practitioner',
     issuer: 'Amazon Web Services',
     logo: getLogoUrl('aws.amazon.com'),
+  },
+  {
+    id: 'azure-ai-fundamentals',
+    name: 'Azure AI Fundamentals',
+    issuer: 'Microsoft',
+    logo: getLogoUrl('microsoft.com'),
+  },
+  {
+    id: 'challenger-insight-selling',
+    name: 'Challenger Insight Selling',
+    issuer: 'Challenger',
+    logo: getLogoUrl('challengerinc.com'),
   },
 ];
 

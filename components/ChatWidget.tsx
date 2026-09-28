@@ -40,10 +40,10 @@ const TYPING_SPEED_MS = 12;
 const GREETING_BUBBLE = {
   /** Delay before showing bubble (ms) */
   SHOW_DELAY_MS: 3000,
-  /** Auto-hide after this duration (ms) - 0 to disable */
-  AUTO_HIDE_MS: 15000,
-  /** localStorage key for tracking dismissal */
-  STORAGE_KEY: 'aboutme-greeting-dismissed',
+  /** Auto-hide after this duration (ms) */
+  AUTO_HIDE_MS: 5000,
+  /** sessionStorage key: the greeting shows at most once per session */
+  STORAGE_KEY: 'aboutme-greeting-shown',
   /** Greeting message text */
   MESSAGE: "👋 Hi! Ask me anything about Michael's experience",
   /** Scroll depth (px) before the greeting may appear; the hero has its own ask box */
@@ -426,7 +426,7 @@ interface GreetingBubbleProps {
 
 /**
  * Animated greeting bubble to attract attention to the chat.
- * Shows after a delay for first-time visitors.
+ * Shows once per session, never on screens under 640px.
  */
 const GreetingBubble = memo<GreetingBubbleProps>(({ onDismiss, onClick }) => (
   <div
@@ -525,37 +525,34 @@ const ChatWidget: React.FC = memo(() => {
   // ============================================================================
 
   /**
-   * Check if greeting was previously dismissed (stored in localStorage).
-   * Returns true if user has dismissed or interacted with chat before.
+   * Check if the greeting has already been shown in this session.
    */
-  const wasGreetingDismissed = useCallback((): boolean => {
+  const wasGreetingShown = useCallback((): boolean => {
     try {
-      const dismissed = localStorage.getItem(GREETING_BUBBLE.STORAGE_KEY);
-      return dismissed === 'true';
+      return sessionStorage.getItem(GREETING_BUBBLE.STORAGE_KEY) === 'true';
     } catch {
-      // localStorage not available (SSR, private browsing, etc.)
+      // sessionStorage not available (SSR, private browsing, etc.)
       return false;
     }
   }, []);
 
   /**
-   * Mark greeting as dismissed in localStorage.
+   * Mark the greeting as shown for this session.
    */
-  const markGreetingDismissed = useCallback((): void => {
+  const markGreetingShown = useCallback((): void => {
     try {
-      localStorage.setItem(GREETING_BUBBLE.STORAGE_KEY, 'true');
+      sessionStorage.setItem(GREETING_BUBBLE.STORAGE_KEY, 'true');
     } catch {
-      // Silently fail if localStorage unavailable
+      // Silently fail if sessionStorage unavailable
     }
   }, []);
 
   /**
-   * Dismiss the greeting bubble and remember the dismissal.
+   * Hide the greeting bubble.
    */
   const dismissGreeting = useCallback((): void => {
     setShowGreetingBubble(false);
-    markGreetingDismissed();
-  }, [markGreetingDismissed]);
+  }, []);
 
   /**
    * Handle greeting bubble click - open chat and dismiss greeting.
@@ -565,42 +562,27 @@ const ChatWidget: React.FC = memo(() => {
     dismissGreeting();
   }, [dismissGreeting]);
 
-  // Show greeting bubble after delay for first-time visitors
+  // Show greeting bubble after a delay, once per session
   useEffect(() => {
-    // Don't show if: already dismissed, chat is open, or visitor is still on the hero
-    if (wasGreetingDismissed() || isOpen || !hasScrolledPastHero) {
+    // Don't show if: already shown this session, chat is open, small screen, or still on the hero
+    if (wasGreetingShown() || isOpen || isMobile || !hasScrolledPastHero) {
       return;
     }
 
-    // Use local variables for cleanup (avoid stale ref issues)
-    let showTimer: ReturnType<typeof setTimeout> | null = null;
-    let hideTimer: ReturnType<typeof setTimeout> | null = null;
-    let isCancelled = false;
-
-    // Show after delay
-    showTimer = setTimeout(() => {
-      // Check if effect was cleaned up during the delay
-      if (isCancelled) return;
-
+    const showTimer = setTimeout(() => {
+      markGreetingShown();
       setShowGreetingBubble(true);
-
-      // Auto-hide after duration (if configured)
-      if (GREETING_BUBBLE.AUTO_HIDE_MS > 0) {
-        hideTimer = setTimeout(() => {
-          if (isCancelled) return;
-          setShowGreetingBubble(false);
-          // Don't mark as dismissed on auto-hide - show again on next visit
-        }, GREETING_BUBBLE.AUTO_HIDE_MS);
-      }
     }, GREETING_BUBBLE.SHOW_DELAY_MS);
 
-    // Cleanup timers on unmount or when dependencies change
-    return () => {
-      isCancelled = true;
-      if (showTimer) clearTimeout(showTimer);
-      if (hideTimer) clearTimeout(hideTimer);
-    };
-  }, [isOpen, hasScrolledPastHero, wasGreetingDismissed]);
+    return () => clearTimeout(showTimer);
+  }, [isOpen, isMobile, hasScrolledPastHero, wasGreetingShown, markGreetingShown]);
+
+  // Auto-hide the greeting
+  useEffect(() => {
+    if (!showGreetingBubble) return;
+    const hideTimer = setTimeout(() => setShowGreetingBubble(false), GREETING_BUBBLE.AUTO_HIDE_MS);
+    return () => clearTimeout(hideTimer);
+  }, [showGreetingBubble]);
 
   // Hide greeting when chat opens
   useEffect(() => {
@@ -767,8 +749,8 @@ const ChatWidget: React.FC = memo(() => {
 
   return (
     <>
-      {/* Greeting Bubble - shows after delay for first-time visitors */}
-      {showGreetingBubble && hasScrolledPastHero && !isOpen && !isFullscreen && (
+      {/* Greeting Bubble - once per session, never under 640px */}
+      {showGreetingBubble && hasScrolledPastHero && !isOpen && !isMobile && (
         <GreetingBubble onDismiss={dismissGreeting} onClick={handleGreetingClick} />
       )}
 

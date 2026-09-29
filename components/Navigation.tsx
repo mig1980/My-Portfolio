@@ -103,7 +103,7 @@ const Navigation: React.FC = memo(() => {
         <a
           href="#hero"
           aria-label="Go to homepage"
-          className="p-1 -m-1 hover:opacity-80 transition-opacity focus-ring rounded-lg"
+          className="shrink-0 p-1 -m-1 hover:opacity-80 transition-opacity focus-ring rounded-lg"
         >
           {/* The mark fills ~60% of the image, so it overlaps the header's padding instead of growing it */}
           <img
@@ -111,7 +111,7 @@ const Navigation: React.FC = memo(() => {
             alt="Michael Gavrilov"
             width={64}
             height={64}
-            className={`w-auto -my-2 -ml-3 transition-all duration-300 ${isScrolled ? 'h-14' : 'h-16'}`}
+            className={`aspect-square max-w-none -my-2 -ml-3 transition-all duration-300 ${isScrolled ? 'size-14' : 'size-16'}`}
           />
         </a>
 

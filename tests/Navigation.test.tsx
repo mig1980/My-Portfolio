@@ -35,4 +35,14 @@ describe('Navigation', () => {
     const menu = screen.getByRole('dialog', { name: 'Navigation menu' });
     expect(menu).not.toContainElement(screen.getByRole('link', { name: 'Résumé' }));
   });
+
+  it('keeps the homepage logo square and prevents it from shrinking', () => {
+    render(<Navigation />);
+
+    const homepageLink = screen.getByRole('link', { name: 'Go to homepage' });
+    const logo = screen.getByRole('img', { name: 'Michael Gavrilov' });
+
+    expect(homepageLink).toHaveClass('shrink-0');
+    expect(logo).toHaveClass('aspect-square', 'max-w-none', 'size-16');
+  });
 });

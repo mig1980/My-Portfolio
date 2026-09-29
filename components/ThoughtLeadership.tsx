@@ -108,7 +108,6 @@ const ThoughtLeadership: React.FC = memo(() => {
                 <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
               </a>
             )}
-            <p className="text-xs text-stone-600 italic">Not financial advice.</p>
           </div>
         </article>
 

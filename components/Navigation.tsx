@@ -4,8 +4,10 @@
  */
 
 import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Download, Menu, X } from 'lucide-react';
 import { useScrollPosition } from '../hooks/useScrollPosition';
+import { PERSONAL_INFO } from '../constants';
+import { trackEvent } from '../utils/analytics';
 
 /** Navigation menu items configuration */
 const navItems = [
@@ -22,6 +24,7 @@ const navItems = [
  * Features:
  * - Scroll-aware background transition (transparent to blurred)
  * - Responsive design with mobile hamburger menu
+ * - Résumé download that stays visible on every screen size
  * - Smooth animations and accessibility support
  *
  * @returns The navigation header element
@@ -39,6 +42,10 @@ const Navigation: React.FC = memo(() => {
 
   const closeMobileMenu = useCallback((): void => {
     setIsMobileMenuOpen(false);
+  }, []);
+
+  const handleResumeClick = useCallback((): void => {
+    trackEvent('resume_download', { location: 'nav' });
   }, []);
 
   // Escape key handler to close mobile menu
@@ -98,39 +105,53 @@ const Navigation: React.FC = memo(() => {
           aria-label="Go to homepage"
           className="p-1 -m-1 hover:opacity-80 transition-opacity focus-ring rounded-lg"
         >
+          {/* The mark fills ~60% of the image, so it overlaps the header's padding instead of growing it */}
           <img
             src="/Logo.webp"
             alt="Michael Gavrilov"
-            width={48}
-            height={48}
-            className={`w-auto transition-all duration-300 ${isScrolled ? 'h-10' : 'h-12'}`}
+            width={64}
+            height={64}
+            className={`w-auto -my-2 -ml-3 transition-all duration-300 ${isScrolled ? 'h-14' : 'h-16'}`}
           />
         </a>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-8">
-          {navItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="text-sm font-medium text-stone-700 hover:text-ink hover:underline decoration-primary-700 decoration-2 underline-offset-8 transition-colors focus-ring rounded-sm"
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
+        <div className="flex items-center gap-4 md:gap-8">
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex gap-8">
+            {navItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-sm font-medium text-stone-700 hover:text-ink hover:underline decoration-primary-700 decoration-2 underline-offset-8 transition-colors focus-ring rounded-sm"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
 
-        {/* Mobile Toggle */}
-        <button
-          ref={toggleButtonRef}
-          className="md:hidden text-stone-700 hover:text-ink focus-ring rounded-md p-1"
-          onClick={toggleMobileMenu}
-          aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-          aria-expanded={isMobileMenuOpen}
-          aria-controls="mobile-nav-menu"
-        >
-          {isMobileMenuOpen ? <X /> : <Menu />}
-        </button>
+          <a
+            href={PERSONAL_INFO.resumeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleResumeClick}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 border border-stone-400 hover:border-ink rounded-full text-sm font-semibold text-ink transition-colors focus-ring focus-visible:ring-offset-paper"
+          >
+            <Download className="w-4 h-4" aria-hidden="true" />
+            Résumé
+          </a>
+
+          {/* Mobile Toggle */}
+          <button
+            ref={toggleButtonRef}
+            className="md:hidden text-stone-700 hover:text-ink focus-ring rounded-md p-1"
+            onClick={toggleMobileMenu}
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-nav-menu"
+          >
+            {isMobileMenuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Nav Menu */}

@@ -32,7 +32,6 @@ export const PERSONAL_INFO = {
   taglineHighlight: 'Strategic account leader by trade.',
   title: 'Strategic Account Director at Microsoft',
   location: 'New York City',
-  focus: 'Technology · AI · Strategy',
   intro: 'I help large companies move AI from pilots to results.',
   resumeUrl: '/CV/MGavrilovCV.pdf',
   summary:

@@ -142,6 +142,20 @@ describe('FitCheckDialog', () => {
     expect(screen.getByRole('button', { name: 'Check fit' })).toBeEnabled();
   });
 
+  it('says so when the text is not a job description', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse({ error: 'Not a job', code: 'not_a_job_description' }, 422)
+    );
+    renderDialog();
+
+    typeJob();
+    fireEvent.click(screen.getByRole('button', { name: 'Check fit' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /doesn't look like a job description/i
+    );
+  });
+
   it('shows a countdown and disables Submit when rate limited', async () => {
     mockFetch.mockResolvedValueOnce(jsonResponse({ error: 'Too many', retryAfterMs: 12000 }, 429));
     renderDialog();

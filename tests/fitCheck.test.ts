@@ -12,6 +12,7 @@ import {
   createFitCheckGrounding,
   extractJson,
   normalizeForMatch,
+  NOT_A_JOB_DESCRIPTION,
   readJobDescription,
   restatesEvidence,
 } from '../utils/fitCheck';
@@ -184,7 +185,22 @@ describe('parseReply', () => {
     const result = parseReply(
       reply({ gaps: [1, 'x'.repeat(401), ...Array.from({ length: 8 }, (_, i) => `Gap ${i}`)] })
     );
-    expect(result?.gaps).toEqual(['Gap 0', 'Gap 1', 'Gap 2', 'Gap 3', 'Gap 4', 'Gap 5']);
+    expect(result).toMatchObject({
+      gaps: ['Gap 0', 'Gap 1', 'Gap 2', 'Gap 3', 'Gap 4', 'Gap 5'],
+    });
+  });
+
+  it('reports text the model says is not a job description', () => {
+    expect(parseReply(reply({ isJobDescription: false }))).toBe(NOT_A_JOB_DESCRIPTION);
+    expect(parseReply(reply({ isJobDescription: false, gaps: ['Anything'] }))).toBe(
+      NOT_A_JOB_DESCRIPTION
+    );
+    expect(parseReply(reply({ isJobDescription: true, gaps: ['Kubernetes'] }))).toEqual({
+      fits: [],
+      transferable: [],
+      gaps: ['Kubernetes'],
+      questions: [],
+    });
   });
 
   it('returns null for unusable replies', () => {

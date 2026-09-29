@@ -237,6 +237,7 @@ export interface FitCheckResult {
 export interface FitCheckError {
   error: string;
   retryAfterMs?: number;
+  code?: 'not_a_job_description';
 }
 
 // ============================================================================

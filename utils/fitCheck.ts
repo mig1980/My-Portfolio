@@ -3,8 +3,14 @@
  * checks that keep the AI's answer grounded in the résumé. No DOM or Node APIs.
  */
 
-import type { FitCheckPoint, FitCheckResult } from '../types';
+import type { FitCheckError, FitCheckPoint, FitCheckResult } from '../types';
 import { MAX_JOB_DESCRIPTION_LENGTH, MIN_JOB_DESCRIPTION_LENGTH } from './fitCheckLimits';
+
+export const NOT_A_JOB_DESCRIPTION = 'not_a_job_description' satisfies NonNullable<
+  FitCheckError['code']
+>;
+
+export type FitCheckReply = FitCheckResult | typeof NOT_A_JOB_DESCRIPTION;
 
 const MAX_ITEMS = 6;
 const MAX_TEXT_LENGTH = 400;
@@ -128,8 +134,8 @@ export interface FitCheckGrounding {
   isResumeQuote: (evidence: string) => boolean;
   /** True when `point` names a tool, product or company from the job description that the résumé lacks */
   mentionsUnsupportedName: (point: string) => boolean;
-  /** Validated, filtered result; null when the reply is unusable */
-  parseReply: (reply: string) => FitCheckResult | null;
+  /** Validated, filtered result, or NOT_A_JOB_DESCRIPTION when the model says so; null when unusable */
+  parseReply: (reply: string) => FitCheckReply | null;
 }
 
 /** Builds the grounding checks for one job description against the résumé text. */
@@ -165,9 +171,10 @@ export function createFitCheckGrounding(
     return { point, evidence: evidence.replace(WRAPPING_QUOTES, '') };
   };
 
-  const parseReply = (reply: string): FitCheckResult | null => {
+  const parseReply = (reply: string): FitCheckReply | null => {
     const data = extractJson(reply);
     if (!isRecord(data)) return null;
+    if (data.isJobDescription === false) return NOT_A_JOB_DESCRIPTION;
 
     const fits = readList(data.fits);
     const transferable = readList(data.transferable);

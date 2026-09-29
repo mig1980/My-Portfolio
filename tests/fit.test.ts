@@ -213,6 +213,17 @@ describe('POST /api/fit', () => {
       expect(mockFetch).toHaveBeenCalledTimes(2);
     });
 
+    it('returns 422 with a code, without trying the backup, when the text is not a job description', async () => {
+      mockFetch.mockResolvedValueOnce(modelReply({ isJobDescription: false }));
+
+      const res = await send({ jobDescription: 'lorem ipsum dolor sit amet '.repeat(10) });
+
+      expect(res.status).toBe(422);
+      expect(((await res.json()) as FitCheckError).code).toBe('not_a_job_description');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(sentContents()[0]?.parts[0]?.text).toContain('{"isJobDescription":false}');
+    });
+
     it('returns 422 when the safety filter blocks the reply', async () => {
       mockFetch.mockResolvedValueOnce(
         new Response(JSON.stringify({ candidates: [{ finishReason: 'SAFETY' }] }), { status: 200 })

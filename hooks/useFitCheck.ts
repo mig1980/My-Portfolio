@@ -28,6 +28,8 @@ const MESSAGES = {
   timeout: 'The analysis took too long. Please try again.',
   offline: "You're offline. Check your connection and try again.",
   unusable: "Couldn't produce a reliable analysis for this description. Please try again.",
+  notAJobDescription:
+    "This doesn't look like a job description. Paste the role's responsibilities and requirements.",
   unavailable: 'The fit check is unavailable right now. Please try again later.',
 } as const;
 
@@ -150,7 +152,11 @@ export function useFitCheck(): UseFitCheckReturn {
           } else if (response.status === 429) {
             startCooldown((data as FitCheckError | null)?.retryAfterMs);
           } else if (response.status === 422) {
-            fail(MESSAGES.unusable);
+            fail(
+              (data as FitCheckError | null)?.code === 'not_a_job_description'
+                ? MESSAGES.notAJobDescription
+                : MESSAGES.unusable
+            );
           } else if (
             response.status === 400 &&
             typeof (data as FitCheckError | null)?.error === 'string'

@@ -1,15 +1,14 @@
 ---
+name: resume-tailor
 description: 'Tailor the résumé to a job description: propose headline, summary and top-3 bullet changes using only the fact register, as a diff for review. Read-only.'
+disable-model-invocation: true
 argument-hint: 'Paste the job description'
-agent: 'agent'
-tools: ['read', 'search']
 ---
-
 Job description:
 
 ${input:jobDescription:Paste the job description}
 
-Propose changes to [resume.html](../../content/resume.html) and [resume-ats.html](../../content/resume-ats.html) that fit this role. Use only facts from [resume-facts.md](../../content/resume-facts.md) and follow the **Résumé Content Standards** in [copilot-instructions.md](../copilot-instructions.md). **Do not edit any file.**
+Propose changes to [resume.html](../../../content/resume.html) and [resume-ats.html](../../../content/resume-ats.html) that fit this role. Use only facts from [resume-facts.md](../../../content/resume-facts.md) and follow the **Résumé Content Standards** in [copilot-instructions.md](../../copilot-instructions.md). **Do not edit any file.**
 
 1. List the 5–8 requirements from the job description that matter most, and which registered facts support each one. Name any requirement no registered fact supports; don't fill the gap.
 2. Propose:

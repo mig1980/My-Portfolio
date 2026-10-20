@@ -1,10 +1,9 @@
 ---
+name: resume-review
 description: 'Review both résumés against the content standards and the fact register; list issues by severity with proposed replacement text. Read-only.'
-agent: 'agent'
-tools: ['read', 'search']
+disable-model-invocation: true
 ---
-
-Review [resume.html](../../content/resume.html) and [resume-ats.html](../../content/resume-ats.html) against the **Résumé Content Standards** in [copilot-instructions.md](../copilot-instructions.md) and the facts in [resume-facts.md](../../content/resume-facts.md). **Do not edit any file.**
+Review [resume.html](../../../content/resume.html) and [resume-ats.html](../../../content/resume-ats.html) against the **Résumé Content Standards** in [copilot-instructions.md](../../copilot-instructions.md) and the facts in [resume-facts.md](../../../content/resume-facts.md). **Do not edit any file.**
 
 Check for:
 

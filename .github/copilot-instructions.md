@@ -115,7 +115,7 @@ AboutMe/
 ├── docs/resume-admin-plan.md  # Design, decisions and manual setup for the résumé editor
 ├── styles/globals.css      # Tailwind v4 + custom utilities
 ├── tests/                  # Vitest tests (397 tests, 28 files)
-├── .github/prompts/        # /resume-update, /resume-review, /resume-tailor
+├── .github/skills/         # /resume-update, /resume-review, /resume-tailor
 ├── .github/workflows/
 │   ├── ci.yml              # Lint, format, type-check, tests, build
 │   └── resume-pdf.yml      # Rebuilds and commits the résumé PDF on main
@@ -211,7 +211,7 @@ Flow: `/admin/` editor → `PUT /api/admin/resume?doc=<id>` (validates, commits 
 
 ## Résumé Content Standards
 
-Reusable prompts: `/resume-update`, `/resume-review`, `/resume-tailor` (`.github/prompts/`).
+Reusable skills: `/resume-update`, `/resume-review`, `/resume-tailor` (`.github/skills/`).
 
 - **Sources of truth:** `content/resume.html` (executive, exactly 1 page) and `content/resume-ats.html` (ATS, exactly 2 pages). Apply every fact change to **both**. Shared facts change in `utils/careerFacts.ts` first.
 - **Facts:** use only facts listed in `content/resume-facts.md`. Never invent metrics, titles, dates or awards. Don't expand or reword items marked **[CONFIRM]**. If a change needs a new fact, ask the owner and add it to the register first.

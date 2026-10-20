@@ -10,6 +10,8 @@ export interface TextCheckInput {
   expectedPages: number;
   /** Phrases that must all appear, in this order (case-insensitive) */
   requiredText: readonly string[];
+  /** Rendered source text in block order, with literal bullet markers. */
+  expectedText?: string;
 }
 
 /**
@@ -25,6 +27,7 @@ export function findTextProblems({
   pages,
   expectedPages,
   requiredText,
+  expectedText,
 }: TextCheckInput): string[] {
   const problems: string[] = [];
   if (pages !== expectedPages) {
@@ -39,6 +42,9 @@ export function findTextProblems({
   if (LIGATURES.test(normalized)) {
     problems.push('contains ligature characters (ﬁ, ﬂ, …); disable font ligatures');
   }
+  if (/\[[^\]\r\n]+\]|\{\{[^}]+\}\}/.test(`${text}\n${expectedText ?? ''}`)) {
+    problems.push('contains unresolved placeholders');
+  }
 
   const lower = normalized.toLowerCase();
   let from = 0;
@@ -50,6 +56,26 @@ export function findTextProblems({
       continue;
     }
     from = index + target.length;
+  }
+  if (expectedText !== undefined) {
+    const blocks = expectedText
+      .split('\n')
+      .map((block) => block.replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+    const expectedBullets = blocks.filter((block) => block.startsWith('• ')).length;
+    const actualBullets = text.match(/•/g)?.length ?? 0;
+    if (actualBullets !== expectedBullets) {
+      problems.push(`has ${actualBullets} bullet(s), expected exactly ${expectedBullets}`);
+    }
+    let position = 0;
+    for (const block of blocks) {
+      const index = lower.indexOf(block.toLowerCase(), position);
+      if (index === -1) {
+        problems.push(`missing or out-of-order source text: "${block}"`);
+      } else {
+        position = index + block.length;
+      }
+    }
   }
   return problems;
 }

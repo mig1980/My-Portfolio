@@ -187,7 +187,7 @@ const Component = memo(() => {
 
 Flow: `/admin/` editor → `PUT /api/admin/resume?doc=<id>` (validates, commits that document's HTML to `main`) → `resume-pdf.yml` runs `npm run resume:build` and commits both PDFs if they changed → Cloudflare Pages redeploys. The site links to the executive PDF via `PERSONAL_INFO.resumeUrl`; the ATS PDF is not linked.
 
-**Template contract** (enforced by `resume/validate.ts`): full HTML document; `{{TITLE}}` exactly once (Enterprise title); `--fs` and `--gap` defined in `:root` and used; `@page { size: Letter; margin: 0; }` (multi-page documents with `pageMargin: 'any'` may set print margins); fonts only via `url('/fonts/…')`; no scripts, `on*=` handlers, `javascript:` URLs, embeds/frames/`<link>`, or external resources (only `<a>` may link out); ≤ 100 KB. The contact line (incl. phone) is plain HTML in the template by the owner's choice. Keep heading `letter-spacing` ≤ 1px and ligatures off in the ATS version, or `resume:check` fails.
+**Template contract** (enforced by `resume/validate.ts`): full HTML document; `{{TITLE}}` exactly once (variant from `resume/documents.ts`, currently Healthcare & Life Sciences); `--fs` and `--gap` defined in `:root` and used; `@page { size: Letter; margin: 0; }` (multi-page documents with `pageMargin: 'any'` may set print margins); fonts only via `url('/fonts/…')`; no scripts, `on*=` handlers, `javascript:` URLs, embeds/frames/`<link>`, or external resources (only `<a>` may link out); ≤ 100 KB. The contact line (incl. phone) is plain HTML in the template by the owner's choice. Keep heading `letter-spacing` ≤ 1px and ligatures off in both versions, or `resume:check` fails.
 
 **Rules:**
 - Keep `resume/*.ts` free of DOM-only and Node-only APIs (no `document`, no `Buffer`/`fs`): they run in the browser, Workers and Node.
@@ -219,8 +219,9 @@ Reusable skills: `/resume-update`, `/resume-review`, `/resume-tailor` (`.github/
 - **Bullets:** outcome first (result → action → context). Where a bullet has a metric, put it in the first 8 words. Never add a metric just to fit the pattern.
 - **Tense:** present tense for ongoing responsibilities in the current role ("Own", "Lead"); past tense for completed results in any role ("Grew", "Structured") and for everything in prior roles.
 - **Voice:** no first person ("I", "my", "we") in either version.
-- **Layout:** the executive version groups Microsoft roles under one "Microsoft 2006 – Present" heading with year-only dates. The ATS version puts the company and LinkedIn month/year dates on every role line (`Title | Company | Mon YYYY – Mon YYYY`). The website and the assistant use the same month/year dates as the ATS version.
-- **Typography:** heading `letter-spacing` ≤ 1px. ATS: ligatures off and no decorative glyphs ("5x" not "5×", "approximately"/"about" not "~", "|" separators, real `<li>` bullets).
+- **Layout:** both versions put the company and LinkedIn month/year dates on every role heading (`Title | Company | Mon YYYY – Mon YYYY`) in normal document flow. Role blocks must not split across pages. The executive version uses 0.5in body padding with zero `@page` margins and a 10pt minimum body font. The website and the assistant use the same month/year dates as the ATS version.
+- **Typography:** heading `letter-spacing` ≤ 1px; ligatures off in both versions. Both use literal `•` text inside real `<li>` elements, with CSS list markers disabled. ATS: no decorative glyphs ("5x" not "5×", "approximately"/"about" not "~", "|" separators).
+- **PDF integrity:** `resume:check` compares every rendered source block and literal bullet count with PDF text in order, rejects draft placeholders, split words and ligatures, and enforces each page target. Preserve all source text when changing layout. Challenger Insight Selling is training, not a certification.
 - **After any change:** run `npm run resume:build` and `npm run resume:check`; both page targets must hold. Run `npm run test:run` (facts test). Then discard the locally built PDFs (`git checkout --` if tracked, delete if new): the Resume PDF Action builds the official ones.
 
 ## Testing

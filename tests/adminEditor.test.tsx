@@ -28,17 +28,19 @@ vi.mock('../admin/components/PreviewFrame', () => ({
     useEffect(() => {
       onFit(
         fitState.fits
-          ? { setting: { fontSizePt: 9.4, gap: 0.7 }, pages: 1, target: 1, overflowLines: 0 }
+          ? { setting: { fontSizePt: 10, gap: 1 }, pages: 1, target: 1, overflowLines: 0 }
           : { setting: null, pages: 2, target: 1, overflowLines: 4 },
         srcDoc
       );
     }, [srcDoc, onFit]);
-    return <div data-testid="preview" />;
+    return <div data-testid="preview" data-srcdoc={srcDoc} />;
   },
 }));
 
 import ResumeEditor, { draftKey } from '../admin/ResumeEditor';
 import AdminApp from '../admin/AdminApp';
+import { RESUME_DOCUMENTS } from '../resume/documents';
+import { renderResume } from '../resume/render';
 
 const DRAFT_KEY = draftKey('executive');
 const noop = (): void => {};
@@ -93,7 +95,11 @@ describe('ResumeEditor', () => {
   it('loads the résumé and keeps Publish disabled until something changes', async () => {
     await renderLoaded();
     expect(mockFetch).toHaveBeenCalledWith('/api/admin/resume?doc=executive', expect.anything());
-    expect(await screen.findByText(/Fits on one page \(9\.4pt\)/)).toBeInTheDocument();
+    expect(await screen.findByText(/Fits on one page \(10pt\)/)).toBeInTheDocument();
+    expect(screen.getByTestId('preview')).toHaveAttribute(
+      'data-srcdoc',
+      renderResume(template, { variant: RESUME_DOCUMENTS.executive.variant })
+    );
     expect(publishButton().disabled).toBe(true);
   });
 

@@ -4,7 +4,7 @@
  */
 
 import { buildFitSettings, type FitSetting } from './pdf';
-import { TITLES } from './render';
+import { TITLES, type ResumeVariant } from './render';
 
 export type ResumeDocId = 'executive' | 'ats';
 
@@ -17,6 +17,7 @@ export interface ResumeDocument {
   out: string;
   /** The build must produce exactly this many pages */
   pages: number;
+  variant: ResumeVariant;
   /** Tried in order until the PDF has exactly `pages` pages */
   fit: readonly FitSetting[];
   /** 'zero' requires `@page { margin: 0 }` (single-page design); 'any' allows print margins */
@@ -36,17 +37,24 @@ export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
     src: 'content/resume.html',
     out: 'public/CV/MGavrilovCV.pdf',
     pages: 1,
-    fit: buildFitSettings([9.6, 9.5, 9.4, 9.3, 9.2], [1, 0.85, 0.7]),
+    variant: 'hls',
+    fit: buildFitSettings([10.5, 10.25, 10], [1, 0.9, 0.8]),
     pageMargin: 'zero',
     commitScope: 'resume',
     requiredText: [
       'Michael Gavrilov',
-      TITLES.enterprise,
+      TITLES.hls,
       'Executive Summary',
+      'Core Expertise',
       'Professional Experience',
-      'Microsoft',
       CURRENT_ROLE,
+      'Senior Account Executive, Enterprise Accounts',
+      'Account Technology Strategist, Enterprise Accounts',
+      'Partner Technology Strategist',
+      'IT Solutions Architect',
+      'IT Operations Manager / Team Lead',
       'Education',
+      'Certifications & Executive Education',
     ],
   },
   ats: {
@@ -55,17 +63,26 @@ export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
     src: 'content/resume-ats.html',
     out: 'public/CV/MGavrilovCV-ATS.pdf',
     pages: 2,
+    variant: 'hls',
     fit: buildFitSettings([11, 10.75, 10.5, 10.25], [1, 0.85, 0.7]),
     pageMargin: 'any',
     commitScope: 'resume-ats',
     requiredText: [
       'Michael Gavrilov',
-      TITLES.enterprise,
-      'Professional Summary',
+      TITLES.hls,
+      'Executive Summary',
+      'Core Expertise',
       'Professional Experience',
       CURRENT_ROLE,
-      'Microsoft',
+      'Senior Account Executive, Enterprise Accounts',
+      'Account Technology Strategist, Enterprise Accounts',
+      'Partner Technology Strategist',
+      'IT Solutions Architect',
+      'IT Operations Manager / Team Lead',
+      'Selected Projects',
       'Education',
+      'Certifications & Executive Education',
+      'Community',
     ],
   },
 };

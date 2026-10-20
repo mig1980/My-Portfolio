@@ -158,8 +158,8 @@ const ResumeEditor = ({ docId, onSwitchDoc }: ResumeEditorProps) => {
   );
   const factWarnings = useMemo(() => findFactWarnings(debouncedHtml), [debouncedHtml]);
   const srcDoc = useMemo(
-    () => renderResume(debouncedHtml, { variant: 'enterprise' }),
-    [debouncedHtml]
+    () => renderResume(debouncedHtml, { variant: doc.variant }),
+    [debouncedHtml, doc.variant]
   );
   // A fit result only counts for the HTML it was measured on.
   const fit = !isChecking && fitCheck?.srcDoc === srcDoc ? fitCheck.result : null;

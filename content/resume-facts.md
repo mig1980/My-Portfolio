@@ -12,7 +12,7 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 - Location: New York City, NY
 - Phone: +1-551-208-1538 (the owner chose to publish it)
 - Email: contact@gavrilov.ai · LinkedIn: linkedin.com/in/mgavrilov · Site: gavrilov.ai
-- Headline titles (filled into `{{TITLE}}` by `resume/render.ts`): "Strategic Account Director, Global Enterprise" (used) and "Strategic Account Director, Healthcare & Life Sciences"
+- Headline titles (filled into `{{TITLE}}` by `resume/render.ts`): "Strategic Account Director, Healthcare & Life Sciences" (used in both documents) and "Strategic Account Director, Global Enterprise" (available variant)
 - Tagline: "Engineer at heart. Strategic account leader by trade."
 
 ## Roles and dates

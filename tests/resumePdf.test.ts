@@ -12,14 +12,14 @@ const text = (pdf: Uint8Array): string => Buffer.from(pdf).toString('latin1');
 describe('fit settings', () => {
   it('tries the largest font first and tightens spacing before shrinking text', () => {
     const fit = RESUME_DOCUMENTS.executive.fit;
-    expect(fit).toHaveLength(15);
+    expect(fit).toHaveLength(9);
     expect(fit.slice(0, 4)).toEqual([
-      { fontSizePt: 9.6, gap: 1 },
-      { fontSizePt: 9.6, gap: 0.85 },
-      { fontSizePt: 9.6, gap: 0.7 },
-      { fontSizePt: 9.5, gap: 1 },
+      { fontSizePt: 10.5, gap: 1 },
+      { fontSizePt: 10.5, gap: 0.9 },
+      { fontSizePt: 10.5, gap: 0.8 },
+      { fontSizePt: 10.25, gap: 1 },
     ]);
-    expect(fit.at(-1)).toEqual({ fontSizePt: 9.2, gap: 0.7 });
+    expect(fit.at(-1)).toEqual({ fontSizePt: 10, gap: 0.8 });
   });
 
   it('starts the ATS version large (11pt down to 10.25pt)', () => {
@@ -44,11 +44,13 @@ describe('document registry', () => {
       src: 'content/resume.html',
       out: 'public/CV/MGavrilovCV.pdf',
       pages: 1,
+      variant: 'hls',
     });
     expect(RESUME_DOCUMENTS.ats).toMatchObject({
       src: 'content/resume-ats.html',
       out: 'public/CV/MGavrilovCV-ATS.pdf',
       pages: 2,
+      variant: 'hls',
     });
   });
 

@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 /**
  * @fileoverview ATS-readability check for the built résumé PDFs: extracts their text with pdf.js
- * (as an applicant-tracking system would) and fails on wrong page counts, split words, ligatures
- * or missing/out-of-order key phrases. Run with: npm run resume:check (after npm run resume:build).
+ * and checks page counts, every source block in order, literal bullet counts, placeholders,
+ * split words and ligatures. Run with: npm run resume:check (after npm run resume:build).
  */
 
 import { readFileSync } from 'node:fs';
@@ -11,6 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { RESUME_DOCUMENTS } from '../resume/documents';
 import { findTextProblems } from '../resume/textCheck';
+import { htmlToPlainText } from '../resume/plainText';
+import { renderResume } from '../resume/render';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -38,11 +40,17 @@ async function main(): Promise<void> {
   let failed = false;
   for (const doc of Object.values(RESUME_DOCUMENTS)) {
     const { text, pages } = await extractText(join(ROOT, doc.out));
+    const template = readFileSync(join(ROOT, doc.src), 'utf8');
+    const expectedText = htmlToPlainText(renderResume(template, { variant: doc.variant })).replace(
+      /^- /gm,
+      '• '
+    );
     const problems = findTextProblems({
       text,
       pages,
       expectedPages: doc.pages,
       requiredText: doc.requiredText,
+      expectedText,
     });
     if (problems.length > 0) {
       failed = true;

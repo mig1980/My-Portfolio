@@ -4,6 +4,7 @@
  */
 
 import { renderResume } from './render';
+import { RESUME_DOCUMENTS } from './documents';
 
 /** The contact line carries the phone number, which the AI must never hand out. */
 const CONTACT_LINE = /<div\s+class="contact"[^>]*>[\s\S]*?<\/div>/gi;
@@ -49,7 +50,7 @@ export function htmlToPlainText(html: string): string {
     .replace(/<!--[\s\S]*?-->/g, '')
     .replace(/<head\b[\s\S]*?<\/head>/gi, '')
     .replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, '')
-    .replace(/<li\b[^>]*>/gi, '\n- ')
+    .replace(/<li\b[^>]*>\s*(?:•|&bull;|&#8226;|&#x2022;)?\s*/gi, '\n- ')
     .replace(BLOCK_TAG, '\n')
     .replace(/<[^>]*>/g, '');
 
@@ -62,7 +63,7 @@ export function htmlToPlainText(html: string): string {
 
 /** Plain text of the ATS résumé as the AI sees it: title filled in, contact line removed. */
 export function resumeTextForAi(atsHtml: string): string {
-  const rendered = renderResume(atsHtml, { variant: 'enterprise' });
+  const rendered = renderResume(atsHtml, { variant: RESUME_DOCUMENTS.ats.variant });
   return htmlToPlainText(rendered.replace(CONTACT_LINE, ''));
 }
 

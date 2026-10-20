@@ -18,15 +18,15 @@ describe('findFit', () => {
     const tried: string[] = [];
     const result = findFit(EXEC, 1, LETTER_HEIGHT_PX, (setting) => {
       tried.push(`${setting.fontSizePt}/${setting.gap}`);
-      return setting.fontSizePt <= 9.4 && setting.gap <= 0.7 ? 1040 : 1100;
+      return setting.fontSizePt <= 10.25 && setting.gap <= 0.8 ? 1040 : 1100;
     });
     expect(result).toEqual({
-      setting: { fontSizePt: 9.4, gap: 0.7 },
+      setting: { fontSizePt: 10.25, gap: 0.8 },
       pages: 1,
       target: 1,
       overflowLines: 0,
     });
-    expect(tried.slice(0, 4)).toEqual(['9.6/1', '9.6/0.85', '9.6/0.7', '9.5/1']);
+    expect(tried.slice(0, 4)).toEqual(['10.5/1', '10.5/0.9', '10.5/0.8', '10.25/1']);
   });
 
   it('accepts a page that is exactly full', () => {
@@ -37,7 +37,7 @@ describe('findFit', () => {
     const result = findFit(EXEC, 1, LETTER_HEIGHT_PX, () => LETTER_HEIGHT_PX + 30);
     expect(result.setting).toBeNull();
     expect(result.pages).toBe(2);
-    expect(result.overflowLines).toBe(3);
+    expect(result.overflowLines).toBe(2);
   });
 
   it('needs exactly the target for multi-page documents', () => {

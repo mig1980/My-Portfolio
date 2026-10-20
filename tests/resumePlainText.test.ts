@@ -30,6 +30,12 @@ describe('htmlToPlainText', () => {
       "R&D – Michael's team…"
     );
   });
+  it.each(['•', '&bull;', '&#8226;', '&#x2022;'])(
+    'normalizes literal list markers (%s) without duplicating them in AI text',
+    (marker) => {
+      expect(htmlToPlainText(`<ul><li>${marker} <b>One</b></li></ul>`)).toBe('- One');
+    }
+  );
 });
 
 describe('resumeTextForAi (content/resume-ats.html)', () => {
@@ -40,7 +46,7 @@ describe('resumeTextForAi (content/resume-ats.html)', () => {
   });
 
   it('fills in the title and keeps the key facts', () => {
-    expect(text).toContain(TITLES.enterprise);
+    expect(text).toContain(TITLES[RESUME_DOCUMENTS.ats.variant]);
     expect(text).toContain(CAREER_FACTS.university);
     expect(text).toContain('top-five global pharmaceutical company');
     expect(text).toContain('- Grew the account 5x since 2017');

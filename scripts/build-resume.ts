@@ -87,7 +87,7 @@ async function buildDocument(
 
   const tried: string[] = [];
   for (const setting of doc.fit) {
-    setHtml(renderResume(template, { variant: 'enterprise', ...setting }));
+    setHtml(renderResume(template, { variant: doc.variant, ...setting }));
     const pdf = await printPdf(page);
     const pages = countPdfPages(pdf);
     if (pages === doc.pages) return { doc, pdf: normalizePdf(pdf, date), setting };

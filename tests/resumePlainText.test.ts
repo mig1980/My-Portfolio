@@ -53,6 +53,7 @@ describe('resumeTextForAi (content/resume-ats.html)', () => {
   });
 
   it('leaves out the contact line', () => {
+    expect(text).not.toContain('michael@gavrilov.ai');
     expect(text).not.toContain('contact@gavrilov.ai');
     expect(text).not.toContain('+1-');
   });

@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { CAREER_FACTS } from '../utils/careerFacts';
-import { AWARDS, EDUCATION, STATS } from '../constants';
+import { AWARDS, EDUCATION, SOCIAL_LINKS, STATS } from '../constants';
 import { SYSTEM_CONTEXT } from '../functions/api/chat';
 import { RESUME_DOCUMENTS } from '../resume/documents';
 import { findFactWarnings } from '../resume/facts';
@@ -23,6 +23,11 @@ const { university, platinumClubCount, goldClubCount, quotaAttainment } = CAREER
 
 describe('career facts stay consistent', () => {
   describe('website (constants.tsx)', () => {
+    it('uses the website contact address rather than the résumé address', () => {
+      expect(SOCIAL_LINKS.find((link) => link.platform === 'Email')?.url).toBe(
+        'mailto:contact@gavrilov.ai'
+      );
+    });
     it('names the university the same way', () => {
       const bauman = EDUCATION.filter((item) => item.institution.includes('Bauman'));
       expect(bauman).toHaveLength(2);
@@ -49,6 +54,26 @@ describe('career facts stay consistent', () => {
   });
 
   describe.each(resumes)('résumé $src', ({ text }) => {
+    it('matches the owner-updated project and credential entries in the register', () => {
+      const source = new DOMParser().parseFromString(text, 'text/html');
+      const plain = source.body.textContent?.replace(/\s+/g, ' ') ?? '';
+      for (const phrase of [
+        'Azure Solutions Architect Expert',
+        'Azure AI Fundamentals',
+        'AWS Certified Cloud Practitioner',
+        'agentic generative-AI investment research platform',
+      ]) {
+        expect(plain).toContain(phrase);
+        expect(factRegister).toContain(phrase);
+      }
+      expect(plain).not.toContain('Challenger Insight Selling');
+    });
+    it('uses the résumé contact address rather than the website address', () => {
+      const source = new DOMParser().parseFromString(text, 'text/html');
+      const contact = source.querySelector('.contact')?.textContent;
+      expect(contact).toContain('michael@gavrilov.ai');
+      expect(contact).not.toContain('contact@gavrilov.ai');
+    });
     it('matches every shared fact (the editor shows the same check as warnings)', () => {
       expect(findFactWarnings(text)).toEqual([]);
     });

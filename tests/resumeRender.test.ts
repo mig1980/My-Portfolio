@@ -29,15 +29,28 @@ describe('renderResume', () => {
 
   it('keeps the contact line from the template', () => {
     const html = renderResume(template, { variant: 'hls' });
-    expect(html).toContain('+1-551-208-1538');
-    expect(html).toContain('contact@gavrilov.ai');
+    const contactLine = /<div class="contact">[^<]+<\/div>/.exec(template)?.[0];
+    expect(contactLine).toBeDefined();
+    expect(html.match(/<div class="contact">[^<]+<\/div>/)?.[0]).toBe(contactLine);
   });
+
+  it.each(['michael@gavrilov.ai', 'contact@gavrilov.ai'])(
+    'preserves an editable contact address (%s)',
+    (email) => {
+      const source = `<div>{{TITLE}}</div><div class="contact">${email}</div>`;
+      expect(renderResume(source, { variant: 'hls' })).toContain(
+        `<div class="contact">${email}</div>`
+      );
+    }
+  );
 
   describe('fit overrides', () => {
     it('injects --fs and --gap right before </head>', () => {
-      const html = renderResume(template, { variant: 'enterprise', fontSizePt: 9.4, gap: 0.7 });
-      expect(html).toContain('<style>:root{--fs:9.4pt;--gap:0.7}</style></head>');
-      expect(html.indexOf(':root{--fs:9.4pt')).toBeGreaterThan(html.indexOf('--fs: 9.6pt'));
+      const source = '<head><style>:root { --fs: 11pt; --gap: 1; }</style></head>';
+      const html = renderResume(source, { variant: 'enterprise', fontSizePt: 10, gap: 0.8 });
+      expect(html).toBe(
+        '<head><style>:root { --fs: 11pt; --gap: 1; }</style><style>:root{--fs:10pt;--gap:0.8}</style></head>'
+      );
     });
 
     it('injects only the values provided', () => {

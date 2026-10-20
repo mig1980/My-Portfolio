@@ -11,20 +11,21 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 - Name: Michael Gavrilov
 - Location: New York City, NY
 - Phone: +1-551-208-1538 (the owner chose to publish it)
-- Email: contact@gavrilov.ai · LinkedIn: linkedin.com/in/mgavrilov · Site: gavrilov.ai
+- Résumé email: michael@gavrilov.ai · Website contact email: contact@gavrilov.ai
+- LinkedIn: linkedin.com/in/mgavrilov · Site: gavrilov.ai
 - Headline titles (filled into `{{TITLE}}` by `resume/render.ts`): "Strategic Account Director, Healthcare & Life Sciences" (used in both documents) and "Strategic Account Director, Global Enterprise" (available variant)
 - Tagline: "Engineer at heart. Strategic account leader by trade."
 
 ## Roles and dates
 
-| Role | Employer | Dates (site, assistant, ATS) | Dates (executive) |
-|---|---|---|---|
-| Strategic Account Director, Healthcare & Life Sciences | Microsoft | Feb 2017 – Present | 2017 – Present |
-| Senior Account Executive, Enterprise Accounts | Microsoft | Apr 2011 – Jan 2017 | 2011 – 2017 |
-| Account Technology Strategist, Enterprise Accounts | Microsoft | Jul 2008 – Mar 2011 | 2008 – 2011 |
-| Partner Technology Strategist | Microsoft | Oct 2006 – Jul 2008 | 2006 – 2008 |
-| IT Solutions Architect | Systematica Group | Jul 2005 – Oct 2006 | 2005 – 2006 |
-| IT Operations Manager / Team Lead | Allied Testing | Apr 2002 – Jul 2005 | 2002 – 2005 |
+| Role | Employer | Dates (site, assistant, both résumés) |
+|---|---|---|
+| Strategic Account Director, Healthcare & Life Sciences | Microsoft | Feb 2017 – Present |
+| Senior Account Executive, Enterprise Accounts | Microsoft | Apr 2011 – Jan 2017 |
+| Account Technology Strategist, Enterprise Accounts | Microsoft | Jul 2008 – Mar 2011 |
+| Partner Technology Strategist | Microsoft | Oct 2006 – Jul 2008 |
+| IT Solutions Architect | Systematica Group | Jul 2005 – Oct 2006 |
+| IT Operations Manager / Team Lead | Allied Testing | Apr 2002 – Jul 2005 |
 
 - Microsoft tenure: 2006 – Present, stated as "20+ years at Microsoft"
 - Current scope: executive owner of Microsoft's relationship with a top-five global pharmaceutical company, one of Microsoft's strategic Healthcare & Life Sciences accounts; relationships with the CIO, CDO and senior business leaders, with CEO-level engagement
@@ -52,9 +53,10 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 
 | Item | Status |
 |---|---|
+| Microsoft Certified: Azure Solutions Architect Expert | Both résumés, added by the owner through the résumé editor. **[CONFIRM: date earned and renewal status]** |
 | Microsoft Certified: Azure AI Fundamentals | Everywhere. **[CONFIRM: date earned; Fundamentals certifications don't expire]** |
 | AWS Certified Cloud Practitioner | Everywhere. **[CONFIRM: date earned and expiry; AWS certifications last 3 years]** |
-| Challenger Insight Selling | Training, everywhere |
+| Challenger Insight Selling | Training on the website; omitted from both résumés by the owner |
 | Wharton Executive Education: Selling to the C-Suite | Everywhere |
 | INSEAD Executive Education: Business Strategy and Financial Acumen; Value Negotiation | Everywhere |
 
@@ -67,6 +69,6 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 
 ## Projects and community
 
-- QuantumInvestor.net: creator of a generative-AI investment research experiment
+- QuantumInvestor.net: creator of an agentic generative-AI investment research platform (owner's updated description in both résumés; no outcome metrics stated)
 - gavrilov.ai: creator of an open-source personal site with an AI assistant built on Google Gemini models
 - Mentor, NYU Tandon Mastermind Mentorship program (ATS résumé only)

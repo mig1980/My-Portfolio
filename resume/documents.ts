@@ -44,6 +44,7 @@ export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
     requiredText: [
       'Michael Gavrilov',
       TITLES.hls,
+      'michael@gavrilov.ai',
       'Executive Summary',
       'Core Expertise',
       'Professional Experience',
@@ -70,6 +71,7 @@ export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
     requiredText: [
       'Michael Gavrilov',
       TITLES.hls,
+      'michael@gavrilov.ai',
       'Executive Summary',
       'Core Expertise',
       'Professional Experience',

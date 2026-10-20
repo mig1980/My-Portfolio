@@ -86,6 +86,7 @@ describe('findTextProblems', () => {
   it('lists required phrases for every registered document', () => {
     for (const doc of Object.values(RESUME_DOCUMENTS)) {
       expect(doc.requiredText[0]).toBe('Michael Gavrilov');
+      expect(doc.requiredText).toContain('michael@gavrilov.ai');
       expect(doc.requiredText).toContain('Education');
       expect(doc.requiredText).toContain('Certifications & Executive Education');
     }

@@ -3,9 +3,6 @@
  * Pure string work with no DOM access, so it runs in Node (the generator script) and in tests.
  */
 
-import { renderResume } from './render';
-import { RESUME_DOCUMENTS } from './documents';
-
 /** The contact line carries the phone number, which the AI must never hand out. */
 const CONTACT_LINE = /<div\s+class="contact"[^>]*>[\s\S]*?<\/div>/gi;
 
@@ -61,10 +58,9 @@ export function htmlToPlainText(html: string): string {
     .join('\n');
 }
 
-/** Plain text of the ATS résumé as the AI sees it: title filled in, contact line removed. */
+/** Plain text of the ATS résumé as the AI sees it, with the contact line removed. */
 export function resumeTextForAi(atsHtml: string): string {
-  const rendered = renderResume(atsHtml, { variant: RESUME_DOCUMENTS.ats.variant });
-  return htmlToPlainText(rendered.replace(CONTACT_LINE, ''));
+  return htmlToPlainText(atsHtml.replace(CONTACT_LINE, ''));
 }
 
 /** Reasons the extracted text can't be used; empty when it's fine. */

@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { findTextProblems } from '../resume/textCheck';
 import { RESUME_DOCUMENTS } from '../resume/documents';
+import { htmlToPlainText } from '../resume/plainText';
 
 const REQUIRED = ['Michael Gavrilov', 'Executive Summary', 'Microsoft', 'Education'];
 const GOOD =
@@ -52,6 +53,26 @@ describe('findTextProblems', () => {
       expect(html).toContain('font-variant-ligatures: none');
       expect(html).toMatch(/\.role\s*\{[^}]*break-inside:\s*avoid/);
       expect(html).not.toMatch(/overflow:\s*hidden|line-clamp|position:\s*absolute|float:/);
+    });
+
+    it('checks an edited title against the source rather than a fixed title', () => {
+      const title = `Edited ${doc.id} headline`;
+      const edited = html.replace(
+        /<div class="title">[^<]*<\/div>/,
+        `<div class="title">${title}</div>`
+      );
+      expect(edited).not.toBe(html);
+      const expectedText = htmlToPlainText(edited).replace(/^- /gm, '• ');
+      const input = {
+        pages: doc.pages,
+        expectedPages: doc.pages,
+        requiredText: doc.requiredText,
+        expectedText,
+      };
+      expect(findTextProblems({ ...input, text: expectedText })).toEqual([]);
+      expect(findTextProblems({ ...input, text: expectedText.replace(title, '') })).toContain(
+        `missing or out-of-order source text: "${title}"`
+      );
     });
   });
 

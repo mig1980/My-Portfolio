@@ -12,7 +12,7 @@ Propose changes to [resume.html](../../../content/resume.html) and [resume-ats.h
 
 1. List the 5–8 requirements from the job description that matter most, and which registered facts support each one. Name any requirement no registered fact supports; don't fill the gap.
 2. Propose:
-   - **Headline:** the title line and tagline (the title comes from `{{TITLE}}` in `resume/render.ts`, so say if the proposal needs a different title there)
+   - **Headline:** the title line and tagline (the title is plain HTML in each résumé, so propose any title change in that file)
    - **Summary:** a rewritten summary for each version
    - **Top-3 bullets:** the three current-role bullets to lead with, reordered or reworded
 3. Output each proposal as a ```diff block per file (`-` current line, `+` proposed line), then a short note on likely fit impact (the executive version must stay 1 page, the ATS version 2 pages).

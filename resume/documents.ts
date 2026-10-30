@@ -4,7 +4,6 @@
  */
 
 import { buildFitSettings, type FitSetting } from './pdf';
-import { TITLES, type ResumeVariant } from './render';
 
 export type ResumeDocId = 'executive' | 'ats';
 
@@ -17,7 +16,6 @@ export interface ResumeDocument {
   out: string;
   /** The build must produce exactly this many pages */
   pages: number;
-  variant: ResumeVariant;
   /** Tried in order until the PDF has exactly `pages` pages */
   fit: readonly FitSetting[];
   /** 'zero' requires `@page { margin: 0 }` (single-page design); 'any' allows print margins */
@@ -37,13 +35,11 @@ export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
     src: 'content/resume.html',
     out: 'public/CV/MGavrilovCV.pdf',
     pages: 1,
-    variant: 'hls',
     fit: buildFitSettings([10.5, 10.25, 10], [1, 0.9, 0.8]),
     pageMargin: 'zero',
     commitScope: 'resume',
     requiredText: [
       'Michael Gavrilov',
-      TITLES.hls,
       'michael@gavrilov.ai',
       'Executive Summary',
       'Core Expertise',
@@ -64,13 +60,11 @@ export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
     src: 'content/resume-ats.html',
     out: 'public/CV/MGavrilovCV-ATS.pdf',
     pages: 2,
-    variant: 'hls',
     fit: buildFitSettings([11, 10.75, 10.5, 10.25], [1, 0.85, 0.7]),
     pageMargin: 'any',
     commitScope: 'resume-ats',
     requiredText: [
       'Michael Gavrilov',
-      TITLES.hls,
       'michael@gavrilov.ai',
       'Executive Summary',
       'Core Expertise',

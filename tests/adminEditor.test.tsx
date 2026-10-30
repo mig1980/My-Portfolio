@@ -39,13 +39,12 @@ vi.mock('../admin/components/PreviewFrame', () => ({
 
 import ResumeEditor, { draftKey } from '../admin/ResumeEditor';
 import AdminApp from '../admin/AdminApp';
-import { RESUME_DOCUMENTS } from '../resume/documents';
-import { renderResume } from '../resume/render';
 
 const DRAFT_KEY = draftKey('executive');
 const noop = (): void => {};
 
 const template = readFileSync(resolve(process.cwd(), 'content', 'resume.html'), 'utf8');
+const atsTemplate = readFileSync(resolve(process.cwd(), 'content', 'resume-ats.html'), 'utf8');
 const SHA = 'a'.repeat(40);
 const mockFetch = vi.fn() as Mock;
 
@@ -96,11 +95,41 @@ describe('ResumeEditor', () => {
     await renderLoaded();
     expect(mockFetch).toHaveBeenCalledWith('/api/admin/resume?doc=executive', expect.anything());
     expect(await screen.findByText(/Fits on one page \(10pt\)/)).toBeInTheDocument();
-    expect(screen.getByTestId('preview')).toHaveAttribute(
-      'data-srcdoc',
-      renderResume(template, { variant: RESUME_DOCUMENTS.executive.variant })
-    );
+    expect(screen.getByTestId('preview')).toHaveAttribute('data-srcdoc', template);
     expect(publishButton().disabled).toBe(true);
+  });
+
+  it.each([
+    ['executive', template, 'Edited executive title'],
+    ['ats', atsTemplate, 'Edited ATS title | Microsoft'],
+  ] as const)('previews and publishes an edited %s title', async (docId, source, title) => {
+    mockFetch.mockImplementation((_url: string, init?: RequestInit) =>
+      Promise.resolve(
+        init?.method === 'PUT'
+          ? jsonResponse({ sha: 'b'.repeat(40), commitSha: 'c'.repeat(40), commitUrl: 'u' })
+          : jsonResponse({ html: source, sha: SHA })
+      )
+    );
+    const edited = source.replace(
+      /<div class="title">[^<]*<\/div>/,
+      `<div class="title">${title}</div>`
+    );
+    expect(edited).not.toBe(source);
+
+    render(<ResumeEditor docId={docId} onSwitchDoc={noop} />);
+    await waitFor(() => expect(editor().value).toBe(source));
+    await editAndOpenDialog(edited);
+    expect(screen.getByTestId('preview')).toHaveAttribute('data-srcdoc', edited);
+    fireEvent.submit(screen.getByRole('dialog'));
+
+    expect(await screen.findByText(/Building the PDF/)).toBeInTheDocument();
+    const put = mockFetch.mock.calls.find(([, init]) => (init as RequestInit)?.method === 'PUT');
+    expect(put?.[0]).toBe(`/api/admin/resume?doc=${docId}`);
+    expect(JSON.parse(String((put?.[1] as RequestInit).body))).toEqual({
+      html: edited,
+      sha: SHA,
+      message: '',
+    });
   });
 
   it('shows validation problems and blocks publishing', async () => {

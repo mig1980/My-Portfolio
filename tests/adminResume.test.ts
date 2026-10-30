@@ -147,6 +147,36 @@ describe('/api/admin/resume', () => {
       expect(sentBody().message).toBe('docs(resume): update via admin');
     });
 
+    it.each([
+      ['executive', template, 'Edited executive title'],
+      ['ats', atsTemplate, 'Edited ATS title | Microsoft'],
+    ] as const)('commits an edited %s title as written', async (docId, source, title) => {
+      mockFetch.mockResolvedValue(githubJson({ content: {}, commit: {} }));
+      const edited = source.replace(
+        /<div class="title">[^<]*<\/div>/,
+        `<div class="title">${title}</div>`
+      );
+      expect(edited).not.toBe(source);
+      const response = await resumeHandler(
+        putContext({ html: edited, sha: SHA }, {}, `/api/admin/resume?doc=${docId}`)
+      );
+      expect(response.status).toBe(200);
+      expect(decodeBase64Utf8(String(sentBody().content))).toBe(edited);
+    });
+
+    it('rejects an old draft containing the title placeholder', async () => {
+      const html = template.replace(
+        /<div class="title">[^<]*<\/div>/,
+        '<div class="title">{{TITLE}}</div>'
+      );
+      const response = await resumeHandler(putContext({ html, sha: SHA }));
+      expect(response.status).toBe(422);
+      expect((await readJson(response)).errors).toContain(
+        'Replace {{TITLE}} with the title text in this HTML file.'
+      );
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
     it('returns 422 with the validation errors and does not commit', async () => {
       const html = template.replace('</body>', '<script>x</script></body>');
       const response = await resumeHandler(putContext({ html, sha: SHA }));

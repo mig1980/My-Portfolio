@@ -98,13 +98,13 @@ AboutMe/
 │   ├── resume-ats.html     # ATS résumé (exactly 2 pages) → public/CV/MGavrilovCV-ATS.pdf (not linked)
 │   └── resume-facts.md     # Fact register: the only facts the résumés may use
 ├── resume/                 # Shared by the editor, the Functions and the PDF build
-│   ├── render.ts           # Fills {{TITLE}}, applies --fs/--gap overrides
+│   ├── render.ts           # Applies --fs/--gap overrides without changing résumé content
 │   ├── validate.ts         # Template contract + safety checks (DOM-free, authoritative on the server)
 │   ├── documents.ts        # Registry: id → src, out, exact page target, fit settings, required text order
 │   ├── pdf.ts              # Fit-setting builder, page constants, @page margin parser, page count/date pinning (isomorphic)
 │   ├── textCheck.ts        # ATS text rules used by scripts/check-resume-text.ts
 │   ├── facts.ts            # Shared-fact cross-check: editor warnings (never blocks Publish) + CI test
-│   ├── plainText.ts        # ATS HTML → plain text for the AI (title filled, contact line removed)
+│   ├── plainText.ts        # ATS HTML → plain text for the AI (contact line removed)
 │   ├── atsText.generated.ts  # Gitignored output of npm run resume:text; never edit
 │   └── github.ts           # GitHub REST helpers for the admin Functions
 ├── scripts/
@@ -187,7 +187,7 @@ const Component = memo(() => {
 
 Flow: `/admin/` editor → `PUT /api/admin/resume?doc=<id>` (validates, commits that document's HTML to `main`) → `resume-pdf.yml` runs `npm run resume:build` and commits both PDFs if they changed → Cloudflare Pages redeploys. The site links to the executive PDF via `PERSONAL_INFO.resumeUrl`; the ATS PDF is not linked.
 
-**Template contract** (enforced by `resume/validate.ts`): full HTML document; `{{TITLE}}` exactly once (variant from `resume/documents.ts`, currently Healthcare & Life Sciences); `--fs` and `--gap` defined in `:root` and used; `@page { size: Letter; margin: 0; }` (multi-page documents with `pageMargin: 'any'` may set print margins); fonts only via `url('/fonts/…')`; no scripts, `on*=` handlers, `javascript:` URLs, embeds/frames/`<link>`, or external resources (only `<a>` may link out); ≤ 100 KB. The contact line (incl. phone) is plain HTML in the template by the owner's choice. Keep heading `letter-spacing` ≤ 1px and ligatures off in both versions, or `resume:check` fails.
+**Template contract** (enforced by `resume/validate.ts`): full HTML document; no old `{{TITLE}}` placeholder; `--fs` and `--gap` defined in `:root` and used; `@page { size: Letter; margin: 0; }` (multi-page documents with `pageMargin: 'any'` may set print margins); fonts only via `url('/fonts/…')`; no scripts, `on*=` handlers, `javascript:` URLs, embeds/frames/`<link>`, or external resources (only `<a>` may link out); ≤ 100 KB. Each title and contact line (incl. phone) is plain HTML in its own template and can be edited there. Keep heading `letter-spacing` ≤ 1px and ligatures off in both versions, or `resume:check` fails.
 
 **Rules:**
 - Keep `resume/*.ts` free of DOM-only and Node-only APIs (no `document`, no `Buffer`/`fs`): they run in the browser, Workers and Node.
@@ -202,7 +202,7 @@ Flow: `/admin/` editor → `PUT /api/admin/resume?doc=<id>` (validates, commits 
 
 ## AI Endpoints (Chat and Fit Check)
 
-- **Facts:** both endpoints read `RESUME_TEXT` from `resume/atsText.generated.ts`, built from `content/resume-ats.html` by `resume/plainText.ts` (title filled in, contact line and phone removed). It is regenerated on every install and build, so a published résumé reaches the AI on the next deploy. The chat adds hand-written facts that aren't on the résumé (approach, projects, Champion Award, "including FY25 and FY26"); keep those out of the résumé text and never duplicate résumé facts there.
+- **Facts:** both endpoints read `RESUME_TEXT` from `resume/atsText.generated.ts`, built from `content/resume-ats.html` by `resume/plainText.ts` (title as written, contact line and phone removed). It is regenerated on every install and build, so a published résumé reaches the AI on the next deploy. The chat adds hand-written facts that aren't on the résumé (approach, projects, Champion Award, "including FY25 and FY26"); keep those out of the résumé text and never duplicate résumé facts there.
 - **Shared Gemini code:** `utils/gemini.ts` (`generateWithFallback`, `isAllowedAiHost`). Keep it DOM- and Node-free.
 - **Hosts:** both endpoints refuse `*.pages.dev` (the Cloudflare rate-limit rule only covers gavrilov.ai) unless `ALLOW_PAGES_DEV=true`, which belongs only in the Pages **Preview** environment.
 - **Fit check (`functions/api/fit.ts`):** Gemini 2.5 Flash with thinking off, then 3.1 Flash-Lite as backup; JSON output mode; never the chat's 3.8 Flash (20/day). Don't use Gemma: it always thinks and times out. Same-origin `Origin`, JSON content type, ≤ 40 KB body, exactly `{ jobDescription }` with 200–8,000 characters after trimming. The job description goes in its own turn between random markers and is treated as untrusted data.

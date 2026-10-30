@@ -13,7 +13,7 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 - Phone: +1-551-208-1538 (the owner chose to publish it)
 - Résumé email: michael@gavrilov.ai · Website contact email: contact@gavrilov.ai
 - LinkedIn: linkedin.com/in/mgavrilov · Site: gavrilov.ai
-- Headline titles (filled into `{{TITLE}}` by `resume/render.ts`): "Strategic Account Director, Healthcare & Life Sciences" (used in both documents) and "Strategic Account Director, Global Enterprise" (available variant)
+- Headline titles (written directly in each résumé HTML file): "Strategic Account Director, Healthcare & Life Sciences" (currently used in both documents) and "Strategic Account Director, Global Enterprise" (alternative)
 - Tagline: "Engineer at heart. Strategic account leader by trade."
 
 ## Roles and dates

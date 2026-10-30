@@ -8,6 +8,7 @@ import { resolve } from 'node:path';
 import { validateResumeHtml, MAX_RESUME_BYTES } from '../resume/validate';
 
 const template = readFileSync(resolve(process.cwd(), 'content', 'resume.html'), 'utf8');
+const atsTemplate = readFileSync(resolve(process.cwd(), 'content', 'resume-ats.html'), 'utf8');
 
 function withBody(snippet: string): string {
   return template.replace('</body>', `${snippet}\n</body>`);
@@ -25,8 +26,10 @@ describe('validateResumeHtml', () => {
   });
 
   it('accepts the ATS template with print margins', () => {
-    const ats = readFileSync(resolve(process.cwd(), 'content', 'resume-ats.html'), 'utf8');
-    expect(validateResumeHtml(ats, { pageMargin: 'any' })).toEqual({ ok: true, errors: [] });
+    expect(validateResumeHtml(atsTemplate, { pageMargin: 'any' })).toEqual({
+      ok: true,
+      errors: [],
+    });
   });
 
   it('allows ordinary external links', () => {
@@ -154,15 +157,26 @@ describe('validateResumeHtml', () => {
   });
 
   describe('template structure', () => {
-    it('requires {{TITLE}} exactly once', () => {
-      expectRejected(
-        template.replace('{{TITLE}}', ''),
-        '{{TITLE}} must appear exactly once (found 0)'
-      );
+    it('accepts independently edited titles in both documents', () => {
+      for (const [source, options] of [
+        [template, {}],
+        [atsTemplate, { pageMargin: 'any' }],
+      ] as const) {
+        const edited = source.replace(
+          /<div class="title">[^<]*<\/div>/,
+          '<div class="title">An edited title</div>'
+        );
+        expect(edited).not.toBe(source);
+        expect(validateResumeHtml(edited, options)).toEqual({ ok: true, errors: [] });
+      }
     });
 
-    it('rejects a duplicated {{TITLE}}', () => {
-      expectRejected(withBody('{{TITLE}}'), '{{TITLE}} must appear exactly once (found 2)');
+    it('explains how to replace a legacy title placeholder', () => {
+      const oldDraft = template.replace(
+        /<div class="title">[^<]*<\/div>/,
+        '<div class="title">{{TITLE}}</div>'
+      );
+      expectRejected(oldDraft, 'Replace {{TITLE}} with the title text in this HTML file.');
     });
 
     it('requires --fs and --gap in :root', () => {

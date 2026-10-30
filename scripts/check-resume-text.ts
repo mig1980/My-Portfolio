@@ -12,7 +12,6 @@ import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { RESUME_DOCUMENTS } from '../resume/documents';
 import { findTextProblems } from '../resume/textCheck';
 import { htmlToPlainText } from '../resume/plainText';
-import { renderResume } from '../resume/render';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -41,10 +40,7 @@ async function main(): Promise<void> {
   for (const doc of Object.values(RESUME_DOCUMENTS)) {
     const { text, pages } = await extractText(join(ROOT, doc.out));
     const template = readFileSync(join(ROOT, doc.src), 'utf8');
-    const expectedText = htmlToPlainText(renderResume(template, { variant: doc.variant })).replace(
-      /^- /gm,
-      '• '
-    );
+    const expectedText = htmlToPlainText(template).replace(/^- /gm, '• ');
     const problems = findTextProblems({
       text,
       pages,

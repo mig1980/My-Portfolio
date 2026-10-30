@@ -157,10 +157,7 @@ const ResumeEditor = ({ docId, onSwitchDoc }: ResumeEditorProps) => {
     [debouncedHtml, doc.pageMargin]
   );
   const factWarnings = useMemo(() => findFactWarnings(debouncedHtml), [debouncedHtml]);
-  const srcDoc = useMemo(
-    () => renderResume(debouncedHtml, { variant: doc.variant }),
-    [debouncedHtml, doc.variant]
-  );
+  const srcDoc = useMemo(() => renderResume(debouncedHtml), [debouncedHtml]);
   // A fit result only counts for the HTML it was measured on.
   const fit = !isChecking && fitCheck?.srcDoc === srcDoc ? fitCheck.result : null;
   const isDirty = base !== null && html !== base.html;

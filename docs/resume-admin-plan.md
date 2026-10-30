@@ -3,6 +3,8 @@
 > Hand this file to GitHub Copilot (Chat: `#file:docs/resume-admin-plan.md`, or paste each phase into a Copilot coding-agent issue).
 > Follow `.github/copilot-instructions.md` for all code conventions.
 
+**Current title behavior:** Each résumé's title is written directly in its HTML file and can be edited independently. The older `{{TITLE}}` and title-variant mechanism has been retired; phases below retain historical implementation details.
+
 ## Goal
 
 A private page on gavrilov.ai, visible only to Michael. It lets him **edit the résumé's raw HTML/CSS directly** in a code editor, with a side-by-side live preview and a one-page fit meter. When he clicks **Publish**, the change is committed to GitHub, a GitHub Action regenerates `public/CV/MGavrilovCV.pdf`, and Cloudflare Pages redeploys the site.
@@ -36,8 +38,8 @@ Browser (/admin/resume)             Cloudflare Pages Function            GitHub
 
 Key design decisions:
 
-1. **The single source of truth is `content/resume.html`**: the full HTML + `<style>` template Michael edits by hand. It is the same file as today's `OneDrive\Documents\CV\source\resume_template.html`, with the contact line (including the phone, which Michael is fine making public) written directly in it.
-2. **One shared TypeScript function** (`resume/render.ts`) fills in `{{TITLE}}` and sets the fit variables (`--fs`, `--gap`). The admin preview, the CI PDF build and the local build all use it, so the preview matches the PDF.
+1. **The résumé sources are `content/resume.html` and `content/resume-ats.html`**: full HTML + `<style>` files with their title and contact line written directly in each file.
+2. **One shared TypeScript function** (`resume/render.ts`) applies optional fit variables (`--fs`, `--gap`) without changing the title. The admin preview, the CI PDF build and the local build use the same source HTML.
 3. **PDF built in GitHub Actions with Playwright** (not in the Cloudflare build, and not by the Function, since Workers can't run Chromium).
 4. **Python `build.py` is retired.** `npm run resume:build` replaces it and writes only `public/CV/MGavrilovCV.pdf` in the repo (no OneDrive output). Michael never runs it: the GitHub Action does, and all editing happens in the browser at gavrilov.ai/admin.
 5. **Auth = Cloudflare Access at the edge + JWT verification in the Function** (defense in depth). No passwords in the app.
@@ -65,13 +67,13 @@ tests/adminResume.test.ts
 tests/adminAuth.test.ts
 ```
 
-## Template contract (`content/resume.html`)
+## Template contract (both résumé HTML files)
 
 The file is a complete HTML document (`<!DOCTYPE html>` … `</html>`) with one `<style>` block. Michael can change anything, as long as these rules hold:
 
 | Rule | Why |
 |---|---|
-| Contains `{{TITLE}}` exactly once | Replaced with the HLS or Enterprise title per variant |
+| Title written directly in the HTML; no `{{TITLE}}` placeholder | Each document's title can be edited independently |
 | `:root` defines `--fs` and `--gap`, and the CSS uses them | The fit-to-one-page loop overrides them (`--fs` 9.6→9.2pt, `--gap` 1→0.7) |
 | `@page { size: Letter; margin: 0; }` | PDF page size |
 | Fonts via `@font-face { src: url('/fonts/…') }` only (the site's own Inter + Instrument Serif in `public/fonts/`) | Must work both in the browser preview and in CI (no external URLs) |
@@ -81,19 +83,16 @@ The file is a complete HTML document (`<!DOCTYPE html>` … `</html>`) with one 
 ```ts
 // resume/render.ts
 export interface RenderOptions {
-  variant: 'hls' | 'enterprise';
   fontSizePt?: number;   // overrides --fs
   gap?: number;          // overrides --gap
 }
-export const TITLES = { hls: 'Strategic Account Director, Healthcare & Life Sciences',
-                        enterprise: 'Strategic Account Director, Global Enterprise' } as const;
-export function renderResume(html: string, opts: RenderOptions): string;
+export function renderResume(html: string, opts?: RenderOptions): string;
 
 // resume/validate.ts: runs in the editor (live error list) AND in the Function (authoritative)
 export function validateResumeHtml(html: string): { ok: boolean; errors: string[] };
 ```
 
-Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</style>` override right before `</head>`. It never parses or rewrites the rest of Michael's markup.
+Rendering optionally injects a `<style>:root{--fs:…;--gap:…}</style>` override right before `</head>`. It never parses or rewrites the rest of Michael's markup.
 ---
 
 ## Phases (one PR each)
@@ -102,11 +101,11 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 
 - **Done (Sept 27, 2026).** Template copied to `content/resume.html` (LF line endings).
 - **Fonts (done):** switched to the site's own `public/fonts/` files (Inter body, Instrument Serif name + tagline). To keep today's one-page fit, body gets `letter-spacing: -0.01em` and `--lh` 1.17 → 1.13; the tagline is 11pt. Measured with Edge: same height as the old Georgia/Segoe version, fits at 9.4pt / gap 0.7.
-- Implement `resume/render.ts` (title fill, CSS variable override) and `resume/validate.ts` (every rule in the Template contract).
-- Tests: title replaced and escaped; override injected; each forbidden pattern is rejected with a readable message; the current template passes validation.
+- Implement `resume/render.ts` (CSS variable override) and `resume/validate.ts` (every rule in the Template contract).
+- Tests: editable title preserved; override injected; each forbidden pattern is rejected with a readable message; the current template passes validation.
 - **Update (Sept 27, 2026):** the phone is public, so the contact line (location | phone | email | LinkedIn | website) is plain HTML in the template. The `{{CONTACT}}` placeholder, phone injection and phone-number check were removed.
 
-**Acceptance:** `npm run test:run` passes, and `renderResume(html, {variant:'enterprise'})` opened in a browser looks like the current PDF.
+**Acceptance:** `npm run test:run` passes, and `renderResume(html)` opened in a browser looks like the current PDF.
 ### Phase 2: PDF build script and GitHub Action
 
 - Add dev deps: `playwright` (Chromium only) and `tsx`.
@@ -114,7 +113,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
   - Read `content/resume.html`, run `validateResumeHtml` (fail on errors), render, then `page.pdf({ format: 'Letter', printBackground: true, margin: 0 })`.
   - Fit loop over `fontSizePt ∈ [9.6, 9.5, 9.4, 9.3, 9.2] × gap ∈ [1, .85, .7]`. Measure `document.body.scrollHeight ≤ 11in` before printing (faster than printing each try).
   - **Fail with exit 1 if it can't fit on one page.** Never write a 2-page PDF.
-  - Writes `public/CV/MGavrilovCV.pdf` (Enterprise title). No other outputs.
+  - Writes `public/CV/MGavrilovCV.pdf` with the title from the HTML. No other outputs in the original plan.
 - npm script: `"resume:build": "tsx scripts/build-resume.ts"`.
 - `.github/workflows/resume-pdf.yml`:
   - `on: push` to `main`, `paths: [content/resume.html, resume/**, public/fonts/**, scripts/build-resume.ts]`, plus `workflow_dispatch`.
@@ -160,7 +159,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
 - Vite multi-page: `build.rollupOptions.input = { main: 'index.html', admin: 'admin/index.html' }`. Cloudflare serves `/admin/` from `dist/admin/index.html`. Check that `App.tsx`'s 404 logic doesn't catch it; it won't, because it's a different HTML file.
 - `ResumeEditor.tsx`, a split-screen layout:
   - **Left: HTML code editor.** Use **CodeMirror 6** (`@codemirror/lang-html`, `@uiw/react-codemirror` or a thin wrapper) with syntax highlighting, autoclose tags, search/replace (Ctrl+F/Ctrl+H), line numbers, fold and word-wrap toggle. Loaded only in the admin bundle. Monaco is too heavy.
-  - **Right: live preview.** `<iframe sandbox="allow-same-origin" srcdoc={renderResume(html, {variant})}>`, updated with a ~300 ms debounce and scaled to fit the pane at Letter proportions. Toolbar: variant toggle (HLS / Enterprise), zoom (fit / 100%) and a "show page boundary" line at 11in.
+  - **Right: live preview.** `<iframe sandbox="allow-same-origin" srcdoc={renderResume(html)}>`, updated with a ~300 ms debounce and scaled to fit the pane at Letter proportions. The editor switches between Executive and ATS documents and shows page boundaries.
   - **Fit meter:** after load, render at the smallest fit settings and compare `contentDocument.body.scrollHeight` with 1056 px. Show "Fits at 9.4pt ✓", or "Over by ~N lines ✗" in red.
   - **Validation panel:** live `validateResumeHtml` errors under the editor. Clicking an error jumps to its line. Publish is disabled while errors exist.
   - Draft autosaved to `localStorage`, with a "Restore unsaved draft?" prompt on load. `beforeunload` guard.
@@ -168,7 +167,7 @@ Rendering = string replacement + injecting a `<style>:root{--fs:…;--gap:…}</
   - After publishing, poll `/api/admin/status` every 10 s until the workflow completes. Then show ✓ with a link to `/CV/MGavrilovCV.pdf?v=<sha>`, or ✗ with a link to the failed Action log.
   - Resizable divider between panes. Mobile: tabs (Code / Preview) instead of split.
 - Tests: the debounce/render hook, fit-meter math, validation-panel rendering, and the publish flow with mocked fetch (200, 409 stale sha, 422 validation).
-- **Done (Sept 27, 2026)** (verified in a real browser with the API mocked; works live after the Manual setup). Deviations, all simplifications: Enterprise title only (no HLS toggle, since only the site PDF is produced); fixed 50/50 split instead of a resizable divider; fit-to-width zoom only. The fit meter changes `--fs`/`--gap` inside the same-origin preview and measures instantly (no reloads), then shows the page at the setting the PDF build will use. A non-JSON reply (e.g. an Access sign-in page) is shown as an error, never treated as data. The admin chunk (~600 kB, CodeMirror) is never loaded by the public site.
+- **Done (Sept 27, 2026)** (verified in a real browser with the API mocked; works live after the Manual setup). Deviations, all simplifications: the original editor had one document; the current editor switches between Executive and ATS, with each title in its HTML. The split is fixed 50/50 rather than resizable, with fit-to-width zoom only. The fit meter changes `--fs`/`--gap` inside the same-origin preview and measures instantly (no reloads), then shows the page at the setting the PDF build will use. A non-JSON reply (e.g. an Access sign-in page) is shown as an error, never treated as data. The admin chunk (~600 kB, CodeMirror) is never loaded by the public site.
 ### Phase 6: Cleanup and docs
 
 - Update `README.md` and `.github/copilot-instructions.md` (new folders, commands, admin architecture and the Template contract).

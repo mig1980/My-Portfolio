@@ -172,10 +172,6 @@ function lineOf(text: string, index: number): number {
   return line;
 }
 
-function countOccurrences(text: string, needle: string): number {
-  return text.split(needle).length - 1;
-}
-
 function checkStructure(html: string, options: ValidateOptions, errors: string[]): void {
   if (!/^\s*<!doctype html>/i.test(html)) {
     errors.push('Start the file with <!DOCTYPE html>.');
@@ -184,9 +180,8 @@ function checkStructure(html: string, options: ValidateOptions, errors: string[]
     errors.push('End the file with </html>.');
   }
 
-  const titleCount = countOccurrences(html, '{{TITLE}}');
-  if (titleCount !== 1) {
-    errors.push(`{{TITLE}} must appear exactly once (found ${titleCount}).`);
+  if (html.includes('{{TITLE}}')) {
+    errors.push('Replace {{TITLE}} with the title text in this HTML file.');
   }
 
   const rootBlock = /:root\s*\{([^}]*)\}/i.exec(html)?.[1] ?? '';

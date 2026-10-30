@@ -44,13 +44,11 @@ describe('document registry', () => {
       src: 'content/resume.html',
       out: 'public/CV/MGavrilovCV.pdf',
       pages: 1,
-      variant: 'hls',
     });
     expect(RESUME_DOCUMENTS.ats).toMatchObject({
       src: 'content/resume-ats.html',
       out: 'public/CV/MGavrilovCV-ATS.pdf',
       pages: 2,
-      variant: 'hls',
     });
   });
 

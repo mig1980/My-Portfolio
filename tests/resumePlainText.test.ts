@@ -7,7 +7,6 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { findResumeTextProblems, htmlToPlainText, resumeTextForAi } from '../resume/plainText';
 import { RESUME_DOCUMENTS } from '../resume/documents';
-import { TITLES } from '../resume/render';
 import { CAREER_FACTS } from '../utils/careerFacts';
 
 const atsHtml = readFileSync(resolve(process.cwd(), RESUME_DOCUMENTS.ats.src), 'utf8');
@@ -45,11 +44,22 @@ describe('resumeTextForAi (content/resume-ats.html)', () => {
     expect(findResumeTextProblems(text)).toEqual([]);
   });
 
-  it('fills in the title and keeps the key facts', () => {
-    expect(text).toContain(TITLES[RESUME_DOCUMENTS.ats.variant]);
+  it('keeps the title and key facts from the HTML', () => {
+    expect(text).toContain('Strategic Account Director, Healthcare & Life Sciences | Microsoft');
     expect(text).toContain(CAREER_FACTS.university);
     expect(text).toContain('top-five global pharmaceutical company');
     expect(text).toContain('- Grew the account 5x since 2017');
+  });
+
+  it('uses an edited ATS title in the AI text', () => {
+    const edited = atsHtml.replace(
+      /<div class="title">[^<]*<\/div>/,
+      '<div class="title">Edited ATS headline</div>'
+    );
+    expect(edited).not.toBe(atsHtml);
+    const editedText = resumeTextForAi(edited);
+    expect(editedText.split('\n')[1]).toBe('Edited ATS headline');
+    expect(findResumeTextProblems(editedText)).toEqual([]);
   });
 
   it('leaves out the contact line', () => {

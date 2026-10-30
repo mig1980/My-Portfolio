@@ -45,7 +45,6 @@ async function main(): Promise<void> {
       text,
       pages,
       expectedPages: doc.pages,
-      requiredText: doc.requiredText,
       expectedText,
     });
     if (problems.length > 0) {

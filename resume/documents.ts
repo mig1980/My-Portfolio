@@ -22,11 +22,7 @@ export interface ResumeDocument {
   pageMargin: 'zero' | 'any';
   /** Conventional-commit scope for edits published from the admin editor */
   commitScope: string;
-  /** Must appear in this order in the PDF's extracted text (scripts/check-resume-text.ts) */
-  requiredText: readonly string[];
 }
-
-const CURRENT_ROLE = 'Strategic Account Director, Healthcare & Life Sciences';
 
 export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
   executive: {
@@ -38,21 +34,6 @@ export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
     fit: buildFitSettings([10.5, 10.25, 10], [1, 0.9, 0.8]),
     pageMargin: 'zero',
     commitScope: 'resume',
-    requiredText: [
-      'Michael Gavrilov',
-      'michael@gavrilov.ai',
-      'Executive Summary',
-      'Core Expertise',
-      'Professional Experience',
-      CURRENT_ROLE,
-      'Senior Account Executive, Enterprise Accounts',
-      'Account Technology Strategist, Enterprise Accounts',
-      'Partner Technology Strategist',
-      'IT Solutions Architect',
-      'IT Operations Manager / Team Lead',
-      'Education',
-      'Certifications & Executive Education',
-    ],
   },
   ats: {
     id: 'ats',
@@ -63,23 +44,6 @@ export const RESUME_DOCUMENTS: Readonly<Record<ResumeDocId, ResumeDocument>> = {
     fit: buildFitSettings([11, 10.75, 10.5, 10.25], [1, 0.85, 0.7]),
     pageMargin: 'any',
     commitScope: 'resume-ats',
-    requiredText: [
-      'Michael Gavrilov',
-      'michael@gavrilov.ai',
-      'Executive Summary',
-      'Core Expertise',
-      'Professional Experience',
-      CURRENT_ROLE,
-      'Senior Account Executive, Enterprise Accounts',
-      'Account Technology Strategist, Enterprise Accounts',
-      'Partner Technology Strategist',
-      'IT Solutions Architect',
-      'IT Operations Manager / Team Lead',
-      'Selected Projects',
-      'Education',
-      'Certifications & Executive Education',
-      'Community',
-    ],
   },
 };
 

@@ -45,10 +45,16 @@ describe('resumeTextForAi (content/resume-ats.html)', () => {
   });
 
   it('keeps the title and key facts from the HTML', () => {
-    expect(text).toContain('Strategic Account Director, Healthcare & Life Sciences | Microsoft');
+    const source = new DOMParser().parseFromString(atsHtml, 'text/html');
+    const title = source.querySelector('.title')?.textContent?.trim();
+    const role = source.querySelector('.role h3')?.textContent?.trim();
+    expect(title).toBeTruthy();
+    expect(role).toBeTruthy();
+    expect(text.split('\n')[1]).toBe(title);
+    expect(text).toContain(role);
     expect(text).toContain(CAREER_FACTS.university);
     expect(text).toContain('top-five global pharmaceutical company');
-    expect(text).toContain('- Grew the account 5x since 2017');
+    expect(text).toMatch(/^- .+/m);
   });
 
   it('uses an edited ATS title in the AI text', () => {

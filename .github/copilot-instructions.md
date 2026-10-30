@@ -100,7 +100,7 @@ AboutMe/
 ├── resume/                 # Shared by the editor, the Functions and the PDF build
 │   ├── render.ts           # Applies --fs/--gap overrides without changing résumé content
 │   ├── validate.ts         # Template contract + safety checks (DOM-free, authoritative on the server)
-│   ├── documents.ts        # Registry: id → src, out, exact page target, fit settings, required text order
+│   ├── documents.ts        # Registry: id → src, out, exact page target, fit settings
 │   ├── pdf.ts              # Fit-setting builder, page constants, @page margin parser, page count/date pinning (isomorphic)
 │   ├── textCheck.ts        # ATS text rules used by scripts/check-resume-text.ts
 │   ├── facts.ts            # Shared-fact cross-check: editor warnings (never blocks Publish) + CI test

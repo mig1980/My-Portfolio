@@ -9,12 +9,11 @@ import { findTextProblems } from '../resume/textCheck';
 import { RESUME_DOCUMENTS } from '../resume/documents';
 import { htmlToPlainText } from '../resume/plainText';
 
-const REQUIRED = ['Michael Gavrilov', 'Executive Summary', 'Microsoft', 'Education'];
 const GOOD =
   'Michael Gavrilov\nStrategic Account Director\nEXECUTIVE SUMMARY\nLeader at Microsoft.\nEDUCATION\nM.S.';
 
 function check(text: string, pages = 1, expectedPages = 1): string[] {
-  return findTextProblems({ text, pages, expectedPages, requiredText: REQUIRED });
+  return findTextProblems({ text, pages, expectedPages, expectedText: GOOD });
 }
 
 describe('findTextProblems', () => {
@@ -55,23 +54,31 @@ describe('findTextProblems', () => {
       expect(html).not.toMatch(/overflow:\s*hidden|line-clamp|position:\s*absolute|float:/);
     });
 
-    it('checks an edited title against the source rather than a fixed title', () => {
+    it('checks edited headlines and role headings against the source', () => {
       const title = `Edited ${doc.id} headline`;
-      const edited = html.replace(
+      const role = `Edited ${doc.id} role | Microsoft | Feb 2017 – Present`;
+      const withEditedTitle = html.replace(
         /<div class="title">[^<]*<\/div>/,
         `<div class="title">${title}</div>`
       );
-      expect(edited).not.toBe(html);
+      const edited = withEditedTitle.replace(
+        /(<h3(?:\s+class="role-head")?>)[^<]*(<\/h3>)/,
+        `$1${role}$2`
+      );
+      expect(withEditedTitle).not.toBe(html);
+      expect(edited).not.toBe(withEditedTitle);
       const expectedText = htmlToPlainText(edited).replace(/^- /gm, '• ');
       const input = {
         pages: doc.pages,
         expectedPages: doc.pages,
-        requiredText: doc.requiredText,
         expectedText,
       };
       expect(findTextProblems({ ...input, text: expectedText })).toEqual([]);
       expect(findTextProblems({ ...input, text: expectedText.replace(title, '') })).toContain(
         `missing or out-of-order source text: "${title}"`
+      );
+      expect(findTextProblems({ ...input, text: expectedText.replace(role, '') })).toContain(
+        `missing or out-of-order source text: "${role}"`
       );
     });
   });
@@ -98,25 +105,26 @@ describe('findTextProblems', () => {
     );
   });
 
-  it('reports missing and out-of-order phrases', () => {
-    expect(check(GOOD.replace('EDUCATION', ''))).toEqual(['missing: "Education"']);
-    const swapped = 'Michael Gavrilov\nEDUCATION\nEXECUTIVE SUMMARY\nMicrosoft';
-    expect(check(swapped)).toEqual(['out of order: "Education"']);
+  it('reports missing and out-of-order source blocks', () => {
+    const problem = 'missing or out-of-order source text: "EDUCATION"';
+    expect(check(GOOD.replace('EDUCATION', ''))).toEqual([problem]);
+    const swapped = GOOD.replace(
+      'EXECUTIVE SUMMARY\nLeader at Microsoft.\nEDUCATION',
+      'EDUCATION\nEXECUTIVE SUMMARY\nLeader at Microsoft.'
+    );
+    expect(check(swapped)).toEqual([problem]);
   });
 
-  it('lists required phrases for every registered document', () => {
-    for (const doc of Object.values(RESUME_DOCUMENTS)) {
-      expect(doc.requiredText[0]).toBe('Michael Gavrilov');
-      expect(doc.requiredText).toContain('michael@gavrilov.ai');
-      expect(doc.requiredText).toContain('Education');
-      expect(doc.requiredText).toContain('Certifications & Executive Education');
-    }
+  it('rejects empty expected source text', () => {
+    expect(
+      findTextProblems({ text: GOOD, pages: 1, expectedPages: 1, expectedText: '\n  ' })
+    ).toEqual(['source text is empty']);
   });
 
   describe('full source integrity', () => {
     const expectedText = `${GOOD}\n• Grew the account\n• Led a team`;
     const validate = (text: string): string[] =>
-      findTextProblems({ text, pages: 1, expectedPages: 1, requiredText: REQUIRED, expectedText });
+      findTextProblems({ text, pages: 1, expectedPages: 1, expectedText });
 
     it('accepts all source blocks and bullets with PDF line wrapping', () => {
       expect(validate(expectedText.replace('Grew the account', 'Grew the\naccount'))).toEqual([]);
@@ -159,7 +167,6 @@ describe('findTextProblems', () => {
           text: GOOD,
           pages: 1,
           expectedPages: 1,
-          requiredText: REQUIRED,
           expectedText: `${GOOD}\n[result]`,
         })
       ).toContain('contains unresolved placeholders');

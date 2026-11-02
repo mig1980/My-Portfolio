@@ -10,7 +10,7 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 
 - Name: Michael Gavrilov
 - Location: New York City, NY
-- Phone: +1-551-208-1538 (the owner chose to publish it)
+- Phone: omitted from both public résumés at the owner's request.
 - Résumé email: michael@gavrilov.ai · Website contact email: contact@gavrilov.ai
 - LinkedIn: linkedin.com/in/mgavrilov · Site: gavrilov.ai
 - Headline titles (written directly in each résumé HTML file): "Strategic Account Director, Healthcare & Life Sciences" (currently used in both documents) and "Strategic Account Director, Global Enterprise" (alternative)

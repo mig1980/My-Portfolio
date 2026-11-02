@@ -74,6 +74,10 @@ describe('career facts stay consistent', () => {
       expect(contact).toContain('michael@gavrilov.ai');
       expect(contact).not.toContain('contact@gavrilov.ai');
     });
+    it('does not publish a phone number', () => {
+      expect(text).not.toMatch(/\+?1[-.\s(]*\d{3}[-.\s)]*\d{3}[-.\s]*\d{4}\b/);
+      expect(text).not.toMatch(/tel:/i);
+    });
     it('matches every shared fact (the editor shows the same check as warnings)', () => {
       expect(findFactWarnings(text)).toEqual([]);
     });

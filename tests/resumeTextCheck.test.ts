@@ -32,7 +32,7 @@ describe('findTextProblems', () => {
       expect(roles).toHaveLength(6);
       for (const role of roles) {
         expect(role.querySelector('h3')?.textContent).toMatch(
-          /\| .+ \| [A-Z][a-z]{2} \d{4} – (?:Present|[A-Z][a-z]{2} \d{4})$/
+          /\| .+ \| [A-Z][a-z]{2} \d{4} - (?:Present|[A-Z][a-z]{2} \d{4})$/
         );
         expect(role.querySelectorAll('ul > li').length).toBeGreaterThan(0);
       }
@@ -56,7 +56,7 @@ describe('findTextProblems', () => {
 
     it('checks edited headlines and role headings against the source', () => {
       const title = `Edited ${doc.id} headline`;
-      const role = `Edited ${doc.id} role | Microsoft | Feb 2017 – Present`;
+      const role = `Edited ${doc.id} role | Microsoft | Feb 2017 - Present`;
       const withEditedTitle = html.replace(
         /<div class="title">[^<]*<\/div>/,
         `<div class="title">${title}</div>`
@@ -129,6 +129,17 @@ describe('findTextProblems', () => {
     it('accepts all source blocks and bullets with PDF line wrapping', () => {
       expect(validate(expectedText.replace('Grew the account', 'Grew the\naccount'))).toEqual([]);
       expect(validate(expectedText.replace('Michael Gavrilov', 'MICHAEL GAVRILOV'))).toEqual([]);
+    });
+
+    it('rejects words joined across an extracted PDF line break', () => {
+      const source = `${GOOD}\nA top-five global account`;
+      const checkSource = (text: string): string[] =>
+        findTextProblems({ text, pages: 1, expectedPages: 1, expectedText: source });
+
+      expect(checkSource(`${GOOD}\nA top-five\nglobal account`)).toEqual([]);
+      expect(checkSource(`${GOOD}\nA top-fiveglobal account`)).toContain(
+        'missing or out-of-order source text: "A top-five global account"'
+      );
     });
 
     it('rejects missing and duplicated bullet markers', () => {

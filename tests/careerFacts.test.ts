@@ -61,7 +61,7 @@ describe('career facts stay consistent', () => {
         'Azure Solutions Architect Expert',
         'Azure AI Fundamentals',
         'AWS Certified Cloud Practitioner',
-        'agentic generative-AI investment research platform',
+        'AI-augmented investment analytics platform',
       ]) {
         expect(plain).toContain(phrase);
         expect(factRegister).toContain(phrase);

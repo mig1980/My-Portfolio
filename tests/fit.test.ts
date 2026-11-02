@@ -9,8 +9,7 @@ import type { FitCheckError, FitCheckResult } from '../types';
 
 type FitContext = Parameters<typeof onRequestPost>[0];
 
-const QUOTE =
-  'Structured and negotiated strategic agreements exceeding $500M in total contract value';
+const QUOTE = 'full-cycle strategy, pricing and negotiations through closure';
 const SITE = 'https://gavrilov.ai';
 const SECRET_MARKER = 'ZEBRA-7Q-UNIQUE-ROLE-TEXT';
 
@@ -259,7 +258,7 @@ describe('POST /api/fit', () => {
             { point: 'Kubernetes is his strongest skill.', evidence: QUOTE },
             {
               point: 'Owns C-suite relationships.',
-              evidence: 'Own relationships with the CIO, CDO and senior business leaders',
+              evidence: 'Partnered directly with the CIO, CDO and CFO',
             },
           ],
           transferable: [{ point: 'Kubernetes skills transfer well.', evidence: QUOTE }],
@@ -276,7 +275,7 @@ describe('POST /api/fit', () => {
       expect(data.fits).toEqual([
         {
           point: 'Owns C-suite relationships.',
-          evidence: 'Own relationships with the CIO, CDO and senior business leaders',
+          evidence: 'Partnered directly with the CIO, CDO and CFO',
         },
       ]);
       expect(data.gaps).toEqual(['Kubernetes is not on the résumé.']);

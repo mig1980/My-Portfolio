@@ -174,8 +174,10 @@ Résumé (verified facts).
 ${RESUME_TEXT}
 
 Additional verified facts (not on the résumé).
-Refer to his current customer only as "a top-five global pharmaceutical company", one of Microsoft's strategic Healthcare and Life Sciences accounts. Do not name the customer.
+Refer to his current customer only as "a top-five global pharmaceutical company in the US", one of Microsoft's strategic Healthcare and Life Sciences accounts. Do not name the customer.
 He has been at Microsoft since 2006. He is based in New York City.
+He partners directly with the account's CIO, CDO and CFO, with CEO-level engagement. Annual account revenue grew 5x since 2017 (~20% CAGR), and multi-year strategic agreements exceeding $500M TCV were signed after full-cycle strategy, pricing and negotiations.
+Microsoft 365 Copilot reached approximately 55,000 net-new paid seats across an approximately 75,000-seat enterprise estate. Copilot and AI agents moved from pilots into governed production across GxP-regulated operations.
 
 Industries.
 Healthcare and Life Sciences, including pharma. He has also supported enterprise accounts across sectors such as transportation and manufacturing.
@@ -184,7 +186,7 @@ Career path: engineer, architect, strategist, strategic account leader.
 He started his career building and operating technology, then became an architect, a strategist, and eventually a strategic account leader. His mindset never changed: understand the problem, challenge assumptions, bring the right people together, and make the solution work. Then: making servers work. Now: making AI work for some of the world's largest companies.
 
 How he thinks.
-Go deep: understand the technology well enough to challenge assumptions. Zoom out: find the business problem behind the technology conversation. Connect the room: create alignment across people with different priorities and incentives. Make it real: turn strategy into commitments, execution, and measurable outcomes.
+Go deep: understand the technology well enough to challenge assumptions. Zoom out: find the business problem behind the technology conversation. Connect the room: create alignment across people with different priorities and incentives. Make it real: turn strategy into commitments, execution, and results.
 His motto: go deep enough to understand the technology, go high enough to understand the business, and stay close enough to make it happen.
 On enterprise AI, he pairs technical depth with business focus, and challenges legacy assumptions with data-driven, security-aware recommendations so adoption can accelerate without increasing risk.
 

@@ -20,22 +20,23 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 
 | Role | Employer | Dates (site, assistant, both résumés) |
 |---|---|---|
-| Strategic Account Director, Healthcare & Life Sciences | Microsoft | Feb 2017 – Present |
-| Senior Account Executive, Enterprise Accounts | Microsoft | Apr 2011 – Jan 2017 |
-| Account Technology Strategist, Enterprise Accounts | Microsoft | Jul 2008 – Mar 2011 |
-| Partner Technology Strategist | Microsoft | Oct 2006 – Jul 2008 |
-| IT Solutions Architect | Systematica Group | Jul 2005 – Oct 2006 |
-| IT Operations Manager / Team Lead | Allied Testing | Apr 2002 – Jul 2005 |
+| Strategic Account Director, Healthcare & Life Sciences | Microsoft | Feb 2017 - Present |
+| Senior Account Executive, Enterprise Accounts | Microsoft | Apr 2011 - Jan 2017 |
+| Account Technology Strategist, Enterprise Accounts | Microsoft | Jul 2008 - Mar 2011 |
+| Partner Technology Strategist | Microsoft | Oct 2006 - Jul 2008 |
+| IT Solutions Architect | Systematica Group | Jul 2005 - Oct 2006 |
+| IT Operations Manager / Team Lead | Allied Testing | Apr 2002 - Jul 2005 |
 
 - Microsoft tenure: 2006 – Present, stated as "20+ years at Microsoft"
-- Current scope: executive owner of Microsoft's relationship with a top-five global pharmaceutical company, one of Microsoft's strategic Healthcare & Life Sciences accounts; relationships with the CIO, CDO and senior business leaders, with CEO-level engagement
+- Current scope: executive owner of Microsoft's relationship with a top-five global pharmaceutical company in the US, one of Microsoft's strategic Healthcare & Life Sciences accounts; direct partnerships with the CIO, CDO and CFO, with CEO-level engagement
+- Enterprise AI: Microsoft 365 Copilot reached approximately 55,000 net-new paid seats across an approximately 75,000-seat enterprise estate; Copilot and AI agents moved from pilots into governed production across GxP-regulated operations
 
 ## Metrics
 
 | Metric | Wording | Definition |
 |---|---|---|
-| Account growth | "5× since 2017 (~20% revenue CAGR)"; ATS: "5x since 2017 (about 20% revenue CAGR)" | Growth of the current account since 2017. **[CONFIRM: revenue \| consumption \| TCV]**. The wording says "revenue", so change it if the answer isn't revenue |
-| Strategic agreements | "exceeding $500M in total contract value" | Total contract value of multi-year agreements structured and negotiated in the current role |
+| Account growth | "Grew annual account revenue 5x since 2017 (~20% CAGR)" | Annual revenue growth of the current account since 2017 |
+| Strategic agreements | "Signed multi-year strategic agreements exceeding $500M TCV" | Led full-cycle strategy, pricing and negotiations through closure for multi-year agreements in the current role |
 | Virtual team | "30+ person (matrixed) virtual team" | Specialist sales, engineering, customer success, support, services and global systems integrator partners |
 | Enterprise revenue | "$20M+ average annual revenue" | Senior Account Executive, 2011 – 2017 |
 | Partner revenue | "increased partner-influenced revenue by 150%" | Partner Technology Strategist, 2006 – 2008 |
@@ -69,6 +70,6 @@ Items marked **[CONFIRM]** are published today but not yet verified by the owner
 
 ## Projects and community
 
-- QuantumInvestor.net: creator of an agentic generative-AI investment research platform (owner's updated description in both résumés; no outcome metrics stated)
+- QuantumInvestor.net: creator of an AI-augmented investment analytics platform
 - gavrilov.ai: creator of an open-source personal site with an AI assistant built on Google Gemini models
 - Mentor, NYU Tandon Mastermind Mentorship program (ATS résumé only)

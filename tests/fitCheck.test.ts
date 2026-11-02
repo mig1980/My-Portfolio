@@ -22,8 +22,7 @@ const RESUME = resumeTextForAi(
   readFileSync(resolve(process.cwd(), RESUME_DOCUMENTS.ats.src), 'utf8')
 );
 
-const QUOTE =
-  'Structured and negotiated strategic agreements exceeding $500M in total contract value';
+const QUOTE = 'full-cycle strategy, pricing and negotiations through closure';
 
 const JOB =
   'We are hiring a Strategic Account Director to lead executive relationships with a global ' +
@@ -155,7 +154,7 @@ describe('parseReply', () => {
           { point: 'Runs global sales teams.', evidence: 'Ran global sales teams for a decade' },
         ],
         transferable: [
-          { point: 'Partner experience.', evidence: 'global systems integrator partners' },
+          { point: 'Partner experience.', evidence: 'global systems integrators (GSIs)' },
         ],
         gaps: ['No Kubernetes experience listed.'],
         questions: ['How has Michael worked with Salesforce?'],
@@ -165,7 +164,7 @@ describe('parseReply', () => {
     expect(result).toEqual({
       fits: [{ point: 'Has negotiated large strategic agreements.', evidence: QUOTE }],
       transferable: [
-        { point: 'Partner experience.', evidence: 'global systems integrator partners' },
+        { point: 'Partner experience.', evidence: 'global systems integrators (GSIs)' },
       ],
       gaps: ['No Kubernetes experience listed.'],
       questions: ['How has Michael worked with Salesforce?'],

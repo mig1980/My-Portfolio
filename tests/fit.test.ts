@@ -258,7 +258,7 @@ describe('POST /api/fit', () => {
             { point: 'Kubernetes is his strongest skill.', evidence: QUOTE },
             {
               point: 'Owns C-suite relationships.',
-              evidence: 'Partnered directly with the CIO, CDO and CFO',
+              evidence: 'Partner directly with the CIO, CDO and CFO',
             },
           ],
           transferable: [{ point: 'Kubernetes skills transfer well.', evidence: QUOTE }],
@@ -275,7 +275,7 @@ describe('POST /api/fit', () => {
       expect(data.fits).toEqual([
         {
           point: 'Owns C-suite relationships.',
-          evidence: 'Partnered directly with the CIO, CDO and CFO',
+          evidence: 'Partner directly with the CIO, CDO and CFO',
         },
       ]);
       expect(data.gaps).toEqual(['Kubernetes is not on the résumé.']);
